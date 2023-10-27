@@ -10,13 +10,13 @@ import frc.robot.SwerveModule;
 import frc.robot.constants.Ports;
 
 public class SwerveSubsystem {
-	SwerveModule[] modules = new SwerveModule[] {
+	public SwerveModule[] modules = new SwerveModule[] {
 		new SwerveModule(Ports.NW_ENCODER, Ports.NW_TURN_MOTOR, Ports.NW_DRIVE_MOTOR),
 		new SwerveModule(Ports.NE_ENCODER, Ports.NE_TURN_MOTOR, Ports.NE_DRIVE_MOTOR),
 		new SwerveModule(Ports.SW_ENCODER, Ports.SW_TURN_MOTOR, Ports.SW_DRIVE_MOTOR),
 		new SwerveModule(Ports.SE_ENCODER, Ports.SE_TURN_MOTOR, Ports.SE_DRIVE_MOTOR)
 	};
-	SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
+	public SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
 			new Translation2d(ROBOT_LENGTH / 2, ROBOT_WIDTH / 2),
 			new Translation2d(ROBOT_LENGTH / 2, -ROBOT_WIDTH / 2),
 			new Translation2d(-ROBOT_LENGTH / 2, ROBOT_WIDTH / 2),
@@ -27,6 +27,12 @@ public class SwerveSubsystem {
 		SwerveDriveKinematics.desaturateWheelSpeeds(states, SWERVE_MAXSPEED);
 		for (int i = 0; i < 4; i++) {
 			modules[i].setState(states[i]);
+		}
+	}
+
+	public void zero() {
+		for(int i = 0; i < 4; i++) {
+			modules[i].setState(new SwerveModuleState());
 		}
 	}
 
