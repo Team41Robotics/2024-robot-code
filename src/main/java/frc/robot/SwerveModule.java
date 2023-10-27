@@ -15,8 +15,8 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Timer;
 
 public class SwerveModule {
-	public PIDController pidTurn = new PIDController(0, 0, 0, 0);
-	public PIDController pidSpeed = new PIDController(0, 0, 0, 0);
+	public PIDController pidTurn = new PIDController(0, 0, 0);
+	public PIDController pidSpeed = new PIDController(0, 0, 0);
 
 	public static final State zeroState = new State(0, 0);
 	TrapezoidProfile profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, zeroState, zeroState);

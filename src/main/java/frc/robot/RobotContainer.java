@@ -1,11 +1,12 @@
 package frc.robot;
 
+import frc.robot.subsystems.SwerveSubsystem;
+
 public class RobotContainer {
 	public static Robot robot;
-
-	// private final XSubsystem x = new XSubsystem()
+	public static SwerveSubsystem drive;
 
 	public static void initSubsystems() {
-		; // x.init()
+		drive = new SwerveSubsystem();
 	}
 }
