@@ -31,7 +31,7 @@ public class SwerveSubsystem {
 	}
 
 	public void zero() {
-		for(int i = 0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			modules[i].setState(new SwerveModuleState());
 		}
 	}

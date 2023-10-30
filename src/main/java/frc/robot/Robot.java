@@ -1,8 +1,7 @@
 package frc.robot;
 
-import static frc.robot.RobotContainer.drive;
-import static frc.robot.RobotContainer.initSubsystems;
-import static frc.robot.RobotContainer.robot;
+
+import static frc.robot.RobotContainer.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -53,28 +52,38 @@ public class Robot extends TimedRobot {
 	}
 
 	@Override
-	public void teleopPeriodic() {}
+	public void teleopPeriodic() {
 
-	int first=1;
+	}
+
+	int first = 1;
+
 	@Override
 	public void testInit() {
 		CommandScheduler.getInstance().cancelAll();
-		if(first == 1) {
+		if (first == 1) {
 			SwerveModule module = drive.modules[0];
 			Shuffleboard.getTab("Module 0").addDouble("Direction", module::getDirection);
 			Shuffleboard.getTab("Module 0").addDouble("Angular Velocity", module::getAngularVelocity);
 			Shuffleboard.getTab("Module 0").addDouble("Velocity", module::getVelocity);
 			Shuffleboard.getTab("Module 0").addDouble("Drive Voltage", () -> module.drive_v);
 			Shuffleboard.getTab("Module 0").addDouble("Turn Voltage", () -> module.turn_v);
+			Shuffleboard.getTab("Module 0").addNumber("Setpoint", () -> module.target_state.speedMetersPerSecond);
+			Shuffleboard.getTab("Module 0").addNumber("Setpoint Angle", () -> module.target_state.angle.getDegrees());
 		}
-		first=0;
+		first = 0;
 	}
 
 	@Override
 	public void testPeriodic() {
-		double mag = new Joystick(0).getMagnitude();
-		double angle = new Joystick(0).getDirectionRadians();
-		if(mag > 0.5) drive.modules[0].setState(new SwerveModuleState(0, new Rotation2d(angle)));
+		double x = controller.getRightX();
+		double y = controller.getRightY();
+		double mag = Math.hypot(x, y);
+		double angle = Math.atan2(y, x);
+		if (mag > 0.5) {
+			drive.modules[0].setState(new SwerveModuleState(0, new Rotation2d(angle)));
+		}
+		
 	}
 
 	public void configureButtons() {

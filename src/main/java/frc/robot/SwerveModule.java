@@ -18,9 +18,9 @@ public class SwerveModule {
 	public PIDController pidTurn = new PIDController(0, 0, 0);
 	public PIDController pidSpeed = new PIDController(0, 0, 0);
 
-	public static final State zeroState = new State(0, 0);
-	public TrapezoidProfile profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, zeroState, zeroState);
-	public double profile_t0 = Timer.getFPGATimestamp();
+	// public static final State zeroState = new State(0, 0);
+	// public TrapezoidProfile profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, zeroState, zeroState);
+	// public double profile_t0 = Timer.getFPGATimestamp();
 
 	CANCoder encoder;
 	CANSparkMax turn_motor, drive_motor;
@@ -48,22 +48,30 @@ public class SwerveModule {
 	public void setState(SwerveModuleState state) {
 		state = SwerveModuleState.optimize(state, new Rotation2d(getDirection()));
 		target_state = state;
-		double delta = getDirection() - state.angle.getRadians();
-		delta = MathUtil.angleModulus(delta);
-		profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, new State(delta, getAngularVelocity()), zeroState);
-		profile_t0 = Timer.getFPGATimestamp();
+		// double delta = getDirection() - state.angle.getRadians();
+		// delta = MathUtil.angleModulus(delta);
+		// profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, new State(delta, getAngularVelocity()), zeroState);
+		// profile_t0 = Timer.getFPGATimestamp();
 	}
 
 	double drive_v, turn_v;
+
 	public void periodic() {
-		State turn_ref = profile.calculate(Timer.getFPGATimestamp() - profile_t0);
+		// State turn_ref = profile.calculate(Timer.getFPGATimestamp() - profile_t0);
 
-		drive_motor.setVoltage(drive_v=DRIVE_KS * signum(target_state.speedMetersPerSecond)
-				+ DRIVE_KV * target_state.speedMetersPerSecond
-				+ pidSpeed.calculate(getVelocity(), target_state.speedMetersPerSecond));
+		// drive_motor.setVoltage(
+				// drive_v = DRIVE_KS * signum(target_state.speedMetersPerSecond)
+					// + DRIVE_KV * target_state.speedMetersPerSecond
+					// + pidSpeed.calculate(getVelocity(), target_state.speedMetersPerSecond));
 
-		turn_motor.setVoltage(turn_v=TURN_KS * signum(turn_ref.velocity)
-				+ TURN_KV * turn_ref.velocity
-				+ pidTurn.calculate(getDirection(), turn_ref.position + target_state.angle.getRadians()));
+		// turn_motor.setVoltage(
+				// turn_v = TURN_KS * signum(turn_ref.velocity)
+					// + TURN_KV * turn_ref.velocity
+					// + pidTurn.calculate(getDirection(), turn_ref.position + target_state.angle.getRadians()));
+
+		// jank wayy
+		double MAX_SPEED=1;
+		drive_motor.setVoltage(target_state.speedMetersPerSecond/MAX_SPEED*9);
+		turn_motor.setVoltage((getDirection() - target_state.angle.getRadians())*3);
 	}
 }
