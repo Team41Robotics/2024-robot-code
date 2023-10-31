@@ -1,11 +1,11 @@
 package frc.robot;
 
-
 import static frc.robot.RobotContainer.*;
+import static frc.robot.constants.Constants.SWERVE_MAXSPEED;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -53,7 +53,10 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopPeriodic() {
-
+		drive.drive(new ChassisSpeeds(
+				controller.getLeftX() * SWERVE_MAXSPEED,
+				controller.getLeftX() * SWERVE_MAXSPEED,
+				controller.getRightY()));
 	}
 
 	int first = 1;
@@ -83,7 +86,6 @@ public class Robot extends TimedRobot {
 		if (mag > 0.5) {
 			drive.modules[0].setState(new SwerveModuleState(0, new Rotation2d(angle)));
 		}
-		
 	}
 
 	public void configureButtons() {

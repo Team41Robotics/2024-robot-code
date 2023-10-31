@@ -6,13 +6,9 @@ import static java.lang.Math.*;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
-import edu.wpi.first.wpilibj.Timer;
 
 public class SwerveModule {
 	public PIDController pidTurn = new PIDController(0, 0, 0);
@@ -60,18 +56,18 @@ public class SwerveModule {
 		// State turn_ref = profile.calculate(Timer.getFPGATimestamp() - profile_t0);
 
 		// drive_motor.setVoltage(
-				// drive_v = DRIVE_KS * signum(target_state.speedMetersPerSecond)
-					// + DRIVE_KV * target_state.speedMetersPerSecond
-					// + pidSpeed.calculate(getVelocity(), target_state.speedMetersPerSecond));
+		// drive_v = DRIVE_KS * signum(target_state.speedMetersPerSecond)
+		// + DRIVE_KV * target_state.speedMetersPerSecond
+		// + pidSpeed.calculate(getVelocity(), target_state.speedMetersPerSecond));
 
 		// turn_motor.setVoltage(
-				// turn_v = TURN_KS * signum(turn_ref.velocity)
-					// + TURN_KV * turn_ref.velocity
-					// + pidTurn.calculate(getDirection(), turn_ref.position + target_state.angle.getRadians()));
+		// turn_v = TURN_KS * signum(turn_ref.velocity)
+		// + TURN_KV * turn_ref.velocity
+		// + pidTurn.calculate(getDirection(), turn_ref.position + target_state.angle.getRadians()));
 
 		// jank wayy
-		double MAX_SPEED=1;
-		drive_motor.setVoltage(target_state.speedMetersPerSecond/MAX_SPEED*9);
-		turn_motor.setVoltage((getDirection() - target_state.angle.getRadians())*3);
+		double MAX_SPEED = 1;
+		drive_motor.setVoltage(target_state.speedMetersPerSecond / MAX_SPEED * 9);
+		turn_motor.setVoltage((getDirection() - target_state.angle.getRadians()) * 3);
 	}
 }

@@ -1,7 +1,5 @@
 package frc.robot.constants;
 
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-
 public final class Constants {
 	public static final double SWERVE_MAXSPEED = 1; // TODO
 	public static final double SWERVE_WHEEL_RAD = 2 * 2.54 / 100;
@@ -15,6 +13,6 @@ public final class Constants {
 
 	// public static final TrapezoidProfile.Constraints SWERVE_TURN_TRAPEZOID = new TrapezoidProfile.Constraints(1, 2);
 
-	public static final double ROBOT_LENGTH = 23.5*2.54/100;
-	public static final double ROBOT_WIDTH = 26.4*2.54/100;
+	public static final double ROBOT_LENGTH = 23.5 * 2.54 / 100;
+	public static final double ROBOT_WIDTH = 26.4 * 2.54 / 100;
 }
