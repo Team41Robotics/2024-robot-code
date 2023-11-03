@@ -3,6 +3,7 @@ package frc.robot;
 import static frc.robot.RobotContainer.*;
 import static frc.robot.constants.Constants.SWERVE_MAXSPEED;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -53,9 +54,10 @@ public class Robot extends TimedRobot {
 	@Override
 	public void teleopPeriodic() {
 		drive.drive(new ChassisSpeeds(
-				controller.getLeftX() * SWERVE_MAXSPEED,
-				controller.getLeftY() * SWERVE_MAXSPEED,
-				controller.getRightY() / 5));
+			MathUtil.applyDeadband(controller.getLeftX(), 0.1) * SWERVE_MAXSPEED,
+			MathUtil.applyDeadband(-controller.getLeftY(), 0.1) * SWERVE_MAXSPEED,
+			MathUtil.applyDeadband(-controller.getRightY(), 0.1)/5
+		));
 	}
 
 	int first = 1;
