@@ -15,4 +15,9 @@ public final class Constants {
 
 	public static final double ROBOT_LENGTH = 23.5 * 2.54 / 100;
 	public static final double ROBOT_WIDTH = 26.4 * 2.54 / 100;
+
+	public static final double NW_ENCODER_OFFSET = 0.075195;
+	public static final double NE_ENCODER_OFFSET = 0.066162;
+	public static final double SW_ENCODER_OFFSET = 0.111084;
+	public static final double SE_ENCODER_OFFSET = 0.915283;
 }

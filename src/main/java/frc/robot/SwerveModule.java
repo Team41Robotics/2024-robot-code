@@ -3,7 +3,7 @@ package frc.robot;
 import static frc.robot.constants.Constants.*;
 import static java.lang.Math.*;
 
-import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.controller.PIDController;
@@ -18,19 +18,20 @@ public class SwerveModule {
 	// public TrapezoidProfile profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, zeroState, zeroState);
 	// public double profile_t0 = Timer.getFPGATimestamp();
 
-	CANCoder encoder;
+	CANcoder encoder;
 	CANSparkMax turn_motor, drive_motor;
-
+	double offset;
 	SwerveModuleState target_state;
 
-	public SwerveModule(int port_cancoder, int port_turn_motor, int port_drive_motor) {
-		encoder = new CANCoder(port_cancoder);
+	public SwerveModule(int port_cancoder, int port_turn_motor, int port_drive_motor, double offset) {
+		encoder = new CANcoder(port_cancoder, "rio");
 		turn_motor = new CANSparkMax(port_turn_motor, MotorType.kBrushless);
 		drive_motor = new CANSparkMax(port_drive_motor, MotorType.kBrushless);
+		this.offset = offset;
 	}
 
 	public double getDirection() {
-		return encoder.getAbsolutePosition() / 180 * PI;
+		return (encoder.getAbsolutePosition().getValue() - offset) % 1 * 2 * PI;
 	}
 
 	public double getAngularVelocity() { // in rad/s
@@ -67,7 +68,10 @@ public class SwerveModule {
 
 		// jank wayy
 		double MAX_SPEED = 1;
-		drive_motor.setVoltage(target_state.speedMetersPerSecond / MAX_SPEED * 9);
-		turn_motor.setVoltage((getDirection() - target_state.angle.getRadians()) * 3);
+		if (this.target_state != null) {
+			System.out.println(target_state);
+			drive_motor.setVoltage(target_state.speedMetersPerSecond / MAX_SPEED * 9);
+			turn_motor.setVoltage((getDirection() - target_state.angle.getRadians()) * 3);
+		}
 	}
 }

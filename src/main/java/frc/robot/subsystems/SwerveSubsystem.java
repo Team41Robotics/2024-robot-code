@@ -6,15 +6,17 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.SwerveModule;
+import frc.robot.constants.Constants;
 import frc.robot.constants.Ports;
 
-public class SwerveSubsystem {
+public class SwerveSubsystem extends SubsystemBase {
 	public SwerveModule[] modules = new SwerveModule[] {
-		new SwerveModule(Ports.NW_ENCODER, Ports.NW_TURN_MOTOR, Ports.NW_DRIVE_MOTOR),
-		new SwerveModule(Ports.NE_ENCODER, Ports.NE_TURN_MOTOR, Ports.NE_DRIVE_MOTOR),
-		new SwerveModule(Ports.SW_ENCODER, Ports.SW_TURN_MOTOR, Ports.SW_DRIVE_MOTOR),
-		new SwerveModule(Ports.SE_ENCODER, Ports.SE_TURN_MOTOR, Ports.SE_DRIVE_MOTOR)
+		new SwerveModule(Ports.NW_ENCODER, Ports.NW_TURN_MOTOR, Ports.NW_DRIVE_MOTOR, Constants.NW_ENCODER_OFFSET),
+		new SwerveModule(Ports.NE_ENCODER, Ports.NE_TURN_MOTOR, Ports.NE_DRIVE_MOTOR, Constants.NE_ENCODER_OFFSET),
+		new SwerveModule(Ports.SW_ENCODER, Ports.SW_TURN_MOTOR, Ports.SW_DRIVE_MOTOR, Constants.SW_ENCODER_OFFSET),
+		new SwerveModule(Ports.SE_ENCODER, Ports.SE_TURN_MOTOR, Ports.SE_DRIVE_MOTOR, Constants.SE_ENCODER_OFFSET)
 	};
 	public SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
 			new Translation2d(ROBOT_LENGTH / 2, ROBOT_WIDTH / 2),

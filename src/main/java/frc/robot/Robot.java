@@ -7,7 +7,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
@@ -55,14 +54,15 @@ public class Robot extends TimedRobot {
 	public void teleopPeriodic() {
 		drive.drive(new ChassisSpeeds(
 				controller.getLeftX() * SWERVE_MAXSPEED,
-				controller.getLeftX() * SWERVE_MAXSPEED,
-				controller.getRightY()));
+				controller.getLeftY() * SWERVE_MAXSPEED,
+				controller.getRightY() / 5));
 	}
 
 	int first = 1;
 
 	@Override
 	public void testInit() {
+		/*
 		CommandScheduler.getInstance().cancelAll();
 		if (first == 1) {
 			SwerveModule module = drive.modules[0];
@@ -75,6 +75,7 @@ public class Robot extends TimedRobot {
 			Shuffleboard.getTab("Module 0").addNumber("Setpoint Angle", () -> module.target_state.angle.getDegrees());
 		}
 		first = 0;
+		*/
 	}
 
 	@Override
@@ -84,7 +85,7 @@ public class Robot extends TimedRobot {
 		double mag = Math.hypot(x, y);
 		double angle = Math.atan2(y, x);
 		if (mag > 0.5) {
-			drive.modules[0].setState(new SwerveModuleState(0, new Rotation2d(angle)));
+			drive.modules[1].setState(new SwerveModuleState(0, new Rotation2d(angle)));
 		}
 	}
 
