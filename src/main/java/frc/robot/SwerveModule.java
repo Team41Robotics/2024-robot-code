@@ -6,7 +6,6 @@ import static java.lang.Math.*;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,7 +29,7 @@ public class SwerveModule {
 		turn_motor = new CANSparkMax(port_turn_motor, MotorType.kBrushless);
 		drive_motor = new CANSparkMax(port_drive_motor, MotorType.kBrushless);
 		this.offset = offset;
-		this.target_state=new SwerveModuleState();
+		this.target_state = new SwerveModuleState();
 	}
 
 	public double getDirection() {
@@ -70,7 +69,8 @@ public class SwerveModule {
 		// + pidTurn.calculate(getDirection(), turn_ref.position + target_state.angle.getRadians()));
 
 		// jank wayy
-		if(this.encoder.getDeviceID()==5)System.out.println(new Rotation2d(this.getDirection())+" ; "+target_state);
+		if (this.encoder.getDeviceID() == 5)
+			System.out.println(new Rotation2d(this.getDirection()) + " ; " + target_state);
 		double MAX_SPEED = 1;
 		if (this.target_state != null) {
 			drive_motor.setVoltage(target_state.speedMetersPerSecond / MAX_SPEED * 9);

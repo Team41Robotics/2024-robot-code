@@ -2,6 +2,7 @@ package frc.robot;
 
 import static frc.robot.RobotContainer.*;
 import static frc.robot.constants.Constants.SWERVE_MAXSPEED;
+import static java.lang.Math.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -18,6 +19,7 @@ public class Robot extends TimedRobot {
 	public void robotInit() {
 		robot = this;
 		initSubsystems();
+		configureButtonBindings();
 	}
 
 	@Override
@@ -46,6 +48,7 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopInit() {
+		imu.zeroYaw();
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}
@@ -53,17 +56,23 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		drive.drive(new ChassisSpeeds(
-			MathUtil.applyDeadband(controller.getLeftX(), 0.1) * SWERVE_MAXSPEED,
-			MathUtil.applyDeadband(-controller.getLeftY(), 0.1) * SWERVE_MAXSPEED,
-			MathUtil.applyDeadband(-controller.getRightY(), 0.1)/5
-		));
+		// drive.drive(new ChassisSpeeds(
+		// MathUtil.applyDeadband(controller.getLeftX(), 0.1) * SWERVE_MAXSPEED,
+		// MathUtil.applyDeadband(-controller.getLeftY(), 0.1) * SWERVE_MAXSPEED,
+		// MathUtil.applyDeadband(-controller.getRightY(), 0.1) / 5));
+		drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
+				MathUtil.applyDeadband(controller.getLeftX(), 0.1) * SWERVE_MAXSPEED,
+				MathUtil.applyDeadband(-controller.getLeftY(), 0.1) * SWERVE_MAXSPEED,
+				MathUtil.applyDeadband(-controller.getRightY(), 0.1) / 5,
+				new Rotation2d(imu.getAngle() * PI / 180)));
 	}
 
 	int first = 1;
 
 	@Override
 	public void testInit() {
+		imu.zeroYaw();
+
 		/*
 		CommandScheduler.getInstance().cancelAll();
 		if (first == 1) {
@@ -89,9 +98,5 @@ public class Robot extends TimedRobot {
 		if (mag > 0.5) {
 			drive.modules[1].setState(new SwerveModuleState(0, new Rotation2d(angle)));
 		}
-	}
-
-	public void configureButtons() {
-		;
 	}
 }
