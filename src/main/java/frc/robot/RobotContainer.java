@@ -18,5 +18,6 @@ public class RobotContainer {
 
 	public static void configureButtonBindings() {
 		controller.y().onTrue(new InstantCommand(() -> imu.zeroYaw()));
+		controller.a().onTrue(new InstantCommand(() -> drive.getOffsets()));
 	}
 }

@@ -56,15 +56,17 @@ public class Robot extends TimedRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		drive.drive(new ChassisSpeeds(
-		MathUtil.applyDeadband(controller.getLeftX(), 0.1) * SWERVE_MAXSPEED,
-		MathUtil.applyDeadband(-controller.getLeftY(), 0.1) * SWERVE_MAXSPEED,
-		MathUtil.applyDeadband(-controller.getRightY(), 0.1) / 5));
-		//drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-				//MathUtil.applyDeadband(controller.getLeftX(), 0.1) * SWERVE_MAXSPEED,
-		//		MathUtil.applyDeadband(-controller.getLeftY(), 0.1) * SWERVE_MAXSPEED,
-				//MathUtil.applyDeadband(-controller.getRightY(), 0.1) / 5,
-		//		new Rotation2d(imu.getAngle() * PI / 180)));
+		//drive.drive(new ChassisSpeeds(
+		//MathUtil.applyDeadband(controller.getLeftX(), 0.1) * SWERVE_MAXSPEED,
+		//MathUtil.applyDeadband(-controller.getLeftY(), 0.1) * SWERVE_MAXSPEED,
+		//MathUtil.applyDeadband(-controller.getRightY(), 0.1) / 5));
+		drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
+				MathUtil.applyDeadband(controller.getLeftX(), 0.1) * SWERVE_MAXSPEED,
+				MathUtil.applyDeadband(-controller.getLeftY(), 0.1) * SWERVE_MAXSPEED,
+				MathUtil.applyDeadband(controller.getRightX(), 0.1) ,
+				new Rotation2d(-(imu.getAngle() +180 % 360)/180 * PI)));
+
+		System.out.println(imu.getAngle()%360);
 	}
 
 	int first = 1;
@@ -72,7 +74,7 @@ public class Robot extends TimedRobot {
 	@Override
 	public void testInit() {
 		imu.zeroYaw();
-
+		drive.getOffsets();
 		/*
 		CommandScheduler.getInstance().cancelAll();
 		if (first == 1) {
@@ -95,8 +97,8 @@ public class Robot extends TimedRobot {
 		double y = controller.getRightY();
 		double mag = Math.hypot(x, y);
 		double angle = Math.atan2(y, x);
-		if (mag > 0.5) {
-			drive.modules[1].setState(new SwerveModuleState(0, new Rotation2d(angle)));
-		}
+		//if (mag > 0.5) {
+		//	drive.modules[1].setState(new SwerveModuleState(0, new Rotation2d(angle)));
+		//}
 	}
 }

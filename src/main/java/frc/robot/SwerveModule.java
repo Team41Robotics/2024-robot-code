@@ -33,10 +33,10 @@ public class SwerveModule {
 	}
 
 	public double getDirection() {
-		return (encoder.getAbsolutePosition().getValue() - offset) * 2 * PI;
+		return (encoder.getAbsolutePosition().getValue()-this.offset) * 2 * PI;
 	}
 
-	public double getAngularVelocity() { // in rad/s
+	public double getAngularVelocity() { // in rad/s 
 		return turn_motor.getEncoder().getVelocity() * 2 * PI / 60 * L2_TURN_RATIO;
 	}
 
@@ -45,7 +45,7 @@ public class SwerveModule {
 	}
 
 	public void setState(SwerveModuleState state) {
-		// state = SwerveModuleState.optimize(state, new Rotation2d(getDirection()));
+		state = SwerveModuleState.optimize(state, new Rotation2d(getDirection()));
 		target_state = state;
 		// double delta = getDirection() - state.angle.getRadians();
 		// delta = MathUtil.angleModulus(delta);
@@ -54,7 +54,9 @@ public class SwerveModule {
 	}
 
 	double drive_v, turn_v;
-
+	public void fixOffset(){
+		System.out.println("Offset for Cancoder: "+ this.encoder.getDeviceID() + " is: " + getDirection()/ 2 / PI);
+	}
 	public void periodic() {
 		// State turn_ref = profile.calculate(Timer.getFPGATimestamp() - profile_t0);
 
@@ -67,10 +69,10 @@ public class SwerveModule {
 		// turn_v = TURN_KS * signum(turn_ref.velocity)
 		// + TURN_KV * turn_ref.velocity
 		// + pidTurn.calculate(getDirection(), turn_ref.position + target_state.angle.getRadians()));
-
+		
 		// jank wayy
-		if (this.encoder.getDeviceID() == 5)
-			System.out.println(new Rotation2d(this.getDirection()) + " ; " + target_state);
+		//if (this.encoder.getDeviceID() == 5)
+		//	System.out.println(new Rotation2d(this.getDirection()) + " ; " + target_state);
 		double MAX_SPEED = 1;
 		if (this.target_state != null) {
 			drive_motor.setVoltage(target_state.speedMetersPerSecond / MAX_SPEED * 9);

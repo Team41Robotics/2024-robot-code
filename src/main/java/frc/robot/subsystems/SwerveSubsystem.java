@@ -31,7 +31,9 @@ public class SwerveSubsystem extends SubsystemBase {
 			modules[i].setState(states[i]);
 		}
 	}
-
+	public void getOffsets(){
+		for (SwerveModule module : modules) module.fixOffset();
+	}
 	public void zero() {
 		for (int i = 0; i < 4; i++) {
 			modules[i].setState(new SwerveModuleState());
