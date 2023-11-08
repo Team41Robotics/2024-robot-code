@@ -66,7 +66,7 @@ public class Robot extends TimedRobot {
 				MathUtil.applyDeadband(controller.getRightX(), 0.1) ,
 				new Rotation2d(-(imu.getAngle() +180 % 360)/180 * PI)));
 
-		System.out.println(imu.getAngle()%360);
+		//System.out.println(imu.getAngle()%360);
 	}
 
 	int first = 1;

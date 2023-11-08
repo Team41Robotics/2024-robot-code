@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import static frc.robot.constants.Constants.*;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -26,7 +27,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public void drive(ChassisSpeeds speed) {
 		SwerveModuleState[] states = kinematics.toSwerveModuleStates(speed);
-		SwerveDriveKinematics.desaturateWheelSpeeds(states, SWERVE_MAXSPEED);
+		SwerveDriveKinematics.desaturateWheelSpeeds(states, Math.max(SWERVE_MAXSPEED, 5));
 		for (int i = 0; i < 4; i++) {
 			modules[i].setState(states[i]);
 		}
@@ -37,6 +38,11 @@ public class SwerveSubsystem extends SubsystemBase {
 	public void zero() {
 		for (int i = 0; i < 4; i++) {
 			modules[i].setState(new SwerveModuleState());
+		}
+	}
+	public void cross(){
+		for (int i = 0; i < 4; i++) {
+			modules[i].setState(new SwerveModuleState(0,new Rotation2d(45)));
 		}
 	}
 

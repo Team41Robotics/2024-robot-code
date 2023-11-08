@@ -45,7 +45,7 @@ public class SwerveModule {
 	}
 
 	public void setState(SwerveModuleState state) {
-		state = SwerveModuleState.optimize(state, new Rotation2d(getDirection()));
+		//state = SwerveModuleState.optimize(state, new Rotation2d(getDirection()));
 		target_state = state;
 		// double delta = getDirection() - state.angle.getRadians();
 		// delta = MathUtil.angleModulus(delta);
@@ -72,11 +72,14 @@ public class SwerveModule {
 		
 		// jank wayy
 		//if (this.encoder.getDeviceID() == 5)
+
 		//	System.out.println(new Rotation2d(this.getDirection()) + " ; " + target_state);
 		double MAX_SPEED = 1;
 		if (this.target_state != null) {
-			drive_motor.setVoltage(target_state.speedMetersPerSecond / MAX_SPEED * 9);
-			turn_motor.setVoltage(MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 3);
+			drive_motor.setVoltage(Math.abs(Math.cos((getDirection() - target_state.angle.getRadians()))) * target_state.speedMetersPerSecond / MAX_SPEED * 9);
+			turn_motor.setVoltage(MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) *2);
+			//System.out.println(target_state.speedMetersPerSecond / MAX_SPEED * 9);
+			//System.out.println((MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 3));
 		}
 	}
 }
