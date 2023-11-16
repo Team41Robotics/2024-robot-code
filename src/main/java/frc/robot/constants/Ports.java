@@ -1,7 +1,6 @@
 package frc.robot.constants;
 
 public final class Ports {
-	// TODO
 	public static final int NW_ENCODER = 2;
 	public static final int NW_TURN_MOTOR = 3;
 	public static final int NW_DRIVE_MOTOR = 4;

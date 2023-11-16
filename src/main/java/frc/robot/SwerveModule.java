@@ -12,7 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class SwerveModule {
-	public PIDController pidTurn = new PIDController(0, 0, 0);
+	public PIDController pidTurn = new PIDController(9, 0, 0);
 	public PIDController pidSpeed = new PIDController(0, 0, 0);
 
 	// public static final State zeroState = new State(0, 0);
@@ -22,21 +22,21 @@ public class SwerveModule {
 	CANcoder encoder;
 	CANSparkMax turn_motor, drive_motor;
 	double offset;
-	SwerveModuleState target_state;
+	SwerveModuleState target_state = new SwerveModuleState();
 
 	public SwerveModule(int port_cancoder, int port_turn_motor, int port_drive_motor, double offset) {
 		encoder = new CANcoder(port_cancoder, "rio");
 		turn_motor = new CANSparkMax(port_turn_motor, MotorType.kBrushless);
 		drive_motor = new CANSparkMax(port_drive_motor, MotorType.kBrushless);
 		this.offset = offset;
-		this.target_state = new SwerveModuleState();
+		pidTurn.enableContinuousInput(-PI, PI);
 	}
 
 	public double getDirection() {
-		return (encoder.getAbsolutePosition().getValue()-this.offset) * 2 * PI;
+		return (encoder.getAbsolutePosition().getValue() - this.offset) * 2 * PI;
 	}
 
-	public double getAngularVelocity() { // in rad/s 
+	public double getAngularVelocity() { // in rad/s
 		return turn_motor.getEncoder().getVelocity() * 2 * PI / 60 * L2_TURN_RATIO;
 	}
 
@@ -45,7 +45,7 @@ public class SwerveModule {
 	}
 
 	public void setState(SwerveModuleState state) {
-		//state = SwerveModuleState.optimize(state, new Rotation2d(getDirection()));
+		state = SwerveModuleState.optimize(state, new Rotation2d(getDirection()));
 		target_state = state;
 		// double delta = getDirection() - state.angle.getRadians();
 		// delta = MathUtil.angleModulus(delta);
@@ -54,9 +54,11 @@ public class SwerveModule {
 	}
 
 	double drive_v, turn_v;
-	public void fixOffset(){
-		System.out.println("Offset for Cancoder: "+ this.encoder.getDeviceID() + " is: " + getDirection()/ 2 / PI);
+
+	public void fixOffset() {
+		System.out.println("Offset for Cancoder: " + this.encoder.getDeviceID() + " is: " + getDirection() / 2 / PI);
 	}
+
 	public void periodic() {
 		// State turn_ref = profile.calculate(Timer.getFPGATimestamp() - profile_t0);
 
@@ -69,17 +71,19 @@ public class SwerveModule {
 		// turn_v = TURN_KS * signum(turn_ref.velocity)
 		// + TURN_KV * turn_ref.velocity
 		// + pidTurn.calculate(getDirection(), turn_ref.position + target_state.angle.getRadians()));
-		
+
 		// jank wayy
-		//if (this.encoder.getDeviceID() == 5)
+		// if (this.encoder.getDeviceID() == 5)
 
 		//	System.out.println(new Rotation2d(this.getDirection()) + " ; " + target_state);
 		double MAX_SPEED = 1;
-		if (this.target_state != null) {
-			drive_motor.setVoltage(Math.abs(Math.cos((getDirection() - target_state.angle.getRadians()))) * target_state.speedMetersPerSecond / MAX_SPEED * 9);
-			turn_motor.setVoltage(MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) *2);
-			//System.out.println(target_state.speedMetersPerSecond / MAX_SPEED * 9);
-			//System.out.println((MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 3));
-		}
+		drive_motor.setVoltage(Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
+				* target_state.speedMetersPerSecond
+				/ MAX_SPEED
+				* 9);
+		// turn_motor.setVoltage(MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 2);
+		turn_motor.setVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
+		// System.out.println(target_state.speedMetersPerSecond / MAX_SPEED * 9);
+		// System.out.println((MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 3));
 	}
 }
