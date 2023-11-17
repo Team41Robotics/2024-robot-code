@@ -57,7 +57,7 @@ public class SwerveModule {
 		// profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, new State(delta, getAngularVelocity()), zeroState);
 		// profile_t0 = Timer.getFPGATimestamp();
 	}
-	
+
 	public SwerveModulePosition getPosition() {
 		return new SwerveModulePosition(getDrivePosition(), new Rotation2d(getDirection() + PI / 2));
 	}
