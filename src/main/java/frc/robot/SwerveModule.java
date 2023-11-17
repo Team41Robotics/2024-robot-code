@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class SwerveModule {
@@ -44,6 +45,10 @@ public class SwerveModule {
 		return drive_motor.getEncoder().getVelocity() * 2 * PI / 60 * L2_DRIVE_RATIO * SWERVE_WHEEL_RAD;
 	}
 
+	public double getDrivePosition() {
+		return drive_motor.getEncoder().getPosition() * 2 * PI * L2_DRIVE_RATIO * SWERVE_WHEEL_RAD;
+	}
+
 	public void setState(SwerveModuleState state) {
 		state = SwerveModuleState.optimize(state, new Rotation2d(getDirection()));
 		target_state = state;
@@ -51,6 +56,10 @@ public class SwerveModule {
 		// delta = MathUtil.angleModulus(delta);
 		// profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, new State(delta, getAngularVelocity()), zeroState);
 		// profile_t0 = Timer.getFPGATimestamp();
+	}
+	
+	public SwerveModulePosition getPosition() {
+		return new SwerveModulePosition(getDrivePosition(), new Rotation2d(getDirection() + PI / 2));
 	}
 
 	double drive_v, turn_v;
@@ -81,8 +90,9 @@ public class SwerveModule {
 				* target_state.speedMetersPerSecond
 				/ MAX_SPEED
 				* 9);
-		// turn_motor.setVoltage(MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 2);
-		turn_motor.setVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
+		turn_motor.setVoltage(MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 2);
+		// turn_motor.setVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
+		// turn_motor.setVoltage(pidTurn.calculate(target_state.angle.getRadians(), getDirection()));
 		// System.out.println(target_state.speedMetersPerSecond / MAX_SPEED * 9);
 		// System.out.println((MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 3));
 	}
