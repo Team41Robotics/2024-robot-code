@@ -4,7 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DefaultDrive;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.drive.SwerveSubsystem;
 
 public class RobotContainer {
 	public static Robot robot;

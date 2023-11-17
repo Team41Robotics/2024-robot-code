@@ -1,7 +1,9 @@
-package frc.robot;
+package frc.robot.subsystems.drive;
 
 import static frc.robot.constants.Constants.*;
 import static java.lang.Math.*;
+
+import org.littletonrobotics.junction.Logger;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
@@ -19,12 +21,17 @@ public class SwerveModule {
 	// public static final State zeroState = new State(0, 0);
 	// public TrapezoidProfile profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, zeroState, zeroState);
 	// public double profile_t0 = Timer.getFPGATimestamp();
-
+	private ModuleIO io;
+	private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
+	private int index;
 	CANcoder encoder;
 	CANSparkMax turn_motor, drive_motor;
 	double offset;
 	SwerveModuleState target_state = new SwerveModuleState();
-
+	public SwerveModule(ModuleIO io, int index){
+		this.io = io;
+		this.index = index;
+	}
 	public SwerveModule(int port_cancoder, int port_turn_motor, int port_drive_motor, double offset) {
 		encoder = new CANcoder(port_cancoder, "rio");
 		turn_motor = new CANSparkMax(port_turn_motor, MotorType.kBrushless);
@@ -34,19 +41,20 @@ public class SwerveModule {
 	}
 
 	public double getDirection() {
-		return (encoder.getAbsolutePosition().getValue() - this.offset) * 2 * PI;
+		return inputs.turnAbsolutePosition.getRadians();
+		//return (encoder.getAbsolutePosition().getValue() - this.offset) * 2 * PI;
 	}
 
-	public double getAngularVelocity() { // in rad/s
-		return turn_motor.getEncoder().getVelocity() * 2 * PI / 60 * L2_TURN_RATIO;
-	}
+
 
 	public double getVelocity() { // in m/s
-		return drive_motor.getEncoder().getVelocity() * 2 * PI / 60 * L2_DRIVE_RATIO * SWERVE_WHEEL_RAD;
+		return inputs.driveVelocityRadPerSec * SWERVE_WHEEL_RAD;
+		//return drive_motor.getEncoder().getVelocity() * 2 * PI / 60 * L2_DRIVE_RATIO * SWERVE_WHEEL_RAD;
 	}
 
 	public double getDrivePosition() {
-		return drive_motor.getEncoder().getPosition() * 2 * PI * L2_DRIVE_RATIO * SWERVE_WHEEL_RAD;
+		return inputs.drivePositionRad * SWERVE_WHEEL_RAD;
+		//return drive_motor.getEncoder().getPosition() * 2 * PI * L2_DRIVE_RATIO * SWERVE_WHEEL_RAD;
 	}
 
 	public void setState(SwerveModuleState state) {
@@ -69,28 +77,25 @@ public class SwerveModule {
 	}
 
 	public void periodic() {
-		// State turn_ref = profile.calculate(Timer.getFPGATimestamp() - profile_t0);
+		io.updateInputs(inputs);
+		Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
-		// drive_motor.setVoltage(
-		// drive_v = DRIVE_KS * signum(target_state.speedMetersPerSecond)
-		// + DRIVE_KV * target_state.speedMetersPerSecond
-		// + pidSpeed.calculate(getVelocity(), target_state.speedMetersPerSecond));
-
-		// turn_motor.setVoltage(
-		// turn_v = TURN_KS * signum(turn_ref.velocity)
-		// + TURN_KV * turn_ref.velocity
-		// + pidTurn.calculate(getDirection(), turn_ref.position + target_state.angle.getRadians()));
-
-		// jank wayy
-		// if (this.encoder.getDeviceID() == 5)
-
-		//	System.out.println(new Rotation2d(this.getDirection()) + " ; " + target_state);
 		double MAX_SPEED = 1;
+
+		if(io != null){
+			io.setDriveVoltage(Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
+				* target_state.speedMetersPerSecond
+				/ MAX_SPEED
+				* 9);
+			io.setTurnVoltage(MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 2);
+		}else{
+
 		drive_motor.setVoltage(Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
 				* target_state.speedMetersPerSecond
 				/ MAX_SPEED
 				* 9);
 		turn_motor.setVoltage(MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 2);
+		}
 		// turn_motor.setVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
 		// turn_motor.setVoltage(pidTurn.calculate(target_state.angle.getRadians(), getDirection()));
 		// System.out.println(target_state.speedMetersPerSecond / MAX_SPEED * 9);

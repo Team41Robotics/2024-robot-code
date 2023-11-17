@@ -1,5 +1,8 @@
 package frc.robot.constants;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
+
 public final class Constants {
 	public static final double SWERVE_MAXSPEED = 0.5; // TODO
 	public static final double SWERVE_WHEEL_RAD = 2 * 2.54 / 100;
@@ -16,8 +19,8 @@ public final class Constants {
 	public static final double ROBOT_LENGTH = 23.5 * 2.54 / 100;
 	public static final double ROBOT_WIDTH = 26.4 * 2.54 / 100;
 
-	public static final double NW_ENCODER_OFFSET = .421630859375;
-	public static final double NE_ENCODER_OFFSET = 0.609619140625;
-	public static final double SW_ENCODER_OFFSET = 0.56591796875;
-	public static final double SE_ENCODER_OFFSET = 0.5732421875;
+	public static final Rotation2d NW_ENCODER_OFFSET = new Rotation2d(Units.rotationsToRadians(.421630859375));
+	public static final Rotation2d NE_ENCODER_OFFSET = new Rotation2d(Units.rotationsToRadians(0.609619140625));
+	public static final Rotation2d SW_ENCODER_OFFSET = new Rotation2d(Units.rotationsToRadians(0.56591796875));
+	public static final Rotation2d SE_ENCODER_OFFSET = new Rotation2d(Units.rotationsToRadians(0.5732421875));
 }

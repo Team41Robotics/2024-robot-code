@@ -83,12 +83,12 @@ test {
 }
 project.compileJava.dependsOn(createVersionFile)
 gversion {
-  srcDir       = "src/main/java/"
-  classPackage = "frc.robot"
-  className    = "BuildConstants"
-  dateFormat   = "yyyy-MM-dd HH:mm:ss z"
-  timeZone     = "America/New_York" // Use preferred time zone
-  indent       = "  "
+    srcDir       = "src/main/java/"
+    classPackage = "frc.robot"
+    className    = "BuildConstants"
+    dateFormat   = "yyyy-MM-dd HH:mm:ss z"
+    timeZone     = "America/New_York" // Use preferred time zone
+    indent       = "  "
 }
 // Simulation configuration (e.g. environment variables).
 wpi.sim.addGui().defaultEnabled = true
@@ -128,10 +128,11 @@ configurations.all {
     exclude group: "edu.wpi.first.wpilibj"
 }
 spotless {
+
     java {
         target fileTree('.') {
             include '**/*.java'
-            exclude '**/build/**', '**/build-*/**'
+            exclude '**/build/**', '**/build-*/**', '**/BuildConstants.java'
         }
         toggleOffOn()
         palantirJavaFormat()

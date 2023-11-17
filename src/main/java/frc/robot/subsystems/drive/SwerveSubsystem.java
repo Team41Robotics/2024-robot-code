@@ -1,4 +1,4 @@
-package frc.robot.subsystems;
+package frc.robot.subsystems.drive;
 
 import static frc.robot.RobotContainer.*;
 import static frc.robot.constants.Constants.*;
@@ -14,16 +14,16 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.SwerveModule;
 import frc.robot.constants.Constants;
 import frc.robot.constants.Ports;
 
 public class SwerveSubsystem extends SubsystemBase {
 	public SwerveModule[] modules = new SwerveModule[] {
-		new SwerveModule(Ports.NW_ENCODER, Ports.NW_TURN_MOTOR, Ports.NW_DRIVE_MOTOR, Constants.NW_ENCODER_OFFSET),
-		new SwerveModule(Ports.NE_ENCODER, Ports.NE_TURN_MOTOR, Ports.NE_DRIVE_MOTOR, Constants.NE_ENCODER_OFFSET),
-		new SwerveModule(Ports.SW_ENCODER, Ports.SW_TURN_MOTOR, Ports.SW_DRIVE_MOTOR, Constants.SW_ENCODER_OFFSET),
-		new SwerveModule(Ports.SE_ENCODER, Ports.SE_TURN_MOTOR, Ports.SE_DRIVE_MOTOR, Constants.SE_ENCODER_OFFSET)
+		new SwerveModule(new ModuleIOSparkMax(0),0),
+		new SwerveModule(new ModuleIOSparkMax(1),1),
+		new SwerveModule(new ModuleIOSparkMax(2),2),
+		new SwerveModule(new ModuleIOSparkMax(3),3),
+
 	};
 	public SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
 			new Translation2d(ROBOT_LENGTH / 2, ROBOT_WIDTH / 2),
