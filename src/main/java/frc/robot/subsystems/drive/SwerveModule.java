@@ -3,16 +3,12 @@ package frc.robot.subsystems.drive;
 import static frc.robot.constants.Constants.*;
 import static java.lang.Math.*;
 
-import org.littletonrobotics.junction.Logger;
-
-import com.ctre.phoenix6.hardware.CANcoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
 	public PIDController pidTurn = new PIDController(9, 0, 0);
@@ -24,37 +20,28 @@ public class SwerveModule {
 	private ModuleIO io;
 	private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
 	private int index;
-	CANcoder encoder;
-	CANSparkMax turn_motor, drive_motor;
+
 	double offset;
 	SwerveModuleState target_state = new SwerveModuleState();
-	public SwerveModule(ModuleIO io, int index){
+
+	public SwerveModule(ModuleIO io, int index) {
 		this.io = io;
 		this.index = index;
-	}
-	public SwerveModule(int port_cancoder, int port_turn_motor, int port_drive_motor, double offset) {
-		encoder = new CANcoder(port_cancoder, "rio");
-		turn_motor = new CANSparkMax(port_turn_motor, MotorType.kBrushless);
-		drive_motor = new CANSparkMax(port_drive_motor, MotorType.kBrushless);
-		this.offset = offset;
-		pidTurn.enableContinuousInput(-PI, PI);
 	}
 
 	public double getDirection() {
 		return inputs.turnAbsolutePosition.getRadians();
-		//return (encoder.getAbsolutePosition().getValue() - this.offset) * 2 * PI;
+		// return (encoder.getAbsolutePosition().getValue() - this.offset) * 2 * PI;
 	}
-
-
 
 	public double getVelocity() { // in m/s
 		return inputs.driveVelocityRadPerSec * SWERVE_WHEEL_RAD;
-		//return drive_motor.getEncoder().getVelocity() * 2 * PI / 60 * L2_DRIVE_RATIO * SWERVE_WHEEL_RAD;
+		// return drive_motor.getEncoder().getVelocity() * 2 * PI / 60 * L2_DRIVE_RATIO * SWERVE_WHEEL_RAD;
 	}
 
 	public double getDrivePosition() {
 		return inputs.drivePositionRad * SWERVE_WHEEL_RAD;
-		//return drive_motor.getEncoder().getPosition() * 2 * PI * L2_DRIVE_RATIO * SWERVE_WHEEL_RAD;
+		// return drive_motor.getEncoder().getPosition() * 2 * PI * L2_DRIVE_RATIO * SWERVE_WHEEL_RAD;
 	}
 
 	public void setState(SwerveModuleState state) {
@@ -73,7 +60,7 @@ public class SwerveModule {
 	double drive_v, turn_v;
 
 	public void fixOffset() {
-		System.out.println("Offset for Cancoder: " + this.encoder.getDeviceID() + " is: " + getDirection() / 2 / PI);
+		// System.out.println("Offset for Cancoder: " + this.encoder.getDeviceID() + " is: " + getDirection() / 2 / PI);
 	}
 
 	public void periodic() {
@@ -82,19 +69,14 @@ public class SwerveModule {
 
 		double MAX_SPEED = 1;
 
-		if(io != null){
+		if (io != null) {
 			io.setDriveVoltage(Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
-				* target_state.speedMetersPerSecond
-				/ MAX_SPEED
-				* 9);
-			io.setTurnVoltage(MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 2);
-		}else{
+					* target_state.speedMetersPerSecond
+					/ MAX_SPEED
+					* 9);
+			io.setTurnVoltage(MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 1);
+		} else {
 
-		drive_motor.setVoltage(Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
-				* target_state.speedMetersPerSecond
-				/ MAX_SPEED
-				* 9);
-		turn_motor.setVoltage(MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 2);
 		}
 		// turn_motor.setVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
 		// turn_motor.setVoltage(pidTurn.calculate(target_state.angle.getRadians(), getDirection()));

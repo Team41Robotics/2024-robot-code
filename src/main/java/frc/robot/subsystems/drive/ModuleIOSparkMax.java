@@ -1,8 +1,7 @@
 package frc.robot.subsystems.drive;
 
-import static frc.robot.constants.Ports.*;
 import static frc.robot.constants.Constants.*;
-
+import static frc.robot.constants.Ports.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
@@ -11,8 +10,6 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.RobotController;
 
 /**
  * Module IO implementation for SparkMax drive motor controller, SparkMax turn motor controller (NEO
@@ -86,8 +83,6 @@ public class ModuleIOSparkMax implements ModuleIO {
 		driveSparkMax.enableVoltageCompensation(12.0);
 		turnSparkMax.enableVoltageCompensation(12.0);
 
-	
-
 		turnRelativeEncoder.setPosition(0.0);
 		turnRelativeEncoder.setMeasurementPeriod(10);
 		turnRelativeEncoder.setAverageDepth(2);
@@ -101,14 +96,13 @@ public class ModuleIOSparkMax implements ModuleIO {
 
 	@Override
 	public void updateInputs(ModuleIOInputs inputs) {
-		inputs.drivePositionRad = Units.rotationsToRadians(driveEncoder.getPosition()) / DRIVE_GEAR_RATIO;
 		inputs.driveVelocityRadPerSec =
 				Units.rotationsPerMinuteToRadiansPerSecond(driveEncoder.getVelocity()) / DRIVE_GEAR_RATIO;
 		inputs.driveAppliedVolts = driveSparkMax.getAppliedOutput() * driveSparkMax.getBusVoltage();
 		inputs.driveCurrentAmps = new double[] {driveSparkMax.getOutputCurrent()};
 
-		inputs.turnAbsolutePosition = new Rotation2d(
-						Units.rotationsToRadians(turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble()))
+		inputs.turnAbsolutePosition = new Rotation2d(Units.rotationsToRadians(
+						turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble()))
 				.minus(absoluteEncoderOffset);
 		inputs.turnPosition = Rotation2d.fromRotations(turnRelativeEncoder.getPosition() / TURN_GEAR_RATIO);
 		inputs.turnVelocityRadPerSec =

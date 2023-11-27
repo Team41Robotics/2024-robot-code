@@ -14,16 +14,13 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.Constants;
-import frc.robot.constants.Ports;
 
 public class SwerveSubsystem extends SubsystemBase {
 	public SwerveModule[] modules = new SwerveModule[] {
-		new SwerveModule(new ModuleIOSparkMax(0),0),
-		new SwerveModule(new ModuleIOSparkMax(1),1),
-		new SwerveModule(new ModuleIOSparkMax(2),2),
-		new SwerveModule(new ModuleIOSparkMax(3),3),
-
+		new SwerveModule(new ModuleIOSparkMax(0), 0),
+		new SwerveModule(new ModuleIOSparkMax(1), 1),
+		new SwerveModule(new ModuleIOSparkMax(2), 2),
+		new SwerveModule(new ModuleIOSparkMax(3), 3),
 	};
 	public SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
 			new Translation2d(ROBOT_LENGTH / 2, ROBOT_WIDTH / 2),
