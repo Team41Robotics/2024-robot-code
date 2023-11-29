@@ -14,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
 
 public class SwerveSubsystem extends SubsystemBase {
 	public SwerveModule[] modules = new SwerveModule[] {
@@ -73,5 +74,18 @@ public class SwerveSubsystem extends SubsystemBase {
 		for (SwerveModule module : modules) module.periodic();
 		pose_est.update(new Rotation2d(imu.yaw()), getPositions());
 		field.setRobotPose(pose_est.getEstimatedPosition());
+		Logger.recordOutput("odom", pose_est.getEstimatedPosition());
+		Logger.recordOutput("odom_rot", pose_est.getEstimatedPosition().getRotation());
+		// SwerveModuleState[] states = new SwerveModuleState[4];
+		// for (int i = 0; i < 4; i++) states[i] = modules[i].getTargetState();
+		double[] states = new double[8];
+		for (int i = 0; i < 4; i++) states[i * 2 + 1] = modules[i].getTargetState().speedMetersPerSecond;
+		for (int i = 0; i < 4; i++)
+			states[i * 2] = modules[i].getTargetState().angle.getRadians();
+		Logger.recordOutput("target States", states);
+		for (int i = 0; i < 4; i++) states[i * 2 + 1] = modules[i].getMeasuredState().speedMetersPerSecond;
+		for (int i = 0; i < 4; i++)
+			states[i * 2] = modules[i].getMeasuredState().angle.getRadians();
+		Logger.recordOutput("measured States", states);
 	}
 }

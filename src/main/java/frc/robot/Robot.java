@@ -73,8 +73,6 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void teleopPeriodic() {}
 
-	int first = 1;
-
 	@Override
 	public void testInit() {
 		imu.zeroYaw();

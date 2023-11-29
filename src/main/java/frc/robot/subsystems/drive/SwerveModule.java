@@ -3,7 +3,6 @@ package frc.robot.subsystems.drive;
 import static frc.robot.constants.Constants.*;
 import static java.lang.Math.*;
 
-import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -11,8 +10,9 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
-	public PIDController pidTurn = new PIDController(9, 0, 0);
-	public PIDController pidSpeed = new PIDController(0, 0, 0);
+	public PIDController pidTurn = new PIDController(3, 0, 0);
+	public PIDController pidSpeed = new PIDController(3, 0, 0);
+	public double kV = 3;
 
 	// public static final State zeroState = new State(0, 0);
 	// public TrapezoidProfile profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, zeroState, zeroState);
@@ -27,6 +27,7 @@ public class SwerveModule {
 	public SwerveModule(ModuleIO io, int index) {
 		this.io = io;
 		this.index = index;
+		pidTurn.enableContinuousInput(-PI, PI);
 	}
 
 	public double getDirection() {
@@ -57,24 +58,36 @@ public class SwerveModule {
 		return new SwerveModulePosition(getDrivePosition(), new Rotation2d(getDirection() + PI / 2));
 	}
 
+	public SwerveModuleState getTargetState() {
+		return target_state;
+	}
+
+	public SwerveModuleState getMeasuredState() {
+		return new SwerveModuleState(inputs.driveVelocityRadPerSec * SWERVE_WHEEL_RAD, new Rotation2d(getDirection()));
+	}
+
 	double drive_v, turn_v;
 
 	public void fixOffset() {
-		// System.out.println("Offset for Cancoder: " + this.encoder.getDeviceID() + " is: " + getDirection() / 2 / PI);
+		System.out.println("ERROR Offset for Cancoder: " + this.index + " is: " + getDirection() / 2 / PI);
 	}
 
 	public void periodic() {
 		io.updateInputs(inputs);
 		Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
-		double MAX_SPEED = 1;
-
 		if (io != null) {
-			io.setDriveVoltage(Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
-					* target_state.speedMetersPerSecond
-					/ MAX_SPEED
-					* 9);
-			io.setTurnVoltage(MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 1);
+			double target_vel = Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
+					* target_state.speedMetersPerSecond;
+			io.setDriveVoltage(target_vel * kV);
+			// if(target_state.speedMetersPerSecond > 0.4) io.setDriveVoltage(12);
+			// doube target_vel = 
+			// io.setDriveVoltage(Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
+					// * target_state.speedMetersPerSecond
+					// / MAX_SPEED
+					// * 9);
+			// io.setTurnVoltage(1 + 0 * MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 1);
+			io.setTurnVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
 		} else {
 
 		}

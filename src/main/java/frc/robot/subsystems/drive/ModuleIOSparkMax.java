@@ -104,6 +104,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 		inputs.turnAbsolutePosition = new Rotation2d(Units.rotationsToRadians(
 						turnAbsoluteEncoder.getAbsolutePosition().getValueAsDouble()))
 				.minus(absoluteEncoderOffset);
+		inputs.turnAbsolutePositionRad = inputs.turnAbsolutePosition.getRadians();
 		inputs.turnPosition = Rotation2d.fromRotations(turnRelativeEncoder.getPosition() / TURN_GEAR_RATIO);
 		inputs.turnVelocityRadPerSec =
 				Units.rotationsPerMinuteToRadiansPerSecond(turnRelativeEncoder.getVelocity()) / TURN_GEAR_RATIO;
