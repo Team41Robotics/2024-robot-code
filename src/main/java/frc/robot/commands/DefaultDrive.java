@@ -23,7 +23,7 @@ public class DefaultDrive extends Command {
 		drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
 				cos(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT,
 				-sin(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT,
-				MathUtil.applyDeadband(controller.getRightX(), 0.1),
+				MathUtil.applyDeadband(controller.getRightX()*2.5, 0.1),
 				new Rotation2d(imu.yaw())));
 	}
 }

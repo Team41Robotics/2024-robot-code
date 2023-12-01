@@ -28,6 +28,7 @@ public class SwerveModule {
 		this.io = io;
 		this.index = index;
 		pidTurn.enableContinuousInput(-PI, PI);
+		
 	}
 
 	public double getDirection() {

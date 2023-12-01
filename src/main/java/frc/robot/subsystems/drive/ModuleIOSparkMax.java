@@ -2,6 +2,7 @@ package frc.robot.subsystems.drive;
 
 import static frc.robot.constants.Constants.*;
 import static frc.robot.constants.Ports.*;
+import static java.lang.Math.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
@@ -25,8 +26,8 @@ import edu.wpi.first.math.util.Units;
  */
 public class ModuleIOSparkMax implements ModuleIO {
 	// Gear ratios for SDS MK4i L2, adjust as necessary
-	private static final double DRIVE_GEAR_RATIO = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
-	private static final double TURN_GEAR_RATIO = 150.0 / 7.0;
+	private static final double DRIVE_GEAR_RATIO = 1/L2_DRIVE_RATIO;
+	private static final double TURN_GEAR_RATIO = 1/L2_TURN_RATIO;
 
 	private final CANSparkMax driveSparkMax;
 	private final CANSparkMax turnSparkMax;
@@ -75,6 +76,8 @@ public class ModuleIOSparkMax implements ModuleIO {
 		turnSparkMax.setCANTimeout(250);
 
 		driveEncoder = driveSparkMax.getEncoder();
+		driveEncoder.setPosition(0.0);
+
 		turnRelativeEncoder = turnSparkMax.getEncoder();
 
 		turnSparkMax.setInverted(isTurnMotorInverted);
@@ -96,6 +99,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
 	@Override
 	public void updateInputs(ModuleIOInputs inputs) {
+		inputs.drivePositionRad = driveEncoder.getPosition() * 2 * PI / DRIVE_GEAR_RATIO;
 		inputs.driveVelocityRadPerSec =
 				Units.rotationsPerMinuteToRadiansPerSecond(driveEncoder.getVelocity()) / DRIVE_GEAR_RATIO;
 		inputs.driveAppliedVolts = driveSparkMax.getAppliedOutput() * driveSparkMax.getBusVoltage();

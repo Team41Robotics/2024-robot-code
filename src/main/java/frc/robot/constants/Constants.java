@@ -5,7 +5,7 @@ import edu.wpi.first.math.util.Units;
 
 public final class Constants {
 	public static final double SWERVE_MAXSPEED = 4.42; // TODO
-	public static final double SPEED_MULT = 0.5; // TODO
+	public static final double SPEED_MULT = 0.25; // TODO
 	public static final double SWERVE_WHEEL_RAD = 2 * 2.54 / 100;
 	public static final double L2_DRIVE_RATIO = 1 / 6.75; // input RPM * gearing = output RPM
 	public static final double L2_TURN_RATIO = 7. / 150;
