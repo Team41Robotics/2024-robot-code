@@ -3,6 +3,10 @@ package frc.robot.subsystems.drive;
 import static frc.robot.RobotContainer.*;
 import static frc.robot.constants.Constants.*;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -38,14 +42,36 @@ public class SwerveSubsystem extends SubsystemBase {
 		Shuffleboard.getTab("swerve").add(field);
 	}
 
-	public void initOdom(Pose2d init_pose) {
+	public void init(Pose2d init_pose) {
 		pose_est = new SwerveDrivePoseEstimator(kinematics, new Rotation2d(imu.yaw()), getPositions(), init_pose);
+		AutoBuilder.configureHolonomic(
+				pose_est::getEstimatedPosition,
+				(pose) -> {
+					pose_est.resetPosition(new Rotation2d(imu.yaw()), getPositions(), pose);
+				},
+				this::getVelocity,
+				this::drive,
+				new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
+						// Constants class
+						new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
+						new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+						4.5, // Max module speed, in m/s
+						0.4, // Drive base radius in meters. Distance from robot center to furthest module.
+						new ReplanningConfig() // Default path replanning config. See the API for the options here
+						),
+				this);
 	}
 
 	public SwerveModulePosition[] getPositions() {
 		SwerveModulePosition[] pos = new SwerveModulePosition[4];
 		for (int i = 0; i < 4; i++) pos[i] = modules[i].getPosition();
 		return pos;
+	}
+
+	public ChassisSpeeds getVelocity() {
+		SwerveModuleState[] pos = new SwerveModuleState[4];
+		for (int i = 0; i < 4; i++) pos[i] = modules[i].getMeasuredState();
+		return kinematics.toChassisSpeeds(pos);
 	}
 
 	public void drive(ChassisSpeeds speed) {

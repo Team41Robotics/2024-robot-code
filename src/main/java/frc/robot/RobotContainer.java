@@ -21,7 +21,7 @@ public class RobotContainer {
 	public static void initSubsystems() {
 		drive = new SwerveSubsystem();
 		drive.setDefaultCommand(new DefaultDrive());
-		drive.initOdom(new Pose2d(1, 1, new Rotation2d()));
+		drive.init(new Pose2d(1, 1, new Rotation2d()));
 		drive.initShuffleboard();
 	}
 
