@@ -3,9 +3,6 @@ package frc.robot.subsystems.drive;
 import static frc.robot.RobotContainer.*;
 import static frc.robot.constants.Constants.*;
 
-import java.util.Arrays;
-import java.util.Optional;
-
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,6 +14,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 
@@ -77,8 +75,8 @@ public class SwerveSubsystem extends SubsystemBase {
 	public void periodic() {
 		for (SwerveModule module : modules) module.periodic();
 		pose_est.update(new Rotation2d(-imu.yaw()), getPositions());
-		Optional<EstimatedRobotPose> vis_pos= photon.getEstimatedGlobalPose(pose_est.getEstimatedPosition());
-		if (vis_pos.isPresent()){
+		Optional<EstimatedRobotPose> vis_pos = photon.getEstimatedGlobalPose(pose_est.getEstimatedPosition());
+		if (vis_pos.isPresent()) {
 			EstimatedRobotPose new_pose = vis_pos.get();
 			pose_est.addVisionMeasurement(new_pose.estimatedPose.toPose2d(), new_pose.timestampSeconds);
 		}
@@ -97,14 +95,13 @@ public class SwerveSubsystem extends SubsystemBase {
 		for (int i = 0; i < 4; i++)
 			states[i * 2] = modules[i].getMeasuredState().angle.getRadians();
 		Logger.recordOutput("measured States", states);
-		double[] curr_pos  = {
-			 pose_est.getEstimatedPosition().getX(),
-			  pose_est.getEstimatedPosition().getY(),
+		double[] curr_pos = {
+			pose_est.getEstimatedPosition().getX(),
+			pose_est.getEstimatedPosition().getY(),
 			pose_est.getEstimatedPosition().getRotation().getRadians()
 		};
 		Logger.recordOutput("Current Pos", curr_pos);
 		Logger.recordOutput("curr_x", pose_est.getEstimatedPosition().getX());
 		Logger.recordOutput("curr_y", pose_est.getEstimatedPosition().getY());
-
 	}
 }

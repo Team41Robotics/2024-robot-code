@@ -28,7 +28,6 @@ public class SwerveModule {
 		this.io = io;
 		this.index = index;
 		pidTurn.enableContinuousInput(-PI, PI);
-		
 	}
 
 	public double getDirection() {
@@ -82,11 +81,11 @@ public class SwerveModule {
 					* target_state.speedMetersPerSecond;
 			io.setDriveVoltage(target_vel * kV);
 			// if(target_state.speedMetersPerSecond > 0.4) io.setDriveVoltage(12);
-			// doube target_vel = 
+			// doube target_vel =
 			// io.setDriveVoltage(Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
-					// * target_state.speedMetersPerSecond
-					// / MAX_SPEED
-					// * 9);
+			// * target_state.speedMetersPerSecond
+			// / MAX_SPEED
+			// * 9);
 			// io.setTurnVoltage(1 + 0 * MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 1);
 			io.setTurnVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
 		} else {
