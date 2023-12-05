@@ -7,18 +7,12 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
 	public PIDController pidTurn = new PIDController(3, 0, 0);
 	public PIDController pidSpeed = new PIDController(3, 0.05, 0);
 	public double kV = 3;
-
-	public static final double MAX_ACCEL = 20;
-	public TrapezoidProfile speed_profile = new TrapezoidProfile(new Constraints(MAX_ACCEL, 1e5));
 
 	// public static final State zeroState = new State(0, 0);
 	// public TrapezoidProfile profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, zeroState, zeroState);
@@ -81,14 +75,9 @@ public class SwerveModule {
 
 		double target_vel = Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
 				* target_state.speedMetersPerSecond;
-		double target_vel_profiled = speed_profile.calculate(
-				0.020,
-				new State(target_vel, 0),
-				new State(getVelocity(), 0)).position;
 		Logger.recordOutput("Drive/Module"+Integer.toString(index)+"/target_vel", target_vel);
-		Logger.recordOutput("Drive/Module"+Integer.toString(index)+"/target_vel_profiled", target_vel_profiled);
-		io.setDriveVoltage(target_vel_profiled * kV +
-			pidSpeed.calculate(getMeasuredState().speedMetersPerSecond, target_vel_profiled));
+		io.setDriveVoltage(target_vel * kV +
+			pidSpeed.calculate(getMeasuredState().speedMetersPerSecond, target_vel));
 		io.setTurnVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
 	}
 }
