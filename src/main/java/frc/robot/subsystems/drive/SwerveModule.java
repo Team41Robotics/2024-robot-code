@@ -7,12 +7,18 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
 	public PIDController pidTurn = new PIDController(3, 0, 0);
-	public PIDController pidSpeed = new PIDController(3, 0, 0);
+	public PIDController pidSpeed = new PIDController(3, 0.05, 0);
 	public double kV = 3;
+
+	public static final double MAX_ACCEL = 20;
+	public TrapezoidProfile speed_profile = new TrapezoidProfile(new Constraints(MAX_ACCEL, 1e5));
 
 	// public static final State zeroState = new State(0, 0);
 	// public TrapezoidProfile profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, zeroState, zeroState);
@@ -32,17 +38,14 @@ public class SwerveModule {
 
 	public double getDirection() {
 		return inputs.turnAbsolutePosition.getRadians();
-		// return (encoder.getAbsolutePosition().getValue() - this.offset) * 2 * PI;
 	}
 
 	public double getVelocity() { // in m/s
 		return inputs.driveVelocityRadPerSec * SWERVE_WHEEL_RAD;
-		// return drive_motor.getEncoder().getVelocity() * 2 * PI / 60 * L2_DRIVE_RATIO * SWERVE_WHEEL_RAD;
 	}
 
 	public double getDrivePosition() {
 		return inputs.drivePositionRad * SWERVE_WHEEL_RAD;
-		// return drive_motor.getEncoder().getPosition() * 2 * PI * L2_DRIVE_RATIO * SWERVE_WHEEL_RAD;
 	}
 
 	public void setState(SwerveModuleState state) {
@@ -76,24 +79,16 @@ public class SwerveModule {
 		io.updateInputs(inputs);
 		Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
 
-		if (io != null) {
-			double target_vel = Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
-					* target_state.speedMetersPerSecond;
-			io.setDriveVoltage(target_vel * kV);
-			// if(target_state.speedMetersPerSecond > 0.4) io.setDriveVoltage(12);
-			// doube target_vel =
-			// io.setDriveVoltage(Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
-			// * target_state.speedMetersPerSecond
-			// / MAX_SPEED
-			// * 9);
-			// io.setTurnVoltage(1 + 0 * MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 1);
-			io.setTurnVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
-		} else {
-
-		}
-		// turn_motor.setVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
-		// turn_motor.setVoltage(pidTurn.calculate(target_state.angle.getRadians(), getDirection()));
-		// System.out.println(target_state.speedMetersPerSecond / MAX_SPEED * 9);
-		// System.out.println((MathUtil.angleModulus(getDirection() - target_state.angle.getRadians()) * 3));
+		double target_vel = Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
+				* target_state.speedMetersPerSecond;
+		double target_vel_profiled = speed_profile.calculate(
+				0.020,
+				new State(target_vel, 0),
+				new State(getVelocity(), 0)).position;
+		Logger.recordOutput("Drive/Module"+Integer.toString(index)+"/target_vel", target_vel);
+		Logger.recordOutput("Drive/Module"+Integer.toString(index)+"/target_vel_profiled", target_vel_profiled);
+		io.setDriveVoltage(target_vel_profiled * kV +
+			pidSpeed.calculate(getMeasuredState().speedMetersPerSecond, target_vel_profiled));
+		io.setTurnVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
 	}
 }
