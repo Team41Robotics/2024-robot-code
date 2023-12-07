@@ -74,7 +74,10 @@ public class SwerveSubsystem extends SubsystemBase {
 		return kinematics.toChassisSpeeds(pos);
 	}
 
+	public ChassisSpeeds desired_speeds=new ChassisSpeeds();
+
 	public void drive(ChassisSpeeds speed) {
+		desired_speeds = speed;
 		SwerveModuleState[] states = kinematics.toSwerveModuleStates(speed);
 		SwerveDriveKinematics.desaturateWheelSpeeds(states, Math.max(SWERVE_MAXSPEED, 5));
 		for (int i = 0; i < 4; i++) {
@@ -99,6 +102,11 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	public void periodic() {
+		Logger.recordOutput("/Swerve/desired_speeds",
+			new double[]{desired_speeds.vxMetersPerSecond,desired_speeds.vyMetersPerSecond,desired_speeds.omegaRadiansPerSecond});
+		ChassisSpeeds speeds = getVelocity();
+		Logger.recordOutput("/Swerve/actual_speeds",
+			new double[]{speeds.vxMetersPerSecond,speeds.vyMetersPerSecond,speeds.omegaRadiansPerSecond});
 		for (SwerveModule module : modules) module.periodic();
 		pose_est.update(new Rotation2d(-imu.yaw()), getPositions());
 		Optional<EstimatedRobotPose> vis_pos = photon.getEstimatedGlobalPose(pose_est.getEstimatedPosition());

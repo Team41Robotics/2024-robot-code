@@ -10,6 +10,7 @@ public interface ModuleIO {
 		public double driveVelocityRadPerSec = 0.0;
 		public double driveAppliedVolts = 0.0;
 		public double[] driveCurrentAmps = new double[] {};
+		public double absDriveVel = 0.0;
 
 		public Rotation2d turnAbsolutePosition = new Rotation2d();
 		public double turnAbsolutePositionRad = 0.0;

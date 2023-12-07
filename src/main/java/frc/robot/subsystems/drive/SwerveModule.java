@@ -11,7 +11,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
 	public PIDController pidTurn = new PIDController(3, 0, 0);
-	public PIDController pidSpeed = new PIDController(3, 0.05, 0);
+	public PIDController pidSpeed = new PIDController(2, 0, 0);
 	public double kV = 3;
 
 	// public static final State zeroState = new State(0, 0);

@@ -102,6 +102,8 @@ public class ModuleIOSparkMax implements ModuleIO {
 		inputs.drivePositionRad = driveEncoder.getPosition() * 2 * PI / DRIVE_GEAR_RATIO;
 		inputs.driveVelocityRadPerSec =
 				Units.rotationsPerMinuteToRadiansPerSecond(driveEncoder.getVelocity()) / DRIVE_GEAR_RATIO;
+		inputs.absDriveVel =
+				Math.abs(Units.rotationsPerMinuteToRadiansPerSecond(driveEncoder.getVelocity()) / DRIVE_GEAR_RATIO);
 		inputs.driveAppliedVolts = driveSparkMax.getAppliedOutput() * driveSparkMax.getBusVoltage();
 		inputs.driveCurrentAmps = new double[] {driveSparkMax.getOutputCurrent()};
 
