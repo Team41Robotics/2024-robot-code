@@ -19,14 +19,14 @@ public class SwerveModule {
 	// public double profile_t0 = Timer.getFPGATimestamp();
 	private ModuleIO io;
 	private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
-	private int index;
+	private String name;
 
 	double offset;
 	SwerveModuleState target_state = new SwerveModuleState();
 
-	public SwerveModule(ModuleIO io, int index) {
+	public SwerveModule(ModuleIO io, String name) {
 		this.io = io;
-		this.index = index;
+		this.name = name;
 		pidTurn.enableContinuousInput(-PI, PI);
 	}
 
@@ -63,21 +63,19 @@ public class SwerveModule {
 		return new SwerveModuleState(inputs.driveVelocityRadPerSec * SWERVE_WHEEL_RAD, new Rotation2d(getDirection()));
 	}
 
-	double drive_v, turn_v;
-
 	public void fixOffset() {
-		System.out.println("ERROR Offset for Cancoder: " + this.index + " is: " + getDirection() / 2 / PI);
+		System.out.println("ERROR Offset for Cancoder: " + this.name + " is: " + getDirection() / 2 / PI);
 	}
 
 	public void periodic() {
-		io.updateInputs(inputs);
-		Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
-
 		double target_vel = Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
 				* target_state.speedMetersPerSecond;
-		Logger.recordOutput("Drive/Module"+Integer.toString(index)+"/target_vel", target_vel);
 		io.setDriveVoltage(target_vel * kV +
 			pidSpeed.calculate(getMeasuredState().speedMetersPerSecond, target_vel));
 		io.setTurnVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
+
+		io.updateInputs(inputs);
+		io.logTargetState(inputs, target_state, target_vel);
+		Logger.processInputs("Drive/Module" + name, inputs);
 	}
 }
