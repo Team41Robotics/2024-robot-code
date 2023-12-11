@@ -52,11 +52,11 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void autonomousInit() {
 		drive.zero();
-		// autonomousCommand = robotContainer.getAutonomousCommand();
+		autonomousCommand = RobotContainer.getAutonomousCommand();
 
-		// if (autonomousCommand != null) {
-		// autonomousCommand.schedule();
-		// }
+		if (autonomousCommand != null) {
+			autonomousCommand.schedule();
+		}
 	}
 
 	@Override

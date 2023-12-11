@@ -6,6 +6,7 @@ import static frc.robot.constants.Constants.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
+import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -19,7 +20,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.SwerveModuleConfiguration;
-
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
@@ -57,11 +57,18 @@ public class SwerveSubsystem extends SubsystemBase {
 						// Constants class
 						new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
 						new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-						4.5, // Max module speed, in m/s
+						.5, // Max module speed, in m/s
 						0.4488, // Drive base radius in meters. Distance from robot center to furthest module.
 						new ReplanningConfig() // Default path replanning config. See the API for the options here
 						),
 				this);
+
+		PathPlannerLogging.setLogActivePathCallback((activePath) -> {
+			Logger.recordOutput("Odometry/Trajectory", activePath.toArray(new Pose2d[activePath.size()]));
+		});
+		PathPlannerLogging.setLogTargetPoseCallback((targetPose) -> {
+			Logger.recordOutput("Odometry/TrajectorySetpoint", targetPose);
+		});
 	}
 
 	public SwerveModulePosition[] getPositions() {
@@ -76,9 +83,10 @@ public class SwerveSubsystem extends SubsystemBase {
 		return kinematics.toChassisSpeeds(pos);
 	}
 
-	public ChassisSpeeds desired_speeds=new ChassisSpeeds();
+	public ChassisSpeeds desired_speeds = new ChassisSpeeds();
 
 	public void drive(ChassisSpeeds speed) {
+		// speed.discretize(ROBOT_WIDTH, ROBOT_LENGTH, L2_TURN_RATIO, L2_DRIVE_RATIO)
 		desired_speeds = speed;
 		SwerveModuleState[] states = kinematics.toSwerveModuleStates(speed);
 		SwerveDriveKinematics.desaturateWheelSpeeds(states, Math.max(SWERVE_MAXSPEED, 5));
@@ -104,11 +112,13 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	public void periodic() {
-		Logger.recordOutput("/Swerve/desired_speeds",
-			new double[]{desired_speeds.vxMetersPerSecond,desired_speeds.vyMetersPerSecond,desired_speeds.omegaRadiansPerSecond});
+		Logger.recordOutput("/Swerve/desired_speeds", new double[] {
+			desired_speeds.vxMetersPerSecond, desired_speeds.vyMetersPerSecond, desired_speeds.omegaRadiansPerSecond
+		});
 		ChassisSpeeds speeds = getVelocity();
-		Logger.recordOutput("/Swerve/actual_speeds",
-			new double[]{speeds.vxMetersPerSecond,speeds.vyMetersPerSecond,speeds.omegaRadiansPerSecond});
+		Logger.recordOutput(
+				"/Swerve/actual_speeds",
+				new double[] {speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond});
 		for (SwerveModule module : modules) module.periodic();
 		pose_est.update(new Rotation2d(-imu.yaw()), getPositions());
 		Optional<EstimatedRobotPose> vis_pos = photon.getEstimatedGlobalPose(pose_est.getEstimatedPosition());

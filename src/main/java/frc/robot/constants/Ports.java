@@ -1,4 +1,3 @@
 package frc.robot.constants;
 
-public final class Ports {
-}
+public final class Ports {}

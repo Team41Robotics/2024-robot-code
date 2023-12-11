@@ -70,8 +70,7 @@ public class SwerveModule {
 	public void periodic() {
 		double target_vel = Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
 				* target_state.speedMetersPerSecond;
-		io.setDriveVoltage(target_vel * kV +
-			pidSpeed.calculate(getMeasuredState().speedMetersPerSecond, target_vel));
+		io.setDriveVoltage(target_vel * kV + pidSpeed.calculate(getMeasuredState().speedMetersPerSecond, target_vel));
 		io.setTurnVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
 
 		io.updateInputs(inputs);
