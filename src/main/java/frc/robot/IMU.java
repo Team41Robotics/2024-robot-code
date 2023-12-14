@@ -12,7 +12,7 @@ public class IMU {
 	}
 
 	public double yaw() {
-		return -(imu.getAngle() + 180 % 360) / 180 * PI;
+		return -imu.getAngle() / 180 * PI;
 	}
 
 	public void zeroYaw() {

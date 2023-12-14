@@ -55,8 +55,8 @@ public class SwerveSubsystem extends SubsystemBase {
 				this::drive,
 				new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
 						// Constants class
-						new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
-						new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+						new PIDConstants(1.0, 0.0, 0.0), // Translation PID constants
+						new PIDConstants(1.0, 0.0, 0.0), // Rotation PID constants
 						.5, // Max module speed, in m/s
 						0.4488, // Drive base radius in meters. Distance from robot center to furthest module.
 						new ReplanningConfig() // Default path replanning config. See the API for the options here
@@ -86,7 +86,8 @@ public class SwerveSubsystem extends SubsystemBase {
 	public ChassisSpeeds desired_speeds = new ChassisSpeeds();
 
 	public void drive(ChassisSpeeds speed) {
-		// speed.discretize(ROBOT_WIDTH, ROBOT_LENGTH, L2_TURN_RATIO, L2_DRIVE_RATIO)
+		speed = ChassisSpeeds.discretize(speed, 0.02);
+		Logger.recordOutput("Swerve/DesiredTurn", speed.omegaRadiansPerSecond);
 		desired_speeds = speed;
 		SwerveModuleState[] states = kinematics.toSwerveModuleStates(speed);
 		SwerveDriveKinematics.desaturateWheelSpeeds(states, Math.max(SWERVE_MAXSPEED, 5));
@@ -120,7 +121,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				"/Swerve/actual_speeds",
 				new double[] {speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond});
 		for (SwerveModule module : modules) module.periodic();
-		pose_est.update(new Rotation2d(-imu.yaw()), getPositions());
+		pose_est.update(new Rotation2d(imu.yaw()), getPositions());
 		Optional<EstimatedRobotPose> vis_pos = photon.getEstimatedGlobalPose(pose_est.getEstimatedPosition());
 		if (vis_pos.isPresent()) {
 			EstimatedRobotPose new_pose = vis_pos.get();
@@ -149,5 +150,9 @@ public class SwerveSubsystem extends SubsystemBase {
 		Logger.recordOutput("Current Pos", curr_pos);
 		Logger.recordOutput("curr_x", pose_est.getEstimatedPosition().getX());
 		Logger.recordOutput("curr_y", pose_est.getEstimatedPosition().getY());
+	}
+
+	public Pose2d getPose() {
+		return pose_est.getEstimatedPosition();
 	}
 }

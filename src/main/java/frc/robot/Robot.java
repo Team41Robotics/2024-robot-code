@@ -64,7 +64,6 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopInit() {
-		imu.zeroYaw();
 		if (autonomousCommand != null) {
 			autonomousCommand.cancel();
 		}

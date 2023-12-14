@@ -52,7 +52,7 @@ public class SwerveModule {
 	}
 
 	public SwerveModulePosition getPosition() {
-		return new SwerveModulePosition(getDrivePosition(), new Rotation2d(getDirection() + PI / 2));
+		return new SwerveModulePosition(getDrivePosition(), new Rotation2d(getDirection()));
 	}
 
 	public SwerveModuleState getTargetState() {
