@@ -47,7 +47,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	public void init(Pose2d init_pose) {
 		pose_est = new SwerveDrivePoseEstimator(kinematics, new Rotation2d(imu.yaw()), getPositions(), init_pose);
 		AutoBuilder.configureHolonomic(
-				pose_est::getEstimatedPosition,
+				this::getPose,
 				(pose) -> {
 					pose_est.resetPosition(new Rotation2d(imu.yaw()), getPositions(), pose);
 				},
@@ -56,7 +56,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
 						// Constants class
 						new PIDConstants(1.0, 0.0, 0.0), // Translation PID constants
-						new PIDConstants(1.0, 0.0, 0.0), // Rotation PID constants
+						new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
 						.5, // Max module speed, in m/s
 						0.4488, // Drive base radius in meters. Distance from robot center to furthest module.
 						new ReplanningConfig() // Default path replanning config. See the API for the options here
@@ -87,7 +87,6 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public void drive(ChassisSpeeds speed) {
 		speed = ChassisSpeeds.discretize(speed, 0.02);
-		Logger.recordOutput("Swerve/DesiredTurn", speed.omegaRadiansPerSecond);
 		desired_speeds = speed;
 		SwerveModuleState[] states = kinematics.toSwerveModuleStates(speed);
 		SwerveDriveKinematics.desaturateWheelSpeeds(states, Math.max(SWERVE_MAXSPEED, 5));
