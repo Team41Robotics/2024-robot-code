@@ -1,7 +1,6 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -11,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.drive.SwerveSubsystem;
-import frc.robot.util.LocalADStarAK;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -31,13 +29,14 @@ public class RobotContainer {
 		drive.init(new Pose2d(1, 1, new Rotation2d()));
 		drive.initShuffleboard();
 		autoChooser = new LoggedDashboardChooser<>("Auto Routine", AutoBuilder.buildAutoChooser());
-		Pathfinding.setPathfinder(new LocalADStarAK());
+		// Pathfinding.setPathfinder(new LocalADStarAK());
 		Shuffleboard.getTab("Swerve").add("Auto Selector", autoChooser.getSendableChooser());
 	}
 
 	public static void configureButtonBindings() {
 		controller.y().onTrue(new InstantCommand(() -> imu.zeroYaw()));
 		controller.x().onTrue(new InstantCommand(() -> drive.getOffsets()));
+		controller.a().and(controller.rightBumper()).onTrue(drive.followPath("Not Example Path"));
 		// left_js.button(4).onTrue(new InstantCommand(() -> imu.zeroYaw()));
 	}
 

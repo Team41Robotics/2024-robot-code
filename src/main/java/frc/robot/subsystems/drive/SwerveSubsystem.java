@@ -4,6 +4,8 @@ import static frc.robot.RobotContainer.*;
 import static frc.robot.constants.Constants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.FollowPathHolonomic;
+import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
@@ -18,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.SwerveModuleConfiguration;
 import java.util.Optional;
@@ -37,6 +40,7 @@ public class SwerveSubsystem extends SubsystemBase {
 			new Translation2d(-ROBOT_LENGTH / 2, ROBOT_WIDTH / 2),
 			new Translation2d(-ROBOT_LENGTH / 2, -ROBOT_WIDTH / 2));
 	public SwerveDrivePoseEstimator pose_est;
+	
 
 	Field2d field = new Field2d();
 
@@ -153,5 +157,23 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public Pose2d getPose() {
 		return pose_est.getEstimatedPosition();
+	}
+
+	public Command followPath(String fileString) {
+		PathPlannerPath path = PathPlannerPath.fromPathFile(fileString);
+		return new FollowPathHolonomic(
+				path,
+				this::getPose,
+				this::getVelocity,
+				this::drive,
+				new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
+						// Constants class
+						new PIDConstants(1.0, 0.0, 0.0), // Translation PID constants
+						new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
+						.5, // Max module speed, in m/s
+						0.4488, // Drive base radius in meters. Distance from robot center to furthest module.
+						new ReplanningConfig() // Default path replanning config. See the API for the options here
+						),
+				this);
 	}
 }
