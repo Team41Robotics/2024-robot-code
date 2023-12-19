@@ -6,6 +6,8 @@ import static java.lang.Math.*;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class DefaultDrive extends Command {
@@ -17,13 +19,14 @@ public class DefaultDrive extends Command {
 		double mag = Math.hypot(vx, vy);
 		double ma2 = MathUtil.applyDeadband(mag, 0.1);
 		double theta = Math.atan2(vy, vx);
+		double sign = (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 1.0 : -1.0);
 		// drive.drive(new ChassisSpeeds(
 		// 		cos(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT,
 		// 		sin(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT,
 		// 		MathUtil.applyDeadband(w, 0.1) * 2.5));
 		drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-				cos(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT,
-				sin(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT,
+				cos(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT * sign,
+				sin(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT * sign,
 				MathUtil.applyDeadband(w, 0.1) * 2.5,
 				drive.getPose().getRotation()));
 	}

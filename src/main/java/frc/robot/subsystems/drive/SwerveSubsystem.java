@@ -6,10 +6,8 @@ import static frc.robot.constants.Constants.*;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
-import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -40,7 +38,6 @@ public class SwerveSubsystem extends SubsystemBase {
 			new Translation2d(-ROBOT_LENGTH / 2, ROBOT_WIDTH / 2),
 			new Translation2d(-ROBOT_LENGTH / 2, -ROBOT_WIDTH / 2));
 	public SwerveDrivePoseEstimator pose_est;
-	
 
 	Field2d field = new Field2d();
 
@@ -49,7 +46,13 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	public void init(Pose2d init_pose) {
-		pose_est = new SwerveDrivePoseEstimator(kinematics, new Rotation2d(imu.yaw()), getPositions(), init_pose);
+		pose_est = new SwerveDrivePoseEstimator(
+				kinematics,
+				new Rotation2d(imu.yaw()),
+				getPositions(),
+				init_pose,
+				VecBuilder.fill(0.1, 0.1, 0.1),
+				VecBuilder.fill(2, 2, 2));
 		AutoBuilder.configureHolonomic(
 				this::getPose,
 				(pose) -> {
@@ -57,14 +60,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				},
 				this::getVelocity,
 				this::drive,
-				new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
-						// Constants class
-						new PIDConstants(1.0, 0.0, 0.0), // Translation PID constants
-						new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-						.5, // Max module speed, in m/s
-						0.4488, // Drive base radius in meters. Distance from robot center to furthest module.
-						new ReplanningConfig() // Default path replanning config. See the API for the options here
-						),
+				PATH_FOLLOWER_CONFIG,
 				this);
 
 		PathPlannerLogging.setLogActivePathCallback((activePath) -> {
@@ -161,19 +157,7 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public Command followPath(String fileString) {
 		PathPlannerPath path = PathPlannerPath.fromPathFile(fileString);
-		return new FollowPathHolonomic(
-				path,
-				this::getPose,
-				this::getVelocity,
-				this::drive,
-				new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
-						// Constants class
-						new PIDConstants(1.0, 0.0, 0.0), // Translation PID constants
-						new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants
-						.5, // Max module speed, in m/s
-						0.4488, // Drive base radius in meters. Distance from robot center to furthest module.
-						new ReplanningConfig() // Default path replanning config. See the API for the options here
-						),
-				this);
+
+		return new FollowPathHolonomic(path, this::getPose, this::getVelocity, this::drive, PATH_FOLLOWER_CONFIG, this);
 	}
 }

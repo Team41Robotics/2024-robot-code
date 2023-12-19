@@ -36,7 +36,7 @@ public class RobotContainer {
 	public static void configureButtonBindings() {
 		controller.y().onTrue(new InstantCommand(() -> imu.zeroYaw()));
 		controller.x().onTrue(new InstantCommand(() -> drive.getOffsets()));
-		controller.a().and(controller.rightBumper()).onTrue(drive.followPath("Not Example Path"));
+		controller.a().and(controller.rightBumper()).onTrue(drive.followPath("New Path"));
 		// left_js.button(4).onTrue(new InstantCommand(() -> imu.zeroYaw()));
 	}
 
