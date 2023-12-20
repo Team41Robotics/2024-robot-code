@@ -9,10 +9,16 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import java.util.function.DoubleSupplier;
 
 public class DefaultDrive extends Command {
-	public DefaultDrive() {
+	DoubleSupplier vx_sup, vy_sup, w_sup;
+
+	public DefaultDrive(DoubleSupplier vx_sup, DoubleSupplier vy_sup, DoubleSupplier w_sup) {
 		addRequirements(drive);
+		this.vx_sup = vx_sup;
+		this.vy_sup = vy_sup;
+		this.w_sup = w_sup;
 	}
 
 	public void run(double vx, double vy, double w) {
@@ -33,14 +39,7 @@ public class DefaultDrive extends Command {
 
 	@Override
 	public void execute() {
-		// double mag = Math.hypot(controller.getLeftY(), controller.getLeftX());
-		// double ma2 = MathUtil.applyDeadband(mag, 0.1);
-		// double theta = Math.atan2(controller.getLeftX(), controller.getLeftY());
-		// drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-		// 		-cos(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT,
-		// 		-sin(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT,
-		// 		MathUtil.applyDeadband(controller.getRightX(), 0.1) * 2.5,
-		// 		drive.getPose().getRotation()));
-		run(-controller.getLeftY(), -controller.getLeftX(), -controller.getRightX());
+		run(vx_sup.getAsDouble(), vy_sup.getAsDouble(), w_sup.getAsDouble());
+		// run(-controller.getLeftY(), -controller.getLeftX(), -controller.getRightX());
 	}
 }
