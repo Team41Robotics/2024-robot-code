@@ -40,6 +40,5 @@ public class DefaultDrive extends Command {
 	@Override
 	public void execute() {
 		run(vx_sup.getAsDouble(), vy_sup.getAsDouble(), w_sup.getAsDouble());
-		// run(-controller.getLeftY(), -controller.getLeftX(), -controller.getRightX());
 	}
 }

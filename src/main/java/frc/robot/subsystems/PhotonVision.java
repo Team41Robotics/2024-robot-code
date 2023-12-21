@@ -28,11 +28,15 @@ public class PhotonVision {
 		}
 		cam = new PhotonCamera("Front_Camera");
 		photonPoseEstimator =
-				new PhotonPoseEstimator(fieldLayout, PoseStrategy.CLOSEST_TO_REFERENCE_POSE, cam, robotToCam);
+				new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam, robotToCam);
+		photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
 	}
 
 	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
 		photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-		return photonPoseEstimator.update();
+		
+		if(cam.getLatestResult().getTargets().size() >= 2)
+			return photonPoseEstimator.update();
+		else return Optional.empty();
 	}
 }

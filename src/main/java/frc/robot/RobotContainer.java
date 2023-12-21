@@ -1,6 +1,8 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.pathfinding.Pathfinding;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -9,6 +11,8 @@ import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.drive.SwerveSubsystem;
+import frc.robot.util.LocalADStarAK;
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -18,26 +22,21 @@ public class RobotContainer {
 	public static PhotonVision photon = new PhotonVision();
 	private static LoggedDashboardChooser<Command> autoChooser;
 
-	// public static CommandXboxController controller = new CommandXboxController(0);
 	public static CommandJoystick left_js = new CommandJoystick(1);
 	public static CommandJoystick right_js = new CommandJoystick(2);
 
 	public static void initSubsystems() {
 		drive = new SwerveSubsystem();
-		drive.setDefaultCommand(new DefaultDrive(() -> left_js.getY(), () -> left_js.getX(), () -> right_js.getX()));
+		drive.setDefaultCommand(new DefaultDrive(() -> left_js.getY(), () -> left_js.getX(), () -> -right_js.getX()));
 		drive.init(new Pose2d(1, 1, new Rotation2d()));
 		drive.initShuffleboard();
 		autoChooser = new LoggedDashboardChooser<>("Auto Routine", AutoBuilder.buildAutoChooser());
-		// Pathfinding.setPathfinder(new LocalADStarAK());
+		Pathfinding.setPathfinder(new LocalADStarAK());
 		Shuffleboard.getTab("Swerve").add("Auto Selector", autoChooser.getSendableChooser());
 	}
 
 	public static void configureButtonBindings() {
 		left_js.button(3).and(left_js.button(1)).whileTrue(drive.followPath("New Path"));
-		// controller.y().onTrue(new InstantCommand(() -> imu.zeroYaw()));
-		// controller.x().onTrue(new InstantCommand(() -> drive.getOffsets()));
-		// controller.a().and(controller.rightBumper()).onTrue(drive.followPath("New Path"));
-		// left_js.button(4).onTrue(new InstantCommand(() -> imu.zeroYaw()));
 	}
 
 	public static Command getAutonomousCommand() {
