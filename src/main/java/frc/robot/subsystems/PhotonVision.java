@@ -34,9 +34,8 @@ public class PhotonVision {
 
 	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
 		photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-		
-		if(cam.getLatestResult().getTargets().size() >= 2)
-			return photonPoseEstimator.update();
+
+		if (cam.getLatestResult().getTargets().size() >= 2) return photonPoseEstimator.update();
 		else return Optional.empty();
 	}
 }

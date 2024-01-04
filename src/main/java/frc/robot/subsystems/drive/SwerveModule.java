@@ -35,7 +35,7 @@ public class SwerveModule {
 	}
 
 	public double getVelocity() { // in m/s
-		return inputs.driveVelocityRadPerSec * SWERVE_WHEEL_RAD;
+		return inputs.driveVelocityMetersPerSec;
 	}
 
 	public double getDrivePosition() {
@@ -60,7 +60,7 @@ public class SwerveModule {
 	}
 
 	public SwerveModuleState getMeasuredState() {
-		return new SwerveModuleState(inputs.driveVelocityRadPerSec * SWERVE_WHEEL_RAD, new Rotation2d(getDirection()));
+		return new SwerveModuleState(inputs.driveVelocityMetersPerSec, new Rotation2d(getDirection()));
 	}
 
 	public void fixOffset() {
@@ -68,11 +68,14 @@ public class SwerveModule {
 	}
 
 	public void periodic() {
-		double target_vel = Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
-				* target_state.speedMetersPerSecond;
-		io.setDriveVoltage(target_vel * kV + pidSpeed.calculate(getMeasuredState().speedMetersPerSecond, target_vel));
+		// double target_vel = Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
+		//		* target_state.speedMetersPerSecond;
+		double target_vel = target_state.speedMetersPerSecond;
+		// io.setDriveVoltage(target_vel * kV + pidSpeed.calculate(getMeasuredState().speedMetersPerSecond,
+		// target_vel));
 		io.setTurnVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
-
+		// io.setDriveVelocity(target_vel / SWERVE_WHEEL_RAD / 2.0 / PI / L2_DRIVE_RATIO * 60);
+		io.setDriveVelocity(target_vel);
 		io.updateInputs(inputs);
 		io.logTargetState(inputs, target_state, target_vel);
 		Logger.processInputs("Drive/Module" + name, inputs);

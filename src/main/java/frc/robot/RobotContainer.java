@@ -2,7 +2,6 @@ package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
-
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -12,7 +11,6 @@ import frc.robot.commands.DefaultDrive;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.util.LocalADStarAK;
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {

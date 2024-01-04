@@ -112,13 +112,6 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	public void periodic() {
-		Logger.recordOutput("/Swerve/desired_speeds", new double[] {
-			desired_speeds.vxMetersPerSecond, desired_speeds.vyMetersPerSecond, desired_speeds.omegaRadiansPerSecond
-		});
-		ChassisSpeeds speeds = getVelocity();
-		Logger.recordOutput(
-				"/Swerve/actual_speeds",
-				new double[] {speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond});
 		for (SwerveModule module : modules) module.periodic();
 		pose_est.update(new Rotation2d(imu.yaw()), getPositions());
 		Optional<EstimatedRobotPose> vis_pos = photon.getEstimatedGlobalPose(pose_est.getEstimatedPosition());
@@ -127,11 +120,19 @@ public class SwerveSubsystem extends SubsystemBase {
 			pose_est.addVisionMeasurement(new_pose.estimatedPose.toPose2d(), new_pose.timestampSeconds);
 		}
 
+		// LOGGING
+		Logger.recordOutput("/Swerve/desired_speeds", new double[] {
+			desired_speeds.vxMetersPerSecond, desired_speeds.vyMetersPerSecond, desired_speeds.omegaRadiansPerSecond
+		});
+		ChassisSpeeds speeds = getVelocity();
+		Logger.recordOutput(
+				"/Swerve/actual_speeds",
+				new double[] {speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond});
+
 		field.setRobotPose(pose_est.getEstimatedPosition());
 		Logger.recordOutput("odom", pose_est.getEstimatedPosition());
 		Logger.recordOutput("odom_rot", pose_est.getEstimatedPosition().getRotation());
-		// SwerveModuleState[] states = new SwerveModuleState[4];
-		// for (int i = 0; i < 4; i++) states[i] = modules[i].getTargetState();
+
 		double[] states = new double[8];
 		for (int i = 0; i < 4; i++) states[i * 2 + 1] = modules[i].getTargetState().speedMetersPerSecond;
 		for (int i = 0; i < 4; i++)
@@ -141,6 +142,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		for (int i = 0; i < 4; i++)
 			states[i * 2] = modules[i].getMeasuredState().angle.getRadians();
 		Logger.recordOutput("measured States", states);
+
 		double[] curr_pos = {
 			pose_est.getEstimatedPosition().getX(),
 			pose_est.getEstimatedPosition().getY(),

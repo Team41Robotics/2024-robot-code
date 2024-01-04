@@ -8,7 +8,7 @@ public interface ModuleIO {
 	@AutoLog
 	public static class ModuleIOInputs {
 		public double drivePositionRad = 0.0;
-		public double driveVelocityRadPerSec = 0.0;
+		public double driveVelocityMetersPerSec = 0.0;
 		public double driveAppliedVolts = 0.0;
 		public double[] driveCurrentAmps = new double[] {};
 
@@ -29,6 +29,9 @@ public interface ModuleIO {
 
 	/** Run the drive motor at the specified voltage. */
 	public default void setDriveVoltage(double volts) {}
+
+	/** Runs the Drive motor at specified velocity in RPM using integrated PID  controller */
+	public default void setDriveVelocity(double rpm) {}
 
 	/** Run the turn motor at the specified voltage. */
 	public default void setTurnVoltage(double volts) {}

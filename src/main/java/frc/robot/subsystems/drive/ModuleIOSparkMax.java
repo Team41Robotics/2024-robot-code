@@ -1,14 +1,15 @@
 package frc.robot.subsystems.drive;
 
 import static frc.robot.constants.Constants.*;
-import static frc.robot.constants.Ports.*;
 import static java.lang.Math.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -34,6 +35,9 @@ public class ModuleIOSparkMax implements ModuleIO {
 	private final CANSparkMax driveSparkMax;
 	private final CANSparkMax turnSparkMax;
 
+	private final SparkMaxPIDController drivePID;
+	private final SparkMaxPIDController turnPID;
+
 	private final RelativeEncoder driveEncoder;
 	private final RelativeEncoder turnRelativeEncoder;
 	private final CANcoder turnAbsoluteEncoder;
@@ -54,7 +58,10 @@ public class ModuleIOSparkMax implements ModuleIO {
 		turnSparkMax.setCANTimeout(250);
 
 		driveEncoder = driveSparkMax.getEncoder();
+		driveEncoder.setVelocityConversionFactor(
+				Units.rotationsPerMinuteToRadiansPerSecond(1) / DRIVE_GEAR_RATIO * SWERVE_WHEEL_RAD);
 		driveEncoder.setPosition(0.0);
+		// System.out.println(driveEncoder.getVelocityConversionFactor());
 
 		turnRelativeEncoder = turnSparkMax.getEncoder();
 
@@ -70,6 +77,13 @@ public class ModuleIOSparkMax implements ModuleIO {
 
 		driveSparkMax.setCANTimeout(0);
 		turnSparkMax.setCANTimeout(0);
+		drivePID = driveSparkMax.getPIDController();
+		// drivePID.setI(0.001);
+		drivePID.setP(DRIVE_KP);
+		drivePID.setFF(DRIVE_KF);
+		// drivePID.setOutputRange(-1, 1);
+
+		turnPID = turnSparkMax.getPIDController();
 
 		driveSparkMax.burnFlash();
 		turnSparkMax.burnFlash();
@@ -78,8 +92,9 @@ public class ModuleIOSparkMax implements ModuleIO {
 	@Override
 	public void updateInputs(ModuleIOInputs inputs) {
 		inputs.drivePositionRad = driveEncoder.getPosition() * 2 * PI / DRIVE_GEAR_RATIO;
-		inputs.driveVelocityRadPerSec =
-				Units.rotationsPerMinuteToRadiansPerSecond(driveEncoder.getVelocity()) / DRIVE_GEAR_RATIO;
+		// inputs.driveVelocityRadPerSec =
+		// 		Units.rotationsPerMinuteToRadiansPerSecond(driveEncoder.getVelocity()) / DRIVE_GEAR_RATIO;
+		inputs.driveVelocityMetersPerSec = driveEncoder.getVelocity();
 		inputs.driveAppliedVolts = driveSparkMax.getAppliedOutput() * driveSparkMax.getBusVoltage();
 		inputs.driveCurrentAmps = new double[] {driveSparkMax.getOutputCurrent()};
 
@@ -97,6 +112,11 @@ public class ModuleIOSparkMax implements ModuleIO {
 	@Override
 	public void setDriveVoltage(double volts) {
 		driveSparkMax.setVoltage(volts);
+	}
+
+	@Override
+	public void setDriveVelocity(double mps) {
+		drivePID.setReference(mps, ControlType.kVelocity);
 	}
 
 	@Override
