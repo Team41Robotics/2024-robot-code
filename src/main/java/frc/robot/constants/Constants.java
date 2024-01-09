@@ -3,6 +3,7 @@ package frc.robot.constants;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.ReplanningConfig;
+import edu.wpi.first.math.util.Units;
 
 public final class Constants {
 	public static final double SWERVE_MAXSPEED = 4.42; // TODO
@@ -20,6 +21,7 @@ public final class Constants {
 	public static final double TURN_KP = 0;
 	public static final double TURN_KF = 0;
 
+	public static final double cam_height = Units.inchesToMeters(8);
 	// public static final TrapezoidProfile.Constraints SWERVE_TURN_TRAPEZOID = new TrapezoidProfile.Constraints(1, 2);
 
 	public static final double ROBOT_LENGTH = 23.5 * 2.54 / 100;

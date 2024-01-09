@@ -16,6 +16,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -61,6 +63,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				this::getVelocity,
 				this::drive,
 				PATH_FOLLOWER_CONFIG,
+				() -> DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue),
 				this);
 
 		PathPlannerLogging.setLogActivePathCallback((activePath) -> {
@@ -148,6 +151,15 @@ public class SwerveSubsystem extends SubsystemBase {
 			pose_est.getEstimatedPosition().getY(),
 			pose_est.getEstimatedPosition().getRotation().getRadians()
 		};
+
+		Optional<Pose2d> noteEst = photon.getNearestNote();
+		if (noteEst.isPresent()) {
+			Pose2d node_pos = noteEst.get();
+			double[] note_pos = {
+				node_pos.getX(), node_pos.getY(), node_pos.getRotation().getRadians()
+			};
+			Logger.recordOutput("Node Pos", note_pos);
+		}
 		Logger.recordOutput("Current Pos", curr_pos);
 		Logger.recordOutput("curr_x", pose_est.getEstimatedPosition().getX());
 		Logger.recordOutput("curr_y", pose_est.getEstimatedPosition().getY());
@@ -160,6 +172,13 @@ public class SwerveSubsystem extends SubsystemBase {
 	public Command followPath(String fileString) {
 		PathPlannerPath path = PathPlannerPath.fromPathFile(fileString);
 
-		return new FollowPathHolonomic(path, this::getPose, this::getVelocity, this::drive, PATH_FOLLOWER_CONFIG, this);
+		return new FollowPathHolonomic(
+				path,
+				this::getPose,
+				this::getVelocity,
+				this::drive,
+				PATH_FOLLOWER_CONFIG,
+				() -> DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue),
+				this);
 	}
 }

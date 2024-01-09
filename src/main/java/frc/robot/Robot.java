@@ -13,6 +13,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
 	private Command autonomousCommand;
+	// CANSparkMax intakeMax = new CANSparkMax(20, MotorType.kBrushless);
 
 	@Override
 	public void robotInit() {
@@ -70,7 +71,15 @@ public class Robot extends LoggedRobot {
 	}
 
 	@Override
-	public void teleopPeriodic() {}
+	public void teleopPeriodic() {
+		/*if(left_js.button(1).getAsBoolean()){
+			intakeMax.set(0.7);
+		}else if(right_js.button(1).getAsBoolean()){
+			intakeMax.set(-0.7);
+		}else{
+			intakeMax.set(0);
+		}*/
+	}
 
 	@Override
 	public void testInit() {

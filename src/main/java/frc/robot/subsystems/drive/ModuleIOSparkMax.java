@@ -4,12 +4,12 @@ import static frc.robot.constants.Constants.*;
 import static java.lang.Math.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
+import com.revrobotics.CANSparkBase.ControlType;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -35,8 +35,8 @@ public class ModuleIOSparkMax implements ModuleIO {
 	private final CANSparkMax driveSparkMax;
 	private final CANSparkMax turnSparkMax;
 
-	private final SparkMaxPIDController drivePID;
-	private final SparkMaxPIDController turnPID;
+	private final SparkPIDController drivePID;
+	private final SparkPIDController turnPID;
 
 	private final RelativeEncoder driveEncoder;
 	private final RelativeEncoder turnRelativeEncoder;
@@ -50,7 +50,6 @@ public class ModuleIOSparkMax implements ModuleIO {
 		turnSparkMax = new CANSparkMax(config.TURN_MOTOR, MotorType.kBrushless);
 		turnAbsoluteEncoder = new CANcoder(config.ENCODER);
 		absoluteEncoderOffset = config.offset; // MUST BE CALIBRATED
-
 		driveSparkMax.restoreFactoryDefaults();
 		turnSparkMax.restoreFactoryDefaults();
 
