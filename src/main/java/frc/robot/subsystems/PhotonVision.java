@@ -33,7 +33,7 @@ public class PhotonVision {
 
 	public PhotonVision() {
 		try {
-			fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2023ChargedUp.m_resourceFile);
+			fieldLayout = AprilTagFieldLayout.loadFromResource(AprilTagFields.k2024Crescendo.m_resourceFile);
 		} catch (IOException e) {
 			System.out.println("Couldn't Find April Tag Layout File");
 			e.printStackTrace();
