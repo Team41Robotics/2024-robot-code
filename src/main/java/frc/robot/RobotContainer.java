@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.FaceRing;
+import frc.robot.commands.GoToNote;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.util.LocalADStarAK;
@@ -41,7 +42,7 @@ public class RobotContainer {
 		ds.button(11).onTrue(new InstantCommand(() -> photon.switchMode(1)));
 		ds.button(12).onTrue(new InstantCommand(() -> photon.switchMode(0)));
 		// ds.button(1).onTrue(new InstantCommand(()-> photon.getNearestNote(drive.getPose())));
-		left_js.button(2).onTrue(new FaceRing().until(() -> right_js.button(2).getAsBoolean()));
+		left_js.button(2).onTrue(new FaceRing().andThen(new GoToNote()).until(()->right_js.button(2).getAsBoolean()));
 	}
 
 	public static Command getAutonomousCommand() {
