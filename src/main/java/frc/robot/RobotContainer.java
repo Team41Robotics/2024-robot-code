@@ -1,5 +1,7 @@
 package frc.robot;
 
+import static frc.robot.constants.Constants.*;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -9,8 +11,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.FaceRing;
-import frc.robot.commands.GoToNote;
+import frc.robot.commands.GoToRing;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.util.LocalADStarAK;
@@ -29,7 +30,8 @@ public class RobotContainer {
 
 	public static void initSubsystems() {
 		drive = new SwerveSubsystem();
-		drive.setDefaultCommand(new DefaultDrive(() -> left_js.getY(), () -> left_js.getX(), () -> -right_js.getX()));
+		drive.setDefaultCommand(new DefaultDrive(
+				() -> left_js.getY() * SPEED_MULT, () -> left_js.getX() * SPEED_MULT, () -> -right_js.getX()));
 		drive.init(new Pose2d(1, 1, new Rotation2d()));
 		drive.initShuffleboard();
 		autoChooser = new LoggedDashboardChooser<>("Auto Routine", AutoBuilder.buildAutoChooser());
@@ -42,7 +44,7 @@ public class RobotContainer {
 		ds.button(11).onTrue(new InstantCommand(() -> photon.switchMode(1)));
 		ds.button(12).onTrue(new InstantCommand(() -> photon.switchMode(0)));
 		// ds.button(1).onTrue(new InstantCommand(()-> photon.getNearestNote(drive.getPose())));
-		left_js.button(2).onTrue(new FaceRing().andThen(new GoToNote()).until(()->right_js.button(2).getAsBoolean()));
+		left_js.button(2).onTrue(new GoToRing().until(() -> right_js.button(2).getAsBoolean()));
 	}
 
 	public static Command getAutonomousCommand() {

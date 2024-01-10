@@ -31,8 +31,8 @@ public class DefaultDrive extends Command {
 		// 		sin(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT,
 		// 		MathUtil.applyDeadband(w, 0.1) * 2.5));
 		drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-				cos(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT * sign,
-				sin(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT * sign,
+				cos(theta) * ma2 * SWERVE_MAXSPEED * sign,
+				sin(theta) * ma2 * SWERVE_MAXSPEED * sign,
 				MathUtil.applyDeadband(w, 0.1) * ANGULAR_SPEED,
 				drive.getPose().getRotation()));
 	}

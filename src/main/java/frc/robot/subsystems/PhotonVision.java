@@ -52,7 +52,7 @@ public class PhotonVision {
 	public Optional<Pose2d> getNearestNote() {
 		if (currentMode == Cam_Mode.APRILTAG) return Optional.empty();
 		PhotonTrackedTarget target = cam.getLatestResult().getBestTarget();
-		if(target == null) return Optional.empty();
+		if (target == null) return Optional.empty();
 		double pitch = target.getPitch();
 		double yaw = target.getYaw();
 		double dx = Constants.cam_height / Math.tan(Units.degreesToRadians(pitch));

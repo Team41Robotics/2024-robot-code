@@ -8,8 +8,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
 
-public class FaceRing extends Command {
-	public FaceRing() {
+public class GoToRing extends Command {
+	public GoToRing() {
 		addRequirements(drive);
 	}
 
@@ -24,16 +24,15 @@ public class FaceRing extends Command {
 			} else {
 				drive.drive(new ChassisSpeeds(0, 0, 5 * target_state.get().getY()));
 			}
+		} else {
+			drive.drive(new ChassisSpeeds());
 		}
 	}
 
 	@Override
 	public boolean isFinished() {
 		Optional<Pose2d> target_state = photon.getNearestNote();
-		if (target_state.isPresent()) {
-			//  drive.drive(new ChassisSpeeds(0, 0, target_state.get().getY()));
-			//  drive.drive(new ChassisSpeeds(,0,0));
-			//  return Math.abs(target_state.get().getY()) <= 1E-3;
+		if (target_state.isPresent()) { // TODO termination conditions
 		}
 		return false;
 	}
