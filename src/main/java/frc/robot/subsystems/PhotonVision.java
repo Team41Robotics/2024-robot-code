@@ -28,7 +28,7 @@ public class PhotonVision {
 		NOTESLAM
 	}
 
-	private Cam_Mode currentMode;
+	private Cam_Mode currentMode = Cam_Mode.APRILTAG;
 	private Pose2d camRobot = new Pose2d(Units.inchesToMeters(9.5), Units.inchesToMeters(7), new Rotation2d());
 
 	public PhotonVision() {
@@ -39,8 +39,11 @@ public class PhotonVision {
 			e.printStackTrace();
 		}
 		cam = new PhotonCamera("Front_Camera");
-		photonPoseEstimator =
-				new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, cam, robotToCam);
+		photonPoseEstimator = new PhotonPoseEstimator(
+				fieldLayout,
+				PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+				cam,
+				robotToCam); // TODO _ON_COPROCESSOR; doesn't work yet until we update photon with '24 tags'
 		photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
 	}
 
@@ -51,23 +54,29 @@ public class PhotonVision {
 
 	public Optional<Pose2d> getNearestNote() {
 		if (currentMode == Cam_Mode.APRILTAG) return Optional.empty();
+		if (!cam.getLatestResult().hasTargets()) return Optional.empty();
 		PhotonTrackedTarget target = cam.getLatestResult().getBestTarget();
 		if (target == null) return Optional.empty();
 		double pitch = target.getPitch();
 		double yaw = target.getYaw();
 		double dx = Constants.cam_height / Math.tan(Units.degreesToRadians(pitch));
-		// System.out.println("Dx: " + dx);
 		double dy = dx * Math.tan(Units.degreesToRadians(yaw)) - Units.inchesToMeters(7);
-		// System.out.println("Dy: " + dy);
 		Pose2d noteCam = new Pose2d(dx, dy, new Rotation2d());
 		return Optional.of(noteCam.relativeTo(camRobot));
 	}
 
 	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+		// System.out.println("PHOTON GET ESTIMATED");
 		if (currentMode == Cam_Mode.NOTESLAM) return Optional.empty();
 		photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
 
-		if (cam.getLatestResult().getTargets().size() >= 2) return photonPoseEstimator.update();
-		return Optional.empty();
+		System.out.println(cam.getLatestResult());
+
+		// System.out.println("HI "+cam.getLatestResult().getTargets().size());
+		// if (cam.getLatestResult().getTargets().size() >= 2) {
+		// System.err.println("PHOTON UPDATED");
+		return photonPoseEstimator.update();
+		// }
+		// return Optional.empty();
 	}
 }

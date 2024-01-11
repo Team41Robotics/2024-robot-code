@@ -36,4 +36,9 @@ public class GoToRing extends Command {
 		}
 		return false;
 	}
+
+	@Override
+	public void end(boolean interrupted) {
+		photon.switchMode(0);
+	}
 }
