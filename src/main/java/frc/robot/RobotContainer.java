@@ -3,6 +3,7 @@ package frc.robot;
 import static frc.robot.constants.Constants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,20 +31,20 @@ public class RobotContainer {
 
 	public static void initSubsystems() {
 		drive = new SwerveSubsystem();
-		drive.setDefaultCommand(new DefaultDrive(
-				() -> left_js.getY() * SPEED_MULT, () -> left_js.getX() * SPEED_MULT, () -> -right_js.getX()));
+		drive.setDefaultCommand(new DefaultDrive(() -> left_js.getY(), () -> left_js.getX(), () -> -right_js.getX()));
 		drive.init(new Pose2d(1, 1, new Rotation2d()));
 		drive.initShuffleboard();
 		autoChooser = new LoggedDashboardChooser<>("Auto Routine", AutoBuilder.buildAutoChooser());
 		Pathfinding.setPathfinder(new LocalADStarAK());
 		Shuffleboard.getTab("Swerve").add("Auto Selector", autoChooser.getSendableChooser());
+		NamedCommands.registerCommand("FACERING", new GoToRing());
 	}
 
 	public static void configureButtonBindings() {
 		// left_js.button(3).and(left_js.button(1)).whileTrue(drive.followPath("New Path"));
 		ds.button(11).onTrue(new InstantCommand(() -> photon.switchMode(1)));
 		ds.button(12).onTrue(new InstantCommand(() -> photon.switchMode(0)));
-		// ds.button(1).onTrue(new InstantCommand(()-> photon.getNearestNote(drive.getPose())));
+		ds.button(1).onTrue(new InstantCommand(()->  right_js.button(2).getAsBoolean()));
 		left_js.button(2).onTrue(new GoToRing().until(() -> right_js.button(2).getAsBoolean()));
 	}
 

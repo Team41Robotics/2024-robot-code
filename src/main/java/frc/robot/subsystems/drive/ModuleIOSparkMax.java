@@ -60,7 +60,6 @@ public class ModuleIOSparkMax implements ModuleIO {
 		driveEncoder.setVelocityConversionFactor(
 				Units.rotationsPerMinuteToRadiansPerSecond(1) / DRIVE_GEAR_RATIO * SWERVE_WHEEL_RAD);
 		driveEncoder.setPosition(0.0);
-		// System.out.println(driveEncoder.getVelocityConversionFactor());
 
 		turnRelativeEncoder = turnSparkMax.getEncoder();
 
@@ -91,8 +90,6 @@ public class ModuleIOSparkMax implements ModuleIO {
 	@Override
 	public void updateInputs(ModuleIOInputs inputs) {
 		inputs.drivePositionRad = driveEncoder.getPosition() * 2 * PI / DRIVE_GEAR_RATIO;
-		// inputs.driveVelocityRadPerSec =
-		// 		Units.rotationsPerMinuteToRadiansPerSecond(driveEncoder.getVelocity()) / DRIVE_GEAR_RATIO;
 		inputs.driveVelocityMetersPerSec = driveEncoder.getVelocity();
 		inputs.driveAppliedVolts = driveSparkMax.getAppliedOutput() * driveSparkMax.getBusVoltage();
 		inputs.driveCurrentAmps = new double[] {driveSparkMax.getOutputCurrent()};

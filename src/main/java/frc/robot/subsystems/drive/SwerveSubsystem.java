@@ -57,9 +57,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				VecBuilder.fill(2, 2, 2));
 		AutoBuilder.configureHolonomic(
 				this::getPose,
-				(pose) -> {
-					pose_est.resetPosition(new Rotation2d(imu.yaw()), getPositions(), pose);
-				},
+				(pose) -> pose_est.resetPosition(new Rotation2d(imu.yaw()), getPositions(), pose),
 				this::getVelocity,
 				this::drive,
 				PATH_FOLLOWER_CONFIG,
@@ -120,6 +118,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		Optional<EstimatedRobotPose> vis_pos = photon.getEstimatedGlobalPose(pose_est.getEstimatedPosition());
 		if (vis_pos.isPresent()) {
 			EstimatedRobotPose new_pose = vis_pos.get();
+
 			pose_est.addVisionMeasurement(new_pose.estimatedPose.toPose2d(), new_pose.timestampSeconds);
 		}
 

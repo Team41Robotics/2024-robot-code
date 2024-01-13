@@ -9,6 +9,8 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.util.Util;
+
 import java.util.function.DoubleSupplier;
 
 public class DefaultDrive extends Command {
@@ -23,17 +25,17 @@ public class DefaultDrive extends Command {
 
 	public void run(double vx, double vy, double w) {
 		double mag = Math.hypot(vx, vy);
-		double ma2 = MathUtil.applyDeadband(mag, 0.1);
+		double ma2 = Util.sensCurve(mag, 0.1);
 		double theta = Math.atan2(vy, vx);
 		double sign = (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 1.0 : -1.0);
 		// drive.drive(new ChassisSpeeds(
 		// 		cos(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT,
 		// 		sin(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT,
-		// 		MathUtil.applyDeadband(w, 0.1) * 2.5));
+		// 		Util.sensCurve(w, 0.1) * 2.5));
 		drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-				cos(theta) * ma2 * SWERVE_MAXSPEED * sign,
-				sin(theta) * ma2 * SWERVE_MAXSPEED * sign,
-				MathUtil.applyDeadband(w, 0.1) * ANGULAR_SPEED,
+				cos(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT * sign,
+				sin(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT * sign,
+				Util.sensCurve(w, 0.1) * ANGULAR_SPEED * ANGULAR_SPEED_MULT,
 				drive.getPose().getRotation()));
 	}
 

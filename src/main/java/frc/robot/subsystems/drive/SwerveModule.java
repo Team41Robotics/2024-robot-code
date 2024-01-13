@@ -12,11 +12,7 @@ import org.littletonrobotics.junction.Logger;
 public class SwerveModule {
 	public PIDController pidTurn = new PIDController(3, 0, 0);
 	public PIDController pidSpeed = new PIDController(2, 0, 0);
-	public double kV = 3;
 
-	// public static final State zeroState = new State(0, 0);
-	// public TrapezoidProfile profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, zeroState, zeroState);
-	// public double profile_t0 = Timer.getFPGATimestamp();
 	private ModuleIO io;
 	private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
 	private String name;
@@ -45,10 +41,6 @@ public class SwerveModule {
 	public void setState(SwerveModuleState state) {
 		state = SwerveModuleState.optimize(state, new Rotation2d(getDirection()));
 		target_state = state;
-		// double delta = getDirection() - state.angle.getRadians();
-		// delta = MathUtil.angleModulus(delta);
-		// profile = new TrapezoidProfile(SWERVE_TURN_TRAPEZOID, new State(delta, getAngularVelocity()), zeroState);
-		// profile_t0 = Timer.getFPGATimestamp();
 	}
 
 	public SwerveModulePosition getPosition() {
@@ -68,13 +60,10 @@ public class SwerveModule {
 	}
 
 	public void periodic() {
-		// double target_vel = Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
-		//		* target_state.speedMetersPerSecond;
-		double target_vel = target_state.speedMetersPerSecond;
-		// io.setDriveVoltage(target_vel * kV + pidSpeed.calculate(getMeasuredState().speedMetersPerSecond,
-		// target_vel));
+		double target_vel = Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
+				* target_state.speedMetersPerSecond;
+		// double target_vel = target_state.speedMetersPerSecond;
 		io.setTurnVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
-		// io.setDriveVelocity(target_vel / SWERVE_WHEEL_RAD / 2.0 / PI / L2_DRIVE_RATIO * 60);
 		io.setDriveVelocity(target_vel);
 		io.updateInputs(inputs);
 		io.logTargetState(inputs, target_state, target_vel);

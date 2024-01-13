@@ -29,7 +29,7 @@ public class PhotonVision {
 	}
 
 	private Cam_Mode currentMode = Cam_Mode.APRILTAG;
-	private Pose2d camRobot = new Pose2d(Units.inchesToMeters(9.5), Units.inchesToMeters(7), new Rotation2d());
+	private Pose2d camRobot = new Pose2d(Units.inchesToMeters(9.5), Units.inchesToMeters(0), new Rotation2d());
 
 	public PhotonVision() {
 		try {
@@ -38,7 +38,7 @@ public class PhotonVision {
 			System.out.println("Couldn't Find April Tag Layout File");
 			e.printStackTrace();
 		}
-		cam = new PhotonCamera("Front_Camera");
+		cam = new PhotonCamera("HD_USB_Camera");
 		photonPoseEstimator = new PhotonPoseEstimator(
 				fieldLayout,
 				PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
@@ -60,9 +60,13 @@ public class PhotonVision {
 		double pitch = target.getPitch();
 		double yaw = target.getYaw();
 		double dx = Constants.cam_height / Math.tan(Units.degreesToRadians(pitch));
-		double dy = dx * Math.tan(Units.degreesToRadians(yaw)) - Units.inchesToMeters(7);
+		double dy = dx * Math.tan(Units.degreesToRadians(yaw));
 		Pose2d noteCam = new Pose2d(dx, dy, new Rotation2d());
+		if (pitch > 0) 
+			return Optional.empty();
+		else //System.out.println(pitch);
 		return Optional.of(noteCam.relativeTo(camRobot));
+		
 	}
 
 	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
@@ -70,13 +74,9 @@ public class PhotonVision {
 		if (currentMode == Cam_Mode.NOTESLAM) return Optional.empty();
 		photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
 
-		System.out.println(cam.getLatestResult());
-
-		// System.out.println("HI "+cam.getLatestResult().getTargets().size());
-		// if (cam.getLatestResult().getTargets().size() >= 2) {
-		// System.err.println("PHOTON UPDATED");
-		return photonPoseEstimator.update();
-		// }
-		// return Optional.empty();
+		if (cam.getLatestResult().getTargets().size() >= 2) {
+			return photonPoseEstimator.update();
+		}
+		return Optional.empty();
 	}
 }
