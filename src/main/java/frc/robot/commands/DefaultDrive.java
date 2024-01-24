@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.util.Util;
-
 import java.util.function.DoubleSupplier;
 
 public class DefaultDrive extends Command {
@@ -25,7 +24,7 @@ public class DefaultDrive extends Command {
 
 	public void run(double vx, double vy, double w) {
 		double mag = Math.hypot(vx, vy);
-		double ma2 = Util.sensCurve(mag, 0.1);
+		double ma2 = MathUtil.clamp(Util.sensCurve(mag*1.5, 0.1),-1,1);
 		double theta = Math.atan2(vy, vx);
 		double sign = (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 1.0 : -1.0);
 		// drive.drive(new ChassisSpeeds(
@@ -35,9 +34,11 @@ public class DefaultDrive extends Command {
 		drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
 				cos(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT * sign,
 				sin(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT * sign,
-				Util.sensCurve(w, 0.1) * ANGULAR_SPEED * ANGULAR_SPEED_MULT,
+				MathUtil.applyDeadband(w, 0.1) * ANGULAR_SPEED * ANGULAR_SPEED_MULT,
 				drive.getPose().getRotation()));
 	}
+
+
 
 	@Override
 	public void execute() {

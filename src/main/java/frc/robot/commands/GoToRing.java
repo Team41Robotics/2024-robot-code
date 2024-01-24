@@ -20,8 +20,9 @@ public class GoToRing extends Command {
 		if (target_state.isPresent()) {
 			System.out.println(target_state.get().getX());
 			if (Math.abs(target_state.get().getY()) <= 0.1) {
-				//drive.drive(new ChassisSpeeds());
-				drive.drive(new ChassisSpeeds(-target_state.get().getX() / 3., target_state.get().getY()/3, 0));
+				// drive.drive(new ChassisSpeeds());
+				drive.drive(new ChassisSpeeds(
+						-target_state.get().getX() / 3., target_state.get().getY() / 3, 0));
 			} else {
 				System.out.println("YAW TOO BIG");
 				drive.drive(new ChassisSpeeds(0, 0, 2 * target_state.get().getY()));
@@ -35,10 +36,11 @@ public class GoToRing extends Command {
 	@Override
 	public boolean isFinished() {
 		Optional<Pose2d> target_state = photon.getNearestNote();
-		if(target_state.isEmpty()){
+		if (target_state.isEmpty()) {
 			return false;
 		}
-		if (Math.abs(target_state.get().getX()) < 1.0 && Math.abs(target_state.get().getY()) <= 0.05 ) {
+		if (Math.abs(target_state.get().getX()) < 1.0
+				&& Math.abs(target_state.get().getY()) <= 0.05) {
 			return true; // TODO termination conditions
 		}
 		return false;
