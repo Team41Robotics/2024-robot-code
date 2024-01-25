@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.DefaultDrive;
 import frc.robot.commands.GoToRing;
+import frc.robot.commands.AlignToSpeaker;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.drive.SwerveSubsystem;
 import frc.robot.util.LocalADStarAK;
@@ -44,8 +45,9 @@ public class RobotContainer {
 		// left_js.button(3).and(left_js.button(1)).whileTrue(drive.followPath("New Path"));
 		ds.button(11).onTrue(new InstantCommand(() -> photon.switchMode(1)));
 		ds.button(12).onTrue(new InstantCommand(() -> photon.switchMode(0)));
-		ds.button(1).onTrue(new InstantCommand(()->  right_js.button(2).getAsBoolean()));
-		left_js.button(2).onTrue(new GoToRing().until(() -> right_js.button(2).getAsBoolean()));
+		ds.button(1).onTrue(new InstantCommand(() -> right_js.button(2).getAsBoolean()));
+		//left_js.button(2).onTrue(new GoToRing().until(() -> right_js.button(2).getAsBoolean()));
+		right_js.button(2).onTrue(new AlignToSpeaker().until(() -> left_js.button(2).getAsBoolean()));
 	}
 
 	public static Command getAutonomousCommand() {

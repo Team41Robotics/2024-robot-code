@@ -23,7 +23,7 @@ public class Robot extends LoggedRobot {
 		Logger.recordMetadata("ProjectName", "OffSeason Swerve"); // Set a metadata value
 
 		if (isReal()) {
-			Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
+			// Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
 			Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
 		} else {
 			setUseTiming(false); // Run as fast as possible

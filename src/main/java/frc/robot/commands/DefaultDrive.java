@@ -24,7 +24,7 @@ public class DefaultDrive extends Command {
 
 	public void run(double vx, double vy, double w) {
 		double mag = Math.hypot(vx, vy);
-		double ma2 = MathUtil.clamp(Util.sensCurve(mag*1.5, 0.1),-1,1);
+		double ma2 = MathUtil.clamp(Util.sensCurve(mag * 1.5, 0.1), -1, 1);
 		double theta = Math.atan2(vy, vx);
 		double sign = (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 1.0 : -1.0);
 		// drive.drive(new ChassisSpeeds(
@@ -37,8 +37,6 @@ public class DefaultDrive extends Command {
 				MathUtil.applyDeadband(w, 0.1) * ANGULAR_SPEED * ANGULAR_SPEED_MULT,
 				drive.getPose().getRotation()));
 	}
-
-
 
 	@Override
 	public void execute() {

@@ -62,11 +62,9 @@ public class PhotonVision {
 		double dx = Constants.cam_height / Math.tan(Units.degreesToRadians(pitch));
 		double dy = dx * Math.tan(Units.degreesToRadians(yaw));
 		Pose2d noteCam = new Pose2d(dx, dy, new Rotation2d());
-		if (pitch > 0) 
-			return Optional.empty();
-		else //System.out.println(pitch);
+		if (pitch > 0) return Optional.empty();
+		else // System.out.println(pitch);
 		return Optional.of(noteCam.relativeTo(camRobot));
-		
 	}
 
 	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
