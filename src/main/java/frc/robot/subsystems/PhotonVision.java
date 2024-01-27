@@ -29,7 +29,7 @@ public class PhotonVision {
 	}
 
 	private Cam_Mode currentMode = Cam_Mode.APRILTAG;
-	private Pose2d camRobot = new Pose2d(Units.inchesToMeters(9.5), Units.inchesToMeters(0), new Rotation2d());
+	private Pose2d camRobot = new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(9.5), new Rotation2d());
 
 	public PhotonVision() {
 		try {
