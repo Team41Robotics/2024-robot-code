@@ -12,9 +12,9 @@ public final class Constants {
 	public static final double SWERVE_MAXSPEED = 4.42;
 	public static final double ANGULAR_SPEED = SWERVE_MAXSPEED / (Math.hypot(ROBOT_LENGTH, ROBOT_WIDTH) / 2);
 
-	public static final double ANGULAR_SPEED_MULT = 0.4;
+	public static final double ANGULAR_SPEED_MULT = 0.7;
 
-	public static final double SPEED_MULT = 0.4;
+	public static final double SPEED_MULT = 0.7;
 	public static final double SWERVE_WHEEL_RAD = 2 * 2.54 / 100;
 	public static final double L2_DRIVE_RATIO = 1 / 6.75; // input RPM * gearing = output RPM
 	public static final double L2_TURN_RATIO = 7. / 150;
