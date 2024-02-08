@@ -20,7 +20,7 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 public class PhotonVision {
 	private PhotonCamera cam;
 	AprilTagFieldLayout fieldLayout;
-	Transform3d robotToCam = new Transform3d(new Translation3d(0, 0.2, 0.1), new Rotation3d(0, 0, 0));
+	Transform3d robotToCam = new Transform3d(new Translation3d(Units.inchesToMeters(14.5), Units.inchesToMeters(0), 0.1), new Rotation3d(0, 0.611, 0));
 	PhotonPoseEstimator photonPoseEstimator;
 
 	enum Cam_Mode {
@@ -38,7 +38,7 @@ public class PhotonVision {
 			System.out.println("Couldn't Find April Tag Layout File");
 			e.printStackTrace();
 		}
-		cam = new PhotonCamera("HD_USB_Camera");
+		cam = new PhotonCamera("Global_Shutter_Camera");
 		photonPoseEstimator = new PhotonPoseEstimator(
 				fieldLayout,
 				PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
