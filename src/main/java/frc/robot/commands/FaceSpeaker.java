@@ -1,9 +1,6 @@
 package frc.robot.commands;
 
-import static frc.robot.RobotContainer.*;
 import static frc.robot.RobotContainer.drive;
-import static frc.robot.constants.Constants.*;
-import static java.lang.Math.*;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -28,7 +25,6 @@ public class FaceSpeaker extends Command {
 
 	@Override
 	public void execute() {
-		// photon.switchMode(1);
 
 		Pose2d currentPose = drive.getPose();
 

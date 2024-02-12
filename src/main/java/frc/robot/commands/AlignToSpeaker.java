@@ -1,8 +1,8 @@
 package frc.robot.commands;
 
 import static frc.robot.RobotContainer.drive;
-import static frc.robot.RobotContainer.photon;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -21,6 +21,7 @@ public class AlignToSpeaker extends Command {
 	public double targetRotation = Units.degreesToRadians(
 			(DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)) ? 0 : 180);
 
+
 	public AlignToSpeaker() {
 		addRequirements(drive);
 		omegaPID.enableContinuousInput(0, Math.PI * 2);
@@ -29,28 +30,15 @@ public class AlignToSpeaker extends Command {
 	@Override
 	public void execute() {
 
-		photon.switchMode(0);
 		Pose2d current_pose = drive.getPose();
 
 		double currentRotation = current_pose.getRotation().getRadians();
 		double currentY = current_pose.getY();
 
-		double vY = yPID.calculate(currentY, targetY);
-		// limits velocity to 1 so the robot doesnt kill itself
-		if (vY > 1) {
-			vY = 1;
-		} else if (vY < -1) {
-			vY = -1;
-		}
+		double vY = MathUtil.clamp(yPID.calculate(currentY, targetY), -1, 1);		
+		if (Units.radiansToDegrees(currentRotation) < 0) currentRotation = 2 * Math.PI + currentRotation;
+		double vW = MathUtil.clamp(omegaPID.calculate(currentRotation, targetRotation), -1, 1);
 
-		if (Units.radiansToDegrees(currentRotation) < 0) currentRotation = 2*Math.PI + currentRotation;
-
-		double vW = omegaPID.calculate(currentRotation, targetRotation);
-		if (vW > 1.0) {
-			vW = 1;
-		} else if (vW < -1.0) {
-			vW = -1;
-		}
 
 		System.out.println("Cr: " + currentRotation + "Tr: " + targetRotation);
 		drive.drive(

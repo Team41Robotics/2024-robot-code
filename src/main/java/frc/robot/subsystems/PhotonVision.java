@@ -18,9 +18,12 @@ import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
 public class PhotonVision {
-	private PhotonCamera cam;
+	private PhotonCamera note_cam;
+	private PhotonCamera april_cam;
 	AprilTagFieldLayout fieldLayout;
-	Transform3d robotToCam = new Transform3d(new Translation3d(Units.inchesToMeters(14.5), Units.inchesToMeters(0), 0.1), new Rotation3d(0, 0.611, 0));
+
+	Transform3d robotToCam = new Transform3d(
+			new Translation3d(Units.inchesToMeters(14.5), Units.inchesToMeters(0), 0.1), new Rotation3d(0, 0.611, 0));
 	PhotonPoseEstimator photonPoseEstimator;
 
 	enum Cam_Mode {
@@ -28,7 +31,6 @@ public class PhotonVision {
 		NOTESLAM
 	}
 
-	private Cam_Mode currentMode = Cam_Mode.APRILTAG;
 	private Pose2d camRobot = new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(9.5), new Rotation2d());
 
 	public PhotonVision() {
@@ -38,24 +40,21 @@ public class PhotonVision {
 			System.out.println("Couldn't Find April Tag Layout File");
 			e.printStackTrace();
 		}
-		cam = new PhotonCamera("Global_Shutter_Camera");
+		note_cam = new PhotonCamera("HD_USB_Camera");
+		april_cam = new PhotonCamera("Global_Shutter_Camera");
 		photonPoseEstimator = new PhotonPoseEstimator(
 				fieldLayout,
 				PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-				cam,
+				april_cam,
 				robotToCam); // TODO _ON_COPROCESSOR; doesn't work yet until we update photon with '24 tags'
 		photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
 	}
 
-	public void switchMode(int pipelineIndex) {
-		cam.setPipelineIndex(pipelineIndex);
-		currentMode = Cam_Mode.values()[pipelineIndex];
-	}
+
 
 	public Optional<Pose2d> getNearestNote() {
-		if (currentMode == Cam_Mode.APRILTAG) return Optional.empty();
-		if (!cam.getLatestResult().hasTargets()) return Optional.empty();
-		PhotonTrackedTarget target = cam.getLatestResult().getBestTarget();
+		if (!april_cam.getLatestResult().hasTargets()) return Optional.empty();
+		PhotonTrackedTarget target = note_cam.getLatestResult().getBestTarget();
 		if (target == null) return Optional.empty();
 		double pitch = target.getPitch();
 		double yaw = target.getYaw();
@@ -63,16 +62,14 @@ public class PhotonVision {
 		double dy = dx * Math.tan(Units.degreesToRadians(yaw));
 		Pose2d noteCam = new Pose2d(dx, dy, new Rotation2d());
 		if (pitch > 0) return Optional.empty();
-		else // System.out.println(pitch);
+		else 
 		return Optional.of(noteCam.relativeTo(camRobot));
 	}
 
 	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-		// System.out.println("PHOTON GET ESTIMATED");
-		if (currentMode == Cam_Mode.NOTESLAM) return Optional.empty();
 		photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
 
-		if (cam.getLatestResult().getTargets().size() >= 2) {
+		if (april_cam.getLatestResult().getTargets().size() >= 2) {
 			return photonPoseEstimator.update();
 		}
 		return Optional.empty();

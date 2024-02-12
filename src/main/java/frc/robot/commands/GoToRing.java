@@ -15,22 +15,19 @@ public class GoToRing extends Command {
 
 	@Override
 	public void execute() {
-		photon.switchMode(1);
 		Optional<Pose2d> target_state = photon.getNearestNote();
-		if (target_state.isPresent()) {
-			System.out.println(target_state.get().getX());
-			if (Math.abs(target_state.get().getY()) <= 0.1) {
-				// drive.drive(new ChassisSpeeds());
-				drive.drive(new ChassisSpeeds(
-						-target_state.get().getX() / 3., target_state.get().getY() / 3, 0));
-			} else {
-				System.out.println("YAW TOO BIG");
-				drive.drive(new ChassisSpeeds(0, 0, 2 * target_state.get().getY()));
-			}
-		} else {
-			System.out.println("NO SIGHT");
+		if (target_state.isEmpty()) {
 			drive.drive(new ChassisSpeeds());
+			return;
 		}
+		Pose2d targetPose = target_state.get();
+		double targetX = targetPose.getX();
+		double targetY = targetPose.getY();
+		if (Math.abs(targetY) > 0.1) {
+			drive.drive(new ChassisSpeeds(0, 0, 2 * targetY));
+			return;
+		}
+		drive.drive(new ChassisSpeeds(-targetX / 3., targetY / 3, 0));
 	}
 
 	@Override
@@ -46,8 +43,5 @@ public class GoToRing extends Command {
 		return false;
 	}
 
-	@Override
-	public void end(boolean interrupted) {
-		photon.switchMode(0);
-	}
+
 }
