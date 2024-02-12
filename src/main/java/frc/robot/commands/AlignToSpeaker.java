@@ -21,7 +21,6 @@ public class AlignToSpeaker extends Command {
 	public double targetRotation = Units.degreesToRadians(
 			(DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)) ? 0 : 180);
 
-
 	public AlignToSpeaker() {
 		addRequirements(drive);
 		omegaPID.enableContinuousInput(0, Math.PI * 2);
@@ -35,10 +34,9 @@ public class AlignToSpeaker extends Command {
 		double currentRotation = current_pose.getRotation().getRadians();
 		double currentY = current_pose.getY();
 
-		double vY = MathUtil.clamp(yPID.calculate(currentY, targetY), -1, 1);		
+		double vY = MathUtil.clamp(yPID.calculate(currentY, targetY), -1, 1);
 		if (Units.radiansToDegrees(currentRotation) < 0) currentRotation = 2 * Math.PI + currentRotation;
 		double vW = MathUtil.clamp(omegaPID.calculate(currentRotation, targetRotation), -1, 1);
-
 
 		System.out.println("Cr: " + currentRotation + "Tr: " + targetRotation);
 		drive.drive(

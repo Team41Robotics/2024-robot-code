@@ -42,6 +42,4 @@ public class GoToRing extends Command {
 		}
 		return false;
 	}
-
-
 }

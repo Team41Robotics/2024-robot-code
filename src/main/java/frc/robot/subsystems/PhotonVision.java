@@ -50,8 +50,6 @@ public class PhotonVision {
 		photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
 	}
 
-
-
 	public Optional<Pose2d> getNearestNote() {
 		if (!april_cam.getLatestResult().hasTargets()) return Optional.empty();
 		PhotonTrackedTarget target = note_cam.getLatestResult().getBestTarget();
@@ -62,8 +60,7 @@ public class PhotonVision {
 		double dy = dx * Math.tan(Units.degreesToRadians(yaw));
 		Pose2d noteCam = new Pose2d(dx, dy, new Rotation2d());
 		if (pitch > 0) return Optional.empty();
-		else 
-		return Optional.of(noteCam.relativeTo(camRobot));
+		else return Optional.of(noteCam.relativeTo(camRobot));
 	}
 
 	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {

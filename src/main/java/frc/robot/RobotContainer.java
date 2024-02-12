@@ -1,7 +1,5 @@
 package frc.robot;
 
-import static frc.robot.constants.Constants.*;
-
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -43,8 +41,7 @@ public class RobotContainer {
 	}
 
 	public static void configureButtonBindings() {
-		ds.button(11).onTrue(new InstantCommand(() -> photon.switchMode(1)));
-		ds.button(12).onTrue(new InstantCommand(() -> photon.switchMode(0)));
+
 		ds.button(1).onTrue(new InstantCommand(() -> left_js.button(1).getAsBoolean()));
 		// left_js.button(2).onTrue(new GoToRing().until(() -> left_js.button(1).getAsBoolean()));
 		right_js.button(2)

@@ -13,6 +13,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
 	private Command autonomousCommand;
+
 	@Override
 	public void robotInit() {
 		robot = this;
@@ -69,9 +70,7 @@ public class Robot extends LoggedRobot {
 	}
 
 	@Override
-	public void teleopPeriodic() {
-
-	}
+	public void teleopPeriodic() {}
 
 	@Override
 	public void testInit() {
