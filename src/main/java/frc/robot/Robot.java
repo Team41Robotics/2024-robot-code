@@ -13,8 +13,6 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 public class Robot extends LoggedRobot {
 	private Command autonomousCommand;
-	// CANSparkMax intakeMax = new CANSparkMax(20, MotorType.kBrushless);
-
 	@Override
 	public void robotInit() {
 		robot = this;
@@ -23,7 +21,7 @@ public class Robot extends LoggedRobot {
 		Logger.recordMetadata("ProjectName", "OffSeason Swerve"); // Set a metadata value
 
 		if (isReal()) {
-			// Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
+			Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
 			Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
 		} else {
 			setUseTiming(false); // Run as fast as possible
@@ -42,7 +40,6 @@ public class Robot extends LoggedRobot {
 	@Override
 	public void robotPeriodic() {
 		CommandScheduler.getInstance().run();
-		// System.out.println(left_js.getX() + "," + left_js.getY());
 	}
 
 	@Override
@@ -73,13 +70,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopPeriodic() {
-		/*if(left_js.button(1).getAsBoolean()){
-			intakeMax.set(0.7);
-		}else if(right_js.button(1).getAsBoolean()){
-			intakeMax.set(-0.7);
-		}else{
-			intakeMax.set(0);
-		}*/
+
 	}
 
 	@Override
