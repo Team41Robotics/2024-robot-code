@@ -61,7 +61,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				this::getVelocity,
 				this::drive,
 				PATH_FOLLOWER_CONFIG,
-				() -> DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue),
+				() -> DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red),
 				this);
 
 		PathPlannerLogging.setLogActivePathCallback((activePath) -> {
