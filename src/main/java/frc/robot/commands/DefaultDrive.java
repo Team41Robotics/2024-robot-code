@@ -26,15 +26,14 @@ public class DefaultDrive extends Command {
 		double mag = Math.hypot(vx, vy);
 		double ma2 = MathUtil.clamp(Util.sensCurve(mag * 1.5, 0.1), -1, 1);
 		double theta = Math.atan2(vy, vx);
-		double sign = (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 1.0 : -1.0);
-		// drive.drive(new ChassisSpeeds(
-		// 		cos(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT,
-		// 		sin(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT,
-		// 		Util.sensCurve(w, 0.1) * 2.5));
+		double sign = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 1.0 : -1.0;
+		boolean turbo = right_js.button(1).getAsBoolean();
+		double speed_mult = turbo ? 0.9 : SPEED_MULT;
+		double angular_mult = turbo ? 0.9 : ANGULAR_SPEED_MULT;
 		drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-				cos(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT * sign,
-				sin(theta) * ma2 * SWERVE_MAXSPEED * SPEED_MULT * sign,
-				MathUtil.applyDeadband(w, 0.1) * ANGULAR_SPEED * ANGULAR_SPEED_MULT,
+				cos(theta) * ma2 * SWERVE_MAXSPEED * speed_mult * sign,
+				sin(theta) * ma2 * SWERVE_MAXSPEED * speed_mult * sign,
+				MathUtil.applyDeadband(w, 0.1) * ANGULAR_MAX_SPEED * angular_mult,
 				drive.getPose().getRotation()));
 	}
 
