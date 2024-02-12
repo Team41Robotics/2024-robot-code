@@ -36,10 +36,7 @@ public class GoToRing extends Command {
 		if (target_state.isEmpty()) {
 			return false;
 		}
-		if (Math.abs(target_state.get().getX()) < 1.0
-				&& Math.abs(target_state.get().getY()) <= 0.05) {
-			return true; // TODO termination conditions
-		}
-		return false;
+		return (Math.abs(target_state.get().getX()) < 1.0
+				&& Math.abs(target_state.get().getY()) <= 0.05);
 	}
 }

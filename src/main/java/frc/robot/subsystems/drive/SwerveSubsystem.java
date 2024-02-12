@@ -113,16 +113,11 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	public void periodic() {
-		for (SwerveModule module : modules) module.periodic();
-		pose_est.update(new Rotation2d(imu.yaw()), getPositions());
-		Optional<EstimatedRobotPose> vis_pos = photon.getEstimatedGlobalPose(pose_est.getEstimatedPosition());
-		if (vis_pos.isPresent()) {
-			EstimatedRobotPose new_pose = vis_pos.get();
+		updateOdom();
+		updateLogging();
+	}
 
-			pose_est.addVisionMeasurement(new_pose.estimatedPose.toPose2d(), new_pose.timestampSeconds);
-		}
-
-		// LOGGING
+	private void updateLogging() {
 		Logger.recordOutput("/Swerve/desired_speeds", new double[] {
 			desired_speeds.vxMetersPerSecond, desired_speeds.vyMetersPerSecond, desired_speeds.omegaRadiansPerSecond
 		});
@@ -162,6 +157,16 @@ public class SwerveSubsystem extends SubsystemBase {
 		Logger.recordOutput("Current Pos", curr_pos);
 		Logger.recordOutput("curr_x", pose_est.getEstimatedPosition().getX());
 		Logger.recordOutput("curr_y", pose_est.getEstimatedPosition().getY());
+	}
+
+	private void updateOdom() {
+		for (SwerveModule module : modules) module.periodic();
+		pose_est.update(new Rotation2d(imu.yaw()), getPositions());
+		Optional<EstimatedRobotPose> vis_pos = photon.getEstimatedGlobalPose(pose_est.getEstimatedPosition());
+		if (vis_pos.isPresent()) {
+			EstimatedRobotPose new_pose = vis_pos.get();
+			pose_est.addVisionMeasurement(new_pose.estimatedPose.toPose2d(), new_pose.timestampSeconds);
+		}
 	}
 
 	public Pose2d getPose() {

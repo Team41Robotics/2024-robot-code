@@ -21,9 +21,9 @@ import frc.robot.util.Util;
 public class FaceSpeakerDrive extends Command {
 
 	private PIDController wPID = new PIDController(1, 0, 0);
-	public double targetX = Units.inchesToMeters(
+	private double targetX = Units.inchesToMeters(
 			DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 652.3 : -1.5);
-	public double targetY = Units.inchesToMeters(218.42);
+	private double targetY = Units.inchesToMeters(218.42);
 
 	public FaceSpeakerDrive() {
 		addRequirements(drive);
@@ -31,7 +31,7 @@ public class FaceSpeakerDrive extends Command {
 		wPID.enableContinuousInput(0, Math.PI * 2);
 	}
 
-	public double getYVel() {
+	private double getYVel() {
 		ChassisSpeeds velocity = drive.getVelocity();
 		double theta = drive.getPose().getRotation().getRadians();
 		return Math.cos(theta) * velocity.vyMetersPerSecond + Math.sin(theta * velocity.vxMetersPerSecond);
@@ -39,14 +39,7 @@ public class FaceSpeakerDrive extends Command {
 
 	@Override
 	public void execute() {
-		// photon.switchMode(1);
-		double vx = left_js.getY();
-		double vy = left_js.getX();
-		double mag = Math.hypot(vx, vy);
-		double ma2 = MathUtil.clamp(Util.sensCurve(mag * 1.5, 0.1), -1, 1);
-		double theta = Math.atan2(vy, vx);
-		double sign = (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 1.0 : -1.0);
-		double speed_mult = (right_js.button(1).getAsBoolean() ? 0.9 : SPEED_MULT);
+		
 		Pose2d currentPose = drive.getPose();
 
 		double cX = currentPose.getX();
@@ -59,6 +52,14 @@ public class FaceSpeakerDrive extends Command {
 		double targetRotation = Math.atan(dy / dx);
 		double currentRotation = currentPose.getRotation().getRadians();
 		wPID.setSetpoint(targetRotation);
+
+		double vx = left_js.getY();
+		double vy = left_js.getX();
+		double mag = Math.hypot(vx, vy);
+		double ma2 = MathUtil.clamp(Util.sensCurve(mag * 1.5, 0.1), -1, 1);
+		double theta = Math.atan2(vy, vx);
+		double sign = (DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 1.0 : -1.0);
+		double speed_mult = (right_js.button(1).getAsBoolean() ? 0.9 : SPEED_MULT);
 
 		drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
 				cos(theta) * ma2 * SWERVE_MAXSPEED * speed_mult * sign,
