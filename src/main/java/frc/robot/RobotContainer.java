@@ -11,9 +11,7 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import frc.robot.commands.AlignToSpeaker;
-import frc.robot.commands.DefaultDrive;
-import frc.robot.commands.GoToRing;
+import frc.robot.commands.*;
 import frc.robot.subsystems.LEDS;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -28,7 +26,7 @@ public class RobotContainer {
 	public static IMU imu = new IMU();
 	public static PhotonVision photon = new PhotonVision();
 	private static LoggedDashboardChooser<Command> autoChooser;
-	private static LEDS leds= new LEDS();
+	private static LEDS leds = new LEDS();
 	public static CommandJoystick left_js = new CommandJoystick(1);
 	public static CommandJoystick right_js = new CommandJoystick(2);
 	public static CommandJoystick ds = new CommandJoystick(0);
@@ -45,13 +43,13 @@ public class RobotContainer {
 	}
 
 	public static void configureButtonBindings() {
-		// left_js.button(3).and(left_js.button(1)).whileTrue(drive.followPath("New Path"));
 		ds.button(11).onTrue(new InstantCommand(() -> photon.switchMode(1)));
 		ds.button(12).onTrue(new InstantCommand(() -> photon.switchMode(0)));
-		ds.button(1).onTrue(new InstantCommand(() -> right_js.button(2).getAsBoolean()));
-		left_js.button(2).onTrue(new GoToRing().until(() -> right_js.button(2).getAsBoolean()));
-		//right_js.button(2)
-	//			.onTrue(new AlignToSpeaker().until(() -> left_js.button(2).getAsBoolean()));
+		ds.button(1).onTrue(new InstantCommand(() -> left_js.button(1).getAsBoolean()));
+		// left_js.button(2).onTrue(new GoToRing().until(() -> left_js.button(1).getAsBoolean()));
+		right_js.button(2)
+				.onTrue(new FaceSpeaker().until(() -> left_js.button(1).getAsBoolean()));
+		right_js.button(1).whileTrue(new FaceSpeakerDrive());
 	}
 
 	public static Command getAutonomousCommand() {

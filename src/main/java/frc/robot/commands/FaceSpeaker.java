@@ -1,40 +1,52 @@
 package frc.robot.commands;
 
 import static frc.robot.RobotContainer.*;
+import static frc.robot.RobotContainer.drive;
 import static frc.robot.constants.Constants.*;
 import static java.lang.Math.*;
 
-import edu.wpi.first.wpilibj2.command.Command;
-
-import static frc.robot.RobotContainer.drive;
-import static frc.robot.RobotContainer.photon;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 
-public class FaceSpeaker extends Command{
+public class FaceSpeaker extends Command {
 
-        PIDController wPID = new PIDController(E, ROBOT_LENGTH, E);
+	private PIDController wPID = new PIDController(2, 0, 0);
+	public double targetX = Units.inchesToMeters(
+			(DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red)) ? -1.5 : 652.3);
+	public double targetY = Units.inchesToMeters(218.42);
 
-        public FaceSpeaker(){
-                addRequirements(drive);
-                wPID.enableContinuousInput(0, Math.PI * 2);
-        }
+	public FaceSpeaker() {
+		addRequirements(drive);
+		wPID.setTolerance(Units.degreesToRadians(1));
+		wPID.enableContinuousInput(0, Math.PI * 2);
+	}
 
-        @Override
-        public void execute(){
-                photon.switchMode(1);
-                Pose2d currentPose = drive.getPose();
+	@Override
+	public void execute() {
+		// photon.switchMode(1);
 
-                double currentRotation = currentPose.getRotation().getRadians();
-                Transform2d targetTransform = new Transform2d(null, null);
+		Pose2d currentPose = drive.getPose();
 
+		double cX = currentPose.getX();
+		double cY = currentPose.getY();
 
-        }
+		double dx = targetX - cX;
+		double dy = targetY - cY;
+
+		double targetRotation = Math.atan(dy / dx);
+		double currentRotation = currentPose.getRotation().getRadians();
+		wPID.setSetpoint(targetRotation);
+		// System.out.println("dx: " + dx + " dy: " + dy + "theta: " + targetRotation + " Current: " + currentRotation);
+		drive.drive(new ChassisSpeeds(0, 0, wPID.calculate(currentRotation) * 2.5));
+	}
+
+	@Override
+	public boolean isFinished() {
+		return (wPID.atSetpoint());
+	}
 }
