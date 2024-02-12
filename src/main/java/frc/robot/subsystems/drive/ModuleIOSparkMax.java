@@ -36,7 +36,6 @@ public class ModuleIOSparkMax implements ModuleIO {
 	private final CANSparkMax turnSparkMax;
 
 	private final SparkPIDController drivePID;
-	private final SparkPIDController turnPID;
 
 	private final RelativeEncoder driveEncoder;
 	private final RelativeEncoder turnRelativeEncoder;
@@ -80,8 +79,6 @@ public class ModuleIOSparkMax implements ModuleIO {
 		drivePID.setP(DRIVE_KP);
 		drivePID.setFF(DRIVE_KF);
 		// drivePID.setOutputRange(-1, 1);
-
-		turnPID = turnSparkMax.getPIDController();
 
 		driveSparkMax.burnFlash();
 		turnSparkMax.burnFlash();
