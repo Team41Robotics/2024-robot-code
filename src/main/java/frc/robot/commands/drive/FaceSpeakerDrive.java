@@ -39,12 +39,12 @@ public class FaceSpeakerDrive extends Command {
 
 	@Override
 	public void execute() {
-		
+
 		Pose2d currentPose = drive.getPose();
 
 		double cX = currentPose.getX();
 		double dx = targetX - cX;
-		double flight_time = dx / 11.6;
+		double flight_time = dx / drive.note_vel;
 		double cY = currentPose.getY() + getYVel() * flight_time;
 
 		double dy = targetY - cY;

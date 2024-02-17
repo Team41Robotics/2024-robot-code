@@ -51,7 +51,7 @@ public class PhotonVision {
 	}
 
 	public Optional<Pose2d> getNearestNote() {
-		if (!april_cam.getLatestResult().hasTargets()) return Optional.empty();
+		if (!note_cam.getLatestResult().hasTargets()) return Optional.empty();
 		PhotonTrackedTarget target = note_cam.getLatestResult().getBestTarget();
 		if (target == null) return Optional.empty();
 		double pitch = target.getPitch();

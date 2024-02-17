@@ -28,9 +28,11 @@ public final class Constants {
 
 	public static final double cam_height = Units.inchesToMeters(13.5);
 
-	public static int SHOOTER_MOTOR_1 = 20; // TBD
-	public static int SHOOTER_MOTOR_2 = 40; // TBD
-	public static int SHOOTER_ANGLE_MOTOR = 60; // TBD
+	public static int SHOOTER_MOTOR_1 = 30; 
+	public static int SHOOTER_MOTOR_2 = 31; 
+	public static int SHOOTER_PIVOT_MOTOR1 = 13;
+	public static int SHOOTER_PIVOT_MOTOR2 = 4;
+	public static int SHOOTER_HEIGHT = 15;
 
 	public static final HolonomicPathFollowerConfig PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
 			new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants

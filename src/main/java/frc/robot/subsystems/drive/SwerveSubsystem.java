@@ -42,6 +42,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	public SwerveDrivePoseEstimator pose_est;
 
 	Field2d field = new Field2d();
+	public double note_vel = 11.6;
 
 	public void initShuffleboard() {
 		Shuffleboard.getTab("swerve").add(field);
@@ -157,6 +158,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		Logger.recordOutput("Current Pos", curr_pos);
 		Logger.recordOutput("curr_x", pose_est.getEstimatedPosition().getX());
 		Logger.recordOutput("curr_y", pose_est.getEstimatedPosition().getY());
+		Logger.recordOutput("note_vel", note_vel);
 	}
 
 	private void updateOdom() {

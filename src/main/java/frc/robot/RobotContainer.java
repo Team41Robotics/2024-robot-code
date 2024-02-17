@@ -8,23 +8,26 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.*;
+import frc.robot.commands.Shooter.toAngle;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.FaceSpeaker;
 import frc.robot.commands.drive.FaceSpeakerDrive;
 import frc.robot.commands.drive.GoToRing;
 import frc.robot.subsystems.LEDS;
 import frc.robot.subsystems.PhotonVision;
-import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.drive.SwerveSubsystem;
+import frc.robot.subsystems.shooter.ShooterSubsystem;
+import frc.robot.subsystems.shooter.SparkFlexIO;
 import frc.robot.util.LocalADStarAK;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
 	public static Robot robot;
 	public static SwerveSubsystem drive;
-	public static ShooterSubsystem shooter;
+	public static ShooterSubsystem shooter = new ShooterSubsystem(new SparkFlexIO());
 	public static IMU imu = new IMU();
 	public static PhotonVision photon = new PhotonVision();
 	private static LoggedDashboardChooser<Command> autoChooser;
@@ -47,10 +50,18 @@ public class RobotContainer {
 	public static void configureButtonBindings() {
 
 		ds.button(1).onTrue(new InstantCommand(() -> left_js.button(1).getAsBoolean()));
-		// left_js.button(2).onTrue(new GoToRing().until(() -> left_js.button(1).getAsBoolean()));
-		right_js.button(2)
+		//left_js.button(2).onTrue(new GoToRing().until(() -> left_js.button(1).getAsBoolean()));
+		left_js.button(2).onTrue(new toAngle(.155));
+		right_js.button(2).onTrue(new toAngle(0));
+		right_js.button(3)
 				.onTrue(new FaceSpeaker().until(() -> left_js.button(1).getAsBoolean()));
 		right_js.button(1).whileTrue(new FaceSpeakerDrive());
+		left_js.button(3).onTrue(new InstantCommand(()->shooter.zeroAbsoluteEncoder()));
+		ds.button(7).onTrue(new InstantCommand(() -> drive.note_vel -= 0.1));
+		ds.button(8).onTrue(new InstantCommand(() -> drive.note_vel += 0.1));
+		ds.button(6).whileTrue(new StartEndCommand(()->shooter.runIntakeMotor(0.5), ()->shooter.runIntakeMotor(0)));
+		ds.button(1).onTrue(new InstantCommand(() -> shooter.setSpeed(0.65)));
+		ds.button(3).onTrue(new InstantCommand(() -> shooter.setSpeed(0)));
 	}
 
 	public static Command getAutonomousCommand() {

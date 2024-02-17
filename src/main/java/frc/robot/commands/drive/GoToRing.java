@@ -5,6 +5,7 @@ import static frc.robot.RobotContainer.photon;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.Optional;
 
@@ -15,6 +16,8 @@ public class GoToRing extends Command {
 
 	@Override
 	public void execute() {
+		//System.out.println("EXECUTED SUCESSFULLY");
+		
 		Optional<Pose2d> target_state = photon.getNearestNote();
 		if (target_state.isEmpty()) {
 			drive.drive(new ChassisSpeeds());
@@ -22,7 +25,7 @@ public class GoToRing extends Command {
 		}
 		Pose2d targetPose = target_state.get();
 		double targetX = targetPose.getX();
-		double targetY = targetPose.getY();
+		double targetY = targetPose.getY()-(Units.inchesToMeters(14.5));
 		if (Math.abs(targetY) > 0.1) {
 			drive.drive(new ChassisSpeeds(0, 0, 2 * targetY));
 			return;
