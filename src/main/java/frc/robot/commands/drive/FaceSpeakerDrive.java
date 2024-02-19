@@ -40,7 +40,6 @@ public class FaceSpeakerDrive extends Command {
 
 	@Override
 	public void execute() {
-
 		Pose2d currentPose = drive.getPose();
 
 		double cX = currentPose.getX();

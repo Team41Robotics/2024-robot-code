@@ -11,8 +11,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class FaceSpeaker extends Command {
-
-	private PIDController wPID = new PIDController(2, 0, 0);
+	private PIDController wPID = new PIDController(5, 0, 0);
 	public double targetX = Units.inchesToMeters(
 			(DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red)) ? -1.5 : 652.3);
 	public double targetY = Units.inchesToMeters(218.42);
@@ -38,11 +37,11 @@ public class FaceSpeaker extends Command {
 		double currentRotation = currentPose.getRotation().getRadians();
 		wPID.setSetpoint(targetRotation);
 		// System.out.println("dx: " + dx + " dy: " + dy + "theta: " + targetRotation + " Current: " + currentRotation);
-		drive.drive(new ChassisSpeeds(0, 0, wPID.calculate(currentRotation) * 2.5));
+		drive.drive(new ChassisSpeeds(0, 0, wPID.calculate(currentRotation)));
 	}
 
 	@Override
 	public boolean isFinished() {
-		return (wPID.atSetpoint());
+		return wPID.atSetpoint();
 	}
 }

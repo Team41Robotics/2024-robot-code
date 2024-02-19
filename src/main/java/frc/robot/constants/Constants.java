@@ -22,10 +22,12 @@ public final class Constants {
 	public static final double L2_DRIVE_RATIO = 1 / 6.75; // input RPM * gearing = output RPM
 	public static final double L2_TURN_RATIO = 7. / 150;
 
-	public static final double DRIVE_KP = 0.05;
-	public static final double DRIVE_KF = 0.23;
+	public static final double MODULE_DRIVE_KP = 0.05;
+	public static final double MODULE_DRIVE_KF = 0.23;
 
 	public static final double NOTE_VELOCITY = 11.6;
+
+	public static final double DRIVER_TURN_KP = 1.;
 
 	public static final double CAMERA_HEIGHT = Units.inchesToMeters(13.5);
 
