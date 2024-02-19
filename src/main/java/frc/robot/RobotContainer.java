@@ -13,6 +13,7 @@ import frc.robot.commands.drive.GoToRing;
 import frc.robot.subsystems.LEDS;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.drive.SwerveSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSparkFlexIO;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.util.LocalADStarAK;
@@ -20,9 +21,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
 	public static Robot robot;
-
 	public static SwerveSubsystem drive = new SwerveSubsystem();
 	public static ShooterSubsystem shooter = new ShooterSubsystem(new ShooterSparkFlexIO());
+	public static IntakeSubsystem intake = new IntakeSubsystem();
 
 	public static PhotonVision photon = new PhotonVision();
 	private static LEDS leds = new LEDS();
