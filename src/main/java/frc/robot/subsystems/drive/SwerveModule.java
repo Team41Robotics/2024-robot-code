@@ -10,8 +10,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import org.littletonrobotics.junction.Logger;
 
 public class SwerveModule {
-	public PIDController pidTurn = new PIDController(3, 0, 0);
-	public PIDController pidSpeed = new PIDController(2, 0, 0);
+	public PIDController pidTurn = new PIDController(MODULE_TURN_KP, 0, 0);
 
 	private ModuleIO io;
 	private final ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
@@ -62,11 +61,12 @@ public class SwerveModule {
 	public void periodic() {
 		double target_vel = Math.abs(Math.cos((getDirection() - target_state.angle.getRadians())))
 				* target_state.speedMetersPerSecond;
-		// double target_vel = target_state.speedMetersPerSecond;
+
 		io.setTurnVoltage(pidTurn.calculate(getDirection(), target_state.angle.getRadians()));
 		io.setDriveVelocity(target_vel);
-		io.updateInputs(inputs);
+
 		io.logTargetState(inputs, target_state, target_vel);
+		io.updateInputs(inputs);
 		Logger.processInputs("Drive/Module" + name, inputs);
 	}
 }

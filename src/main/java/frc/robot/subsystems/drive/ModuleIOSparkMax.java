@@ -75,10 +75,8 @@ public class ModuleIOSparkMax implements ModuleIO {
 		driveSparkMax.setCANTimeout(0);
 		turnSparkMax.setCANTimeout(0);
 		drivePID = driveSparkMax.getPIDController();
-		// drivePID.setI(0.001);
 		drivePID.setP(MODULE_DRIVE_KP);
 		drivePID.setFF(MODULE_DRIVE_KF);
-		// drivePID.setOutputRange(-1, 1);
 
 		driveSparkMax.burnFlash();
 		turnSparkMax.burnFlash();

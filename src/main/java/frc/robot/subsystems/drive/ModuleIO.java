@@ -30,8 +30,8 @@ public interface ModuleIO {
 	/** Run the drive motor at the specified voltage. */
 	public default void setDriveVoltage(double volts) {}
 
-	/** Runs the Drive motor at specified velocity in RPM using integrated PID  controller */
-	public default void setDriveVelocity(double rpm) {}
+	/** Runs the Drive motor at specified velocity in m/s using integrated PID  controller */
+	public default void setDriveVelocity(double mps) {}
 
 	/** Run the turn motor at the specified voltage. */
 	public default void setTurnVoltage(double volts) {}

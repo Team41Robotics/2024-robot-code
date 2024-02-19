@@ -24,19 +24,26 @@ public final class Constants {
 
 	public static final double MODULE_DRIVE_KP = 0.05;
 	public static final double MODULE_DRIVE_KF = 0.23;
+	public static final double MODULE_TURN_KP = 3;
 
-	public static final double NOTE_VELOCITY = 11.6;
+	public static final double NOTE_VELOCITY = 12.3;
+	public static final double TARGET_X_RED = Units.inchesToMeters(-1.5);
+	public static final double TARGET_X_BLUE = Units.inchesToMeters(652.3);
+	public static final double TARGET_Y = Units.inchesToMeters(218.42);
 
 	public static final double DRIVER_TURN_KP = 1.;
 
 	public static final double CAMERA_HEIGHT = Units.inchesToMeters(13.5);
 
-	public static int SHOOTER_MOTOR_1 = 30;
-	public static int SHOOTER_MOTOR_2 = 31;
-	public static int SHOOTER_PIVOT_MOTOR1 = 13;
-	public static int SHOOTER_PIVOT_MOTOR2 = 4;
-	public static double SHOOTER_HEIGHT = Units.inchesToMeters(15);
-	public static double TARGET_HEIGHT = Units.inchesToMeters(95);
+	public static final int SHOOTER_MOTOR_BOT = 30;
+	public static final int SHOOTER_MOTOR_TOP = 31;
+	public static final int SHOOTER_PIVOT_MOTOR1 = 13;
+	public static final int SHOOTER_PIVOT_MOTOR2 = 4;
+	public static final int FEEDER_MOTOR = 3;
+	public static final int SHOOTER_ENCODER = 0;
+	public static final double SHOOTER_ENCODER_OFFSET = 0.89;
+	public static final double SHOOTER_HEIGHT = Units.inchesToMeters(15);
+	public static final double TARGET_HEIGHT = Units.inchesToMeters(95);
 
 	public static final HolonomicPathFollowerConfig PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
 			new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants

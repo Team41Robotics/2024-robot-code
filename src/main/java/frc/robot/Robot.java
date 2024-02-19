@@ -20,21 +20,18 @@ public class Robot extends LoggedRobot {
 		initSubsystems();
 		configureButtonBindings();
 
-		Logger.recordMetadata("ProjectName", "Robot2024"); // Set a metadata value
+		Logger.recordMetadata("ProjectName", "Robot2024");
 		if (isReal()) {
-			// Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
-			Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+			Logger.addDataReceiver(new WPILOGWriter("/U"));
+			Logger.addDataReceiver(new NT4Publisher());
 		} else {
-			setUseTiming(false); // Run as fast as possible
-			String logPath =
-					LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
-			Logger.setReplaySource(new WPILOGReader(logPath)); // Read replay log
-			Logger.addDataReceiver(
-					new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+			setUseTiming(false);
+			String logPath = LogFileUtil.findReplayLog();
+			Logger.setReplaySource(new WPILOGReader(logPath));
+			Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
 		}
-		// Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow"
-		// page
-		Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.g
+		// Logger.disableDeterministicTimestamps()
+		Logger.start();
 	}
 
 	@Override
