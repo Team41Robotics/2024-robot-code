@@ -32,8 +32,9 @@ public final class Constants {
 	public static int SHOOTER_MOTOR_2 = 31; 
 	public static int SHOOTER_PIVOT_MOTOR1 = 13;
 	public static int SHOOTER_PIVOT_MOTOR2 = 4;
-	public static int SHOOTER_HEIGHT = 15;
-
+	public static double SHOOTER_HEIGHT = Units.inchesToMeters(15);
+	public static double TARGET_HEIGHT = Units.inchesToMeters(95);
+	
 	public static final HolonomicPathFollowerConfig PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
 			new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants
 			new PIDConstants(5.0, 0.0, 0.0), // Rotation PID constants

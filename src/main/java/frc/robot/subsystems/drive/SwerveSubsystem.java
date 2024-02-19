@@ -42,7 +42,7 @@ public class SwerveSubsystem extends SubsystemBase {
 	public SwerveDrivePoseEstimator pose_est;
 
 	Field2d field = new Field2d();
-	public double note_vel = 11.6;
+	public double note_vel = 12.3;
 
 	public void initShuffleboard() {
 		Shuffleboard.getTab("swerve").add(field);

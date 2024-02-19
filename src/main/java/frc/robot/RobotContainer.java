@@ -19,6 +19,7 @@ import frc.robot.commands.drive.GoToRing;
 import frc.robot.subsystems.LEDS;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.drive.SwerveSubsystem;
+import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.subsystems.shooter.SparkFlexIO;
 import frc.robot.util.LocalADStarAK;
@@ -28,6 +29,7 @@ public class RobotContainer {
 	public static Robot robot;
 	public static SwerveSubsystem drive;
 	public static ShooterSubsystem shooter = new ShooterSubsystem(new SparkFlexIO());
+	public static IntakeSubsystem intake = new IntakeSubsystem();
 	public static IMU imu = new IMU();
 	public static PhotonVision photon = new PhotonVision();
 	private static LoggedDashboardChooser<Command> autoChooser;
@@ -51,8 +53,9 @@ public class RobotContainer {
 
 		ds.button(1).onTrue(new InstantCommand(() -> left_js.button(1).getAsBoolean()));
 		//left_js.button(2).onTrue(new GoToRing().until(() -> left_js.button(1).getAsBoolean()));
-		left_js.button(2).onTrue(new toAngle(.155));
-		right_js.button(2).onTrue(new toAngle(0));
+		left_js.button(2).onTrue(new toAngle(45));//.155));
+		right_js.button(2).onTrue(new toAngle(90));
+		left_js.button(4).onTrue(new toAngle(() -> shooter.calculateAngle()));
 		right_js.button(3)
 				.onTrue(new FaceSpeaker().until(() -> left_js.button(1).getAsBoolean()));
 		right_js.button(1).whileTrue(new FaceSpeakerDrive());

@@ -40,7 +40,7 @@ public class PhotonVision {
 			System.out.println("Couldn't Find April Tag Layout File");
 			e.printStackTrace();
 		}
-		note_cam = new PhotonCamera("HD_USB_Camera");
+		note_cam =null;// new PhotonCamera("HD_USB_Camera");
 		april_cam = new PhotonCamera("Global_Shutter_Camera");
 		photonPoseEstimator = new PhotonPoseEstimator(
 				fieldLayout,
@@ -51,6 +51,7 @@ public class PhotonVision {
 	}
 
 	public Optional<Pose2d> getNearestNote() {
+		if(note_cam == null) return Optional.empty();
 		if (!note_cam.getLatestResult().hasTargets()) return Optional.empty();
 		PhotonTrackedTarget target = note_cam.getLatestResult().getBestTarget();
 		if (target == null) return Optional.empty();
