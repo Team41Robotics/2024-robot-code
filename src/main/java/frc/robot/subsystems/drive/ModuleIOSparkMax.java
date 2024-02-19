@@ -34,7 +34,7 @@ public class ModuleIOSparkMax implements ModuleIO {
 
 	private final CANSparkMax driveSparkMax;
 	private final CANSparkMax turnSparkMax;
-	
+
 	private final SparkPIDController drivePID;
 
 	private final RelativeEncoder driveEncoder;

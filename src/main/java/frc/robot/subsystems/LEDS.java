@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class LEDS extends SubsystemBase {
 	CANdle leds = new CANdle(23);
 
-	public LEDS() {
+	public LEDS() {}
+
+	public void init() {
 		Color color = Color.kChartreuse;
 
 		leds.animate(new LarsonAnimation(

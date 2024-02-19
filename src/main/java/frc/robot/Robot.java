@@ -19,10 +19,10 @@ public class Robot extends LoggedRobot {
 		robot = this;
 		initSubsystems();
 		configureButtonBindings();
-		Logger.recordMetadata("ProjectName", "OffSeason Swerve"); // Set a metadata value
 
+		Logger.recordMetadata("ProjectName", "Robot2024"); // Set a metadata value
 		if (isReal()) {
-			//Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
+			// Logger.addDataReceiver(new WPILOGWriter("/U")); // Log to a USB stick
 			Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
 		} else {
 			setUseTiming(false); // Run as fast as possible
@@ -32,7 +32,6 @@ public class Robot extends LoggedRobot {
 			Logger.addDataReceiver(
 					new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
 		}
-
 		// Logger.disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow"
 		// page
 		Logger.start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.g
@@ -54,9 +53,7 @@ public class Robot extends LoggedRobot {
 		drive.zero();
 		autonomousCommand = RobotContainer.getAutonomousCommand();
 
-		if (autonomousCommand != null) {
-			autonomousCommand.schedule();
-		}
+		if (autonomousCommand != null) autonomousCommand.schedule();
 	}
 
 	@Override
@@ -64,9 +61,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void teleopInit() {
-		if (autonomousCommand != null) {
-			autonomousCommand.cancel();
-		}
+		if (autonomousCommand != null) autonomousCommand.cancel();
 	}
 
 	@Override

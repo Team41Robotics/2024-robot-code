@@ -12,24 +12,25 @@ public final class Constants {
 	public static final double SWERVE_MAXSPEED = 4.42;
 	public static final double ANGULAR_MAX_SPEED = SWERVE_MAXSPEED / (Math.hypot(ROBOT_LENGTH, ROBOT_WIDTH) / 2);
 
-	public static final double ANGULAR_SPEED_MULT = 0.5;
-
 	public static final double SPEED_MULT = 0.55;
+	public static final double TURBO_SPEED_MULT = 0.9;
+
+	public static final double ANGULAR_SPEED_MULT = 0.5;
+	public static final double TURBO_ANGULAR_SPEED_MULT = 0.9;
+
 	public static final double SWERVE_WHEEL_RAD = 2 * 2.54 / 100;
 	public static final double L2_DRIVE_RATIO = 1 / 6.75; // input RPM * gearing = output RPM
 	public static final double L2_TURN_RATIO = 7. / 150;
 
 	public static final double DRIVE_KP = 0.05;
 	public static final double DRIVE_KF = 0.23;
-	public static final double TURN_KP = 0;
-	public static final double TURN_KF = 0;
 
-	public static final double APRILTAG_4_Y = 5.548;
+	public static final double NOTE_VELOCITY = 11.6;
 
-	public static final double cam_height = Units.inchesToMeters(13.5);
+	public static final double CAMERA_HEIGHT = Units.inchesToMeters(13.5);
 
-	public static int SHOOTER_MOTOR_1 = 30; 
-	public static int SHOOTER_MOTOR_2 = 31; 
+	public static int SHOOTER_MOTOR_1 = 30;
+	public static int SHOOTER_MOTOR_2 = 31;
 	public static int SHOOTER_PIVOT_MOTOR1 = 13;
 	public static int SHOOTER_PIVOT_MOTOR2 = 4;
 	public static int SHOOTER_HEIGHT = 15;

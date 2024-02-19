@@ -18,8 +18,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.SwerveModuleConfiguration;
@@ -41,13 +39,6 @@ public class SwerveSubsystem extends SubsystemBase {
 			new Translation2d(-ROBOT_LENGTH / 2, -ROBOT_WIDTH / 2));
 	public SwerveDrivePoseEstimator pose_est;
 
-	Field2d field = new Field2d();
-	public double note_vel = 11.6;
-
-	public void initShuffleboard() {
-		Shuffleboard.getTab("swerve").add(field);
-	}
-
 	public void init(Pose2d init_pose) {
 		pose_est = new SwerveDrivePoseEstimator(
 				kinematics,
@@ -56,6 +47,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				init_pose,
 				VecBuilder.fill(0.1, 0.1, 0.1),
 				VecBuilder.fill(2, 2, 2));
+
 		AutoBuilder.configureHolonomic(
 				this::getPose,
 				(pose) -> pose_est.resetPosition(new Rotation2d(imu.yaw()), getPositions(), pose),
@@ -91,10 +83,8 @@ public class SwerveSubsystem extends SubsystemBase {
 		speed = ChassisSpeeds.discretize(speed, 0.02);
 		desired_speeds = speed;
 		SwerveModuleState[] states = kinematics.toSwerveModuleStates(speed);
-		SwerveDriveKinematics.desaturateWheelSpeeds(states, Math.max(SWERVE_MAXSPEED, 5));
-		for (int i = 0; i < 4; i++) {
-			modules[i].setState(states[i]);
-		}
+		SwerveDriveKinematics.desaturateWheelSpeeds(states, SWERVE_MAXSPEED);
+		for (int i = 0; i < 4; i++) modules[i].setState(states[i]);
 	}
 
 	public void getOffsets() {
@@ -102,50 +92,40 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	public void zero() {
-		for (int i = 0; i < 4; i++) {
-			modules[i].setState(new SwerveModuleState());
-		}
+		for (int i = 0; i < 4; i++) modules[i].setState(new SwerveModuleState());
 	}
 
 	public void cross() {
-		for (int i = 0; i < 4; i++) {
-			modules[i].setState(new SwerveModuleState(0, new Rotation2d(45)));
-		}
-	}
-
-	public void periodic() {
-		updateOdom();
-		updateLogging();
+		for (int i = 0; i < 4; i++) modules[i].setState(new SwerveModuleState(0, new Rotation2d(45)));
 	}
 
 	private void updateLogging() {
-		Logger.recordOutput("/Swerve/desired_speeds", new double[] {
+		Logger.recordOutput("/Swerve/speed_setpoint", new double[] {
 			desired_speeds.vxMetersPerSecond, desired_speeds.vyMetersPerSecond, desired_speeds.omegaRadiansPerSecond
 		});
 		ChassisSpeeds speeds = getVelocity();
 		Logger.recordOutput(
-				"/Swerve/actual_speeds",
+				"/Swerve/speeds",
 				new double[] {speeds.vxMetersPerSecond, speeds.vyMetersPerSecond, speeds.omegaRadiansPerSecond});
 
-		field.setRobotPose(pose_est.getEstimatedPosition());
-		Logger.recordOutput("odom", pose_est.getEstimatedPosition());
-		Logger.recordOutput("odom_rot", pose_est.getEstimatedPosition().getRotation());
+		Logger.recordOutput("/Odom/pose", pose_est.getEstimatedPosition());
+		Logger.recordOutput("/Odom/rot", pose_est.getEstimatedPosition().getRotation());
+
+		Logger.recordOutput("/Odom/x", pose_est.getEstimatedPosition().getX());
+		Logger.recordOutput("/Odom/y", pose_est.getEstimatedPosition().getY());
+		Logger.recordOutput(
+				"/Odom/rot_raw", pose_est.getEstimatedPosition().getRotation().getRadians());
 
 		double[] states = new double[8];
 		for (int i = 0; i < 4; i++) states[i * 2 + 1] = modules[i].getTargetState().speedMetersPerSecond;
 		for (int i = 0; i < 4; i++)
 			states[i * 2] = modules[i].getTargetState().angle.getRadians();
-		Logger.recordOutput("target States", states);
+		Logger.recordOutput("/Swerve/module_setpoint", states);
+
 		for (int i = 0; i < 4; i++) states[i * 2 + 1] = modules[i].getMeasuredState().speedMetersPerSecond;
 		for (int i = 0; i < 4; i++)
 			states[i * 2] = modules[i].getMeasuredState().angle.getRadians();
-		Logger.recordOutput("measured States", states);
-
-		double[] curr_pos = {
-			pose_est.getEstimatedPosition().getX(),
-			pose_est.getEstimatedPosition().getY(),
-			pose_est.getEstimatedPosition().getRotation().getRadians()
-		};
+		Logger.recordOutput("/Swerve/module_speeds", states);
 
 		Optional<Pose2d> noteEst = photon.getNearestNote();
 		if (noteEst.isPresent()) {
@@ -153,22 +133,20 @@ public class SwerveSubsystem extends SubsystemBase {
 			double[] note_pos = {
 				node_pos.getX(), node_pos.getY(), node_pos.getRotation().getRadians()
 			};
-			Logger.recordOutput("Node Pos", note_pos);
+			Logger.recordOutput("note_pos", note_pos);
 		}
-		Logger.recordOutput("Current Pos", curr_pos);
-		Logger.recordOutput("curr_x", pose_est.getEstimatedPosition().getX());
-		Logger.recordOutput("curr_y", pose_est.getEstimatedPosition().getY());
-		Logger.recordOutput("note_vel", note_vel);
 	}
 
-	private void updateOdom() {
+	public void periodic() {
 		for (SwerveModule module : modules) module.periodic();
 		pose_est.update(new Rotation2d(imu.yaw()), getPositions());
+
 		Optional<EstimatedRobotPose> vis_pos = photon.getEstimatedGlobalPose(pose_est.getEstimatedPosition());
 		if (vis_pos.isPresent()) {
 			EstimatedRobotPose new_pose = vis_pos.get();
 			pose_est.addVisionMeasurement(new_pose.estimatedPose.toPose2d(), new_pose.timestampSeconds);
 		}
+		updateLogging();
 	}
 
 	public Pose2d getPose() {

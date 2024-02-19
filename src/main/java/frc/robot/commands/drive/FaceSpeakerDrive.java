@@ -16,6 +16,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.constants.Constants;
 import frc.robot.util.Util;
 
 public class FaceSpeakerDrive extends Command {
@@ -44,7 +45,7 @@ public class FaceSpeakerDrive extends Command {
 
 		double cX = currentPose.getX();
 		double dx = targetX - cX;
-		double flight_time = dx / drive.note_vel;
+		double flight_time = dx / Constants.NOTE_VELOCITY;
 		double cY = currentPose.getY() + getYVel() * flight_time;
 
 		double dy = targetY - cY;

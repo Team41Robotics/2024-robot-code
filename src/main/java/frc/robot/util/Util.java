@@ -6,7 +6,6 @@ public class Util {
 	private static double a = 3;
 
 	public static double sensCurve(double w, double d) {
-		// quadratic sensitivity curve
 		if (abs(w) < d) return 0;
 		double wn = (w - d) / (1 - d);
 
@@ -14,7 +13,7 @@ public class Util {
 		return wn * signum(w);
 	}
 
-	private static double sigmoid(double x) {
+	public static double sigmoid(double x) {
 		return 2 / (1.0 + exp(-x * a)) - 1;
 	}
 }

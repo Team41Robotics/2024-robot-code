@@ -16,8 +16,6 @@ public class GoToRing extends Command {
 
 	@Override
 	public void execute() {
-		//System.out.println("EXECUTED SUCESSFULLY");
-		
 		Optional<Pose2d> target_state = photon.getNearestNote();
 		if (target_state.isEmpty()) {
 			drive.drive(new ChassisSpeeds());
@@ -25,7 +23,7 @@ public class GoToRing extends Command {
 		}
 		Pose2d targetPose = target_state.get();
 		double targetX = targetPose.getX();
-		double targetY = targetPose.getY()-(Units.inchesToMeters(14.5));
+		double targetY = targetPose.getY() - (Units.inchesToMeters(14.5));
 		if (Math.abs(targetY) > 0.1) {
 			drive.drive(new ChassisSpeeds(0, 0, 2 * targetY));
 			return;
@@ -39,7 +37,6 @@ public class GoToRing extends Command {
 		if (target_state.isEmpty()) {
 			return false;
 		}
-		return (Math.abs(target_state.get().getX()) < 1.0
-				&& Math.abs(target_state.get().getY()) <= 0.05);
+		return false; // TODO
 	}
 }

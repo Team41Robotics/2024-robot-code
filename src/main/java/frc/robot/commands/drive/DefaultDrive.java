@@ -24,15 +24,17 @@ public class DefaultDrive extends Command {
 
 	public void run(double vx, double vy, double w) {
 		double mag = Math.hypot(vx, vy);
-		double ma2 = MathUtil.clamp(Util.sensCurve(mag * 1.5, 0.1), -1, 1);
+		double mag_curved = MathUtil.clamp(Util.sensCurve(mag * 1.5, 0.1), -1, 1);
+
 		double theta = Math.atan2(vy, vx);
 		double sign = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 1.0 : -1.0;
+
 		boolean turbo = right_js.button(1).getAsBoolean();
-		double speed_mult = turbo ? 0.9 : SPEED_MULT;
-		double angular_mult = turbo ? 0.9 : ANGULAR_SPEED_MULT;
+		double speed_mult = turbo ? TURBO_SPEED_MULT : SPEED_MULT;
+		double angular_mult = turbo ? TURBO_ANGULAR_SPEED_MULT : ANGULAR_SPEED_MULT;
 		drive.drive(ChassisSpeeds.fromFieldRelativeSpeeds(
-				cos(theta) * ma2 * SWERVE_MAXSPEED * speed_mult * sign,
-				sin(theta) * ma2 * SWERVE_MAXSPEED * speed_mult * sign,
+				cos(theta) * mag_curved * SWERVE_MAXSPEED * speed_mult * sign,
+				sin(theta) * mag_curved * SWERVE_MAXSPEED * speed_mult * sign,
 				MathUtil.applyDeadband(w, 0.1) * ANGULAR_MAX_SPEED * angular_mult,
 				drive.getPose().getRotation()));
 	}
