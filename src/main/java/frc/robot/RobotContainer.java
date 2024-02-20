@@ -8,7 +8,6 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.drive.DefaultDrive;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LEDS;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.drive.SwerveSubsystem;
@@ -23,7 +22,6 @@ public class RobotContainer {
 	// subsystems
 	public static SwerveSubsystem drive = new SwerveSubsystem();
 	public static ShooterSubsystem shooter = new ShooterSubsystem();
-	public static IntakeSubsystem intake = new IntakeSubsystem();
 
 	public static PhotonVision photon = new PhotonVision();
 	public static LEDS leds = new LEDS();

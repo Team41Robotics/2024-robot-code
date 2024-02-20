@@ -22,9 +22,6 @@ import frc.robot.util.Util;
 public class FaceSpeakerDrive extends Command {
 
 	private PIDController wPID = new PIDController(1, 0, 0);
-	private double targetX = Units.inchesToMeters(
-			DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 652.3 : -1.5);
-	private double targetY = Units.inchesToMeters(218.42);
 
 	public FaceSpeakerDrive() {
 		addRequirements(drive);

@@ -14,6 +14,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.Util;
+
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -57,8 +59,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	public double calculateAngle() {
 		double targetY = TARGET_Y;
-		double targetX =
-				DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? TARGET_X_BLUE : TARGET_X_RED;
+		double targetX = Util.isRed() ? TARGET_X_RED : TARGET_X_BLUE;
 		double dx = drive.getPose().getX() - targetX;
 		double dy = drive.getPose().getY() - targetY;
 		double distance = Math.hypot(dx, dy);

@@ -10,6 +10,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.util.Util;
 
 public class AlignToSpeaker extends Command {
 
@@ -18,8 +19,7 @@ public class AlignToSpeaker extends Command {
 	public PIDController omegaPID = new PIDController(2, 0, 0);
 
 	public double targetY = 5.5;
-	public double targetRotation = Units.degreesToRadians(
-			(DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue)) ? 0 : 180);
+	public double targetRotation = Units.degreesToRadians( Util.isRed() ? 180 : 0);
 
 	public AlignToSpeaker() {
 		addRequirements(drive);

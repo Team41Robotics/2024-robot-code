@@ -26,7 +26,7 @@ public final class Constants {
 	public static final double MODULE_DRIVE_KF = 0.23;
 	public static final double MODULE_TURN_KP = 3;
 
-	public static final double NOTE_VELOCITY = 12.3;
+	public static double NOTE_VELOCITY = 12.3; // TOO not constant
 	public static final double TARGET_X_RED = Units.inchesToMeters(-1.5);
 	public static final double TARGET_X_BLUE = Units.inchesToMeters(652.3);
 	public static final double TARGET_Y = Units.inchesToMeters(218.42);

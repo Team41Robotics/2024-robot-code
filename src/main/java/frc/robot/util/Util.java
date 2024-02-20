@@ -29,7 +29,7 @@ public class Util {
 		double mag_curved = MathUtil.clamp(Util.sensCurve(mag * 1.5, 0.1), -1, 1);
 
 		double theta = Math.atan2(vy, vx);
-		double sign = DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Blue) ? 1.0 : -1.0;
+		double sign = isRed() ? -1.0 : 1.0;
 
 		double speed_mult = turbo ? TURBO_SPEED_MULT : SPEED_MULT;
 		double angular_mult = turbo ? TURBO_ANGULAR_SPEED_MULT : ANGULAR_SPEED_MULT;
@@ -38,5 +38,9 @@ public class Util {
 				sin(theta) * mag_curved * SWERVE_MAXSPEED * speed_mult * sign,
 				MathUtil.applyDeadband(w, 0.1) * ANGULAR_MAX_SPEED * angular_mult,
 				rot);
+	}
+
+	public static boolean isRed() {
+		return DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
 	}
 }

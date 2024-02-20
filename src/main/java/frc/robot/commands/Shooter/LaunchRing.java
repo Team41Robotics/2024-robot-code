@@ -3,9 +3,7 @@ package frc.robot.commands.Shooter;
 import static frc.robot.RobotContainer.drive;
 import static frc.robot.RobotContainer.shooter;
 
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.constants.Constants;
 
 public class LaunchRing extends Command {
 

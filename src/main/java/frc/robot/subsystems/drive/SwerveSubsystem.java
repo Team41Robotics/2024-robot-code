@@ -21,6 +21,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.constants.SwerveModuleConfiguration;
+import frc.robot.util.Util;
+
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
@@ -54,7 +56,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				this::getVelocity,
 				this::drive,
 				PATH_FOLLOWER_CONFIG,
-				() -> DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red),
+				() -> Util.isRed(),
 				this);
 
 		PathPlannerLogging.setLogActivePathCallback((activePath) -> {
