@@ -9,6 +9,8 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import org.littletonrobotics.junction.Logger;
+import java.util.ArrayList;
 
 public class IntakeSubsystem extends SubsystemBase{
         
@@ -21,6 +23,18 @@ public class IntakeSubsystem extends SubsystemBase{
         public PIDController turnPID = new PIDController(0, 0, 0);
 
         private Optional<Rotation2d> target_angle = Optional.empty();
+
+        private ArrayList<Double> intakeCurrent = new ArrayList<Double>();
+        private double meanCurrentVoltage = 0;
+
+        // jank
+        public double calculateMeanCurrentVoltage(){
+                double sum = 0;
+                for (int i = 0; i < intakeCurrent.size(); i++){
+                        sum += intakeCurrent.get(i);
+                }
+                return sum / intakeCurrent.size();
+        }
 
         public IntakeSubsystem(){
                 pivotMotor.setIdleMode(IdleMode.kBrake);
@@ -55,6 +69,13 @@ public class IntakeSubsystem extends SubsystemBase{
                 if((this.target_angle.get().getDegrees() - this.getAngle().getDegrees()) > 1){
                         pivotMotor.set(pivotPID.calculate(this.target_angle.get().getDegrees(), this.getAngle().getDegrees()));
                 }
+
+                double currentOutputVoltage = pivotMotor.getAppliedOutput() * pivotMotor.getBusVoltage();
+                intakeCurrent.add(currentOutputVoltage);
+                this.meanCurrentVoltage = calculateMeanCurrentVoltage();
+                Logger.recordOutput("Intake/Current", currentOutputVoltage);
+
+
         }
 
 }
