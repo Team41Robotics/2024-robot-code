@@ -5,6 +5,7 @@ import static frc.robot.RobotContainer.left_js;
 import static frc.robot.RobotContainer.right_js;
 import static frc.robot.constants.Constants.SPEED_MULT;
 import static frc.robot.constants.Constants.SWERVE_MAXSPEED;
+import static frc.robot.constants.Constants.TARGET_Y;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
@@ -40,11 +41,11 @@ public class FaceSpeakerDrive extends Command {
 		Pose2d currentPose = drive.getPose();
 
 		double cX = currentPose.getX();
-		double dx = targetX - cX;
+		double dx = Util.getTargetX() - cX;
 		double flight_time = dx / Constants.NOTE_VELOCITY;
 		double cY = currentPose.getY() + getYVel() * flight_time;
 
-		double dy = targetY - cY;
+		double dy = TARGET_Y - cY;
 
 		double targetRotation = Math.atan(dy / dx);
 		double currentRotation = currentPose.getRotation().getRadians();

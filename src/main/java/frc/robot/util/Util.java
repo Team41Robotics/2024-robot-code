@@ -43,4 +43,8 @@ public class Util {
 	public static boolean isRed() {
 		return DriverStation.getAlliance().orElse(Alliance.Blue).equals(Alliance.Red);
 	}
+
+	public static double getTargetX() {
+		return isRed() ? TARGET_X_RED : TARGET_X_BLUE;
+	}
 }

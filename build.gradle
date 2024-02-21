@@ -25,11 +25,12 @@ def ROBOT_MAIN_CLASS = "frc.robot.Main"
 configurations.all {
     exclude group: "edu.wpi.first.wpilibj"
 }
-
-task(checkAkitInstall, dependsOn: "classes", type: JavaExec) {
-    mainClass = "org.littletonrobotics.junction.CheckInstall"
-    classpath = sourceSets.main.runtimeClasspath
-}
+/*
+ task(checkAkitInstall, dependsOn: "classes", type: JavaExec) {
+ mainClass = "org.littletonrobotics.junction.CheckInstall"
+ classpath = sourceSets.main.runtimeClasspath
+ }
+ */
 //compileJava.finalizedBy checkAkitInstall
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
@@ -126,6 +127,7 @@ jar {
 deployArtifact.jarTask = jar
 wpi.java.configureExecutableTasks(jar)
 wpi.java.configureTestTasks(test)
+compileJava.dependsOn 'spotlessApply'
 
 // Configure string concat to always inline compile
 tasks.withType(JavaCompile) {

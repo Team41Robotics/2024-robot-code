@@ -3,10 +3,10 @@ package frc.robot.commands.Shooter;
 import static frc.robot.RobotContainer.shooter;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.Command;
 import java.util.function.DoubleSupplier;
-import org.littletonrobotics.junction.Logger;
 
 public class toAngle extends Command {
 	DoubleSupplier target_angle;
@@ -27,18 +27,13 @@ public class toAngle extends Command {
 
 	@Override
 	public void execute() {
-		double angle = shooter.shooterAngle();
-		System.out.println(shooter.calculateAngle());
-		double output = t1Controller.calculate(angle, target_angle.getAsDouble());
-		Logger.recordOutput("PID_output", output);
-		Logger.recordOutput("PID_error", t1Controller.getPositionError());
-		shooter.angleMotor.set(output);
-		shooter.angleMotor2.set(output);
+		shooter.setAngle(new Rotation2d());
+		// shooter.angleMotor2.set(output);
 	}
 
 	@Override
 	public boolean isFinished() {
-		return Math.abs(t1Controller.getPositionError()) >= 0.5;
+		return shooter.angleAtSetpoint();
 		// t1Controller.atSetpoint();
 	}
 }

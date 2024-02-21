@@ -22,7 +22,7 @@ public class Robot extends LoggedRobot {
 
 		Logger.recordMetadata("ProjectName", "Robot2024");
 		if (isReal()) {
-			Logger.addDataReceiver(new WPILOGWriter("/U"));
+			// Logger.addDataReceiver(new WPILOGWriter("/U"));
 			Logger.addDataReceiver(new NT4Publisher());
 		} else {
 			setUseTiming(false);
@@ -36,6 +36,7 @@ public class Robot extends LoggedRobot {
 
 	@Override
 	public void robotPeriodic() {
+		shooter.periodic();
 		CommandScheduler.getInstance().run();
 	}
 

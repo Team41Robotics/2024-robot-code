@@ -15,7 +15,7 @@ public class LaunchRing extends Command {
 	@Override
 	public void execute() {
 		// shooter.setAngle(calculateAngle());
-		shooter.setSpeed(0.6);
-		shooter.runMotors();
+		shooter.sm_top.set(0.6 * 0.85);
+		shooter.sm_bot.set(0.6);
 	}
 }
