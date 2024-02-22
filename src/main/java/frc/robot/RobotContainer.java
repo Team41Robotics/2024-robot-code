@@ -6,11 +6,12 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import frc.robot.commands.Shooter.toAngle;
 import frc.robot.commands.drive.DefaultDrive;
-import frc.robot.commands.drive.FaceSpeakerDrive;
 import frc.robot.subsystems.LEDS;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.drive.SwerveSubsystem;
@@ -52,9 +53,22 @@ public class RobotContainer {
 	}
 
 	public static void configureButtonBindings() {
-		right_js.button(2).onTrue(new toAngle(90));
-		left_js.button(2).onTrue(new toAngle(45));
-		right_js.button(1).whileTrue(new ParallelCommandGroup(new FaceSpeakerDrive()));
+		ds.button(1).onTrue(new InstantCommand(() -> shooter.setAngle(Rotation2d.fromDegrees(15))));
+		ds.button(3).onTrue(new InstantCommand(() -> shooter.setAngle(Rotation2d.fromDegrees(60))));
+		// left_js.button(2).onTrue(new toAngle(45));
+		/// right_js.button(1).whileTrue(new ParallelCommandGroup(new FaceSpeakerDrive()));
+		// ds.button(6).onTrue(new ToggleMotors());
+		left_js.button(2).onTrue(shooter.runFeeder());
+		left_js.button(4).onTrue(shooter.muzzleLoad());
+		ds.button(12).onTrue(shooter.shootSingle(0.7));
+		ds.button(6)
+				.onTrue(shooter.shootSingle(0.15)
+						.alongWith(new InstantCommand(() -> shooter.setAngle(Rotation2d.fromDegrees(20
+						)))));
+		right_js.button(1)
+				.whileTrue(new StartEndCommand(() -> shooter.runFeederMotor(-0.3), () -> shooter.runFeederMotor(0)));
+		right_js.button(2)
+				.whileTrue(new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0)));
 	}
 
 	public static Command getAutonomousCommand() {

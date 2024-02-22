@@ -35,6 +35,7 @@ public final class Constants {
 
 	public static final double CAMERA_HEIGHT = Units.inchesToMeters(13.5);
 
+	public static final int RING_SENSOR = 3;
 	public static final int SHOOTER_MOTOR_BOT = 21;
 	public static final int SHOOTER_MOTOR_TOP = 22;
 	public static final int SHOOTER_PIVOT_MOTOR1 = 13;
