@@ -6,15 +6,13 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.subsystems.LEDS;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.drive.SwerveSubsystem;
+import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.util.LocalADStarAK;
@@ -28,6 +26,7 @@ public class RobotContainer {
 	public static SwerveSubsystem drive = new SwerveSubsystem();
 	public static ShooterSubsystem shooter = new ShooterSubsystem();
 	public static IntakeSubsystem intake = new IntakeSubsystem();
+	public static ElevatorSubsystem elevator = new ElevatorSubsystem();
 
 	public static PhotonVision photon = new PhotonVision();
 	public static LEDS leds = new LEDS();
@@ -53,18 +52,15 @@ public class RobotContainer {
 	}
 
 	public static void configureButtonBindings() {
-		ds.button(1).onTrue(new InstantCommand(() -> shooter.setAngle(Rotation2d.fromDegrees(15))));
-		ds.button(3).onTrue(new InstantCommand(() -> shooter.setAngle(Rotation2d.fromDegrees(60))));
+		ds.button(1).onTrue(shooter.toAngleCommand(Rotation2d.fromDegrees(15)));
+		ds.button(3).onTrue(shooter.toAngleCommand(Rotation2d.fromDegrees(60)));
 		// left_js.button(2).onTrue(new toAngle(45));
 		/// right_js.button(1).whileTrue(new ParallelCommandGroup(new FaceSpeakerDrive()));
 		// ds.button(6).onTrue(new ToggleMotors());
 		left_js.button(2).onTrue(shooter.runFeeder());
 		left_js.button(4).onTrue(shooter.muzzleLoad());
 		ds.button(12).onTrue(shooter.shootSingle(0.7));
-		ds.button(6)
-				.onTrue(shooter.shootSingle(0.15)
-						.alongWith(new InstantCommand(() -> shooter.setAngle(Rotation2d.fromDegrees(20
-						)))));
+		ds.button(6).onTrue(shooter.shootSingle(0.15).alongWith(shooter.toAngleCommand(Rotation2d.fromDegrees(20))));
 		right_js.button(1)
 				.whileTrue(new StartEndCommand(() -> shooter.runFeederMotor(-0.3), () -> shooter.runFeederMotor(0)));
 		right_js.button(2)

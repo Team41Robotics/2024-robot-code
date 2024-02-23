@@ -30,7 +30,6 @@ public final class Constants {
 	public static final double TARGET_X_RED = Units.inchesToMeters(-1.5);
 	public static final double TARGET_X_BLUE = Units.inchesToMeters(652.3);
 	public static final double TARGET_Y = Units.inchesToMeters(218.42);
-
 	public static final double DRIVER_TURN_KP = 1.;
 
 	public static final double CAMERA_HEIGHT = Units.inchesToMeters(13.5);
@@ -45,6 +44,9 @@ public final class Constants {
 	public static final double SHOOTER_ENCODER_OFFSET = 0.89;
 	public static final double SHOOTER_HEIGHT = Units.inchesToMeters(15);
 	public static final double TARGET_HEIGHT = Units.inchesToMeters(95);
+
+	public static final int ELEVATOR_MOTOR_RIGHT = 1;
+	public static final int ELEVATOR_MOTOR_LEFT = 2;
 
 	public static final HolonomicPathFollowerConfig PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
 			new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants

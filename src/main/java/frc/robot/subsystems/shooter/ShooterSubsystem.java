@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.util.Util;
 import java.util.Optional;
+import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -140,6 +141,11 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	public void setAngle(Rotation2d angle) { // someone is kinda stpuid
 		// TODO
+		if (angle.getDegrees() < 0 || angle.getDegrees() > 90) {
+			this.target_angle = Optional.of(Rotation2d.fromDegrees(15));
+			System.out.println("ERROR: Out of bounds angle");
+			return;
+		}
 		this.target_angle = Optional.of(angle);
 	}
 
@@ -173,6 +179,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	public Command shootSingle(double speed) {
 		return new StartEndCommand(() -> runMotors(speed), () -> runMotors(0)).until(ringSensor.negate());
+	}
+
+	public Command toAngleCommand(Supplier<Rotation2d> speed) {
+		return new InstantCommand(() -> setAngle(speed.get()));
+	}
+
+	public Command toAngleCommand(Rotation2d speed) {
+		return this.toAngleCommand(() -> speed);
 	}
 
 	public Command muzzleLoad() {
