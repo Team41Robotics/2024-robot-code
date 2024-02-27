@@ -3,30 +3,49 @@ package frc.robot.commands.elevator;
 import static frc.robot.RobotContainer.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import java.lang.Math.*;
 
-public class RunElevator extends Command{
-        
-        double speed = 0;
-        double maxVel1 = 0;
-        double maxVel2 = 0;
+public class RunElevator extends Command {
 
-        public RunElevator(double s){
-                addRequirements(elevator);
-                this.speed = s;
-        }
+	double speed;
+	double maxVelocity1;
+	double maxVelocity2;
 
-        @Override
-        public void initialize(){
-                maxVel1 = 0;
-                maxVel2 = 0;
-                elevator.setMotor(speed);
-        }
+	boolean leftContact;
+	boolean rightContanct;
 
-        @Override 
-        public void execute(){
-                //maxVel1 = max(maxVel1, (elevator.climberMotor1.getVelocity()));
-                // I have no idea what im doing with this lmao
+	public RunElevator(double s) {
+		addRequirements(elevator);
+		speed = s;
+		leftContact = false;
+		rightContanct = false;
+	}
 
-        }
+	@Override
+	public void initialize() {
+		elevator.setMotor(speed);
+		maxVelocity1 = 0;
+		maxVelocity2 = 0;
+	}
 
+	@Override
+	public void execute() {
+		maxVelocity1 =
+				Math.max(maxVelocity1, elevator.climberMotor1.getVelocity().getValueAsDouble());
+		maxVelocity2 =
+				Math.max(maxVelocity2, elevator.climberMotor2.getVelocity().getValueAsDouble());
+
+		if (elevator.climberMotor1.getVelocity().getValueAsDouble() < maxVelocity1 * 0.75) {
+			leftContact = true;
+			elevator.climberMotor1.set(0);
+		} else if (elevator.climberMotor2.getVelocity().getValueAsDouble() < maxVelocity2 * 0.75) {
+			rightContanct = true;
+			elevator.climberMotor2.set(0);
+		}
+	}
+
+	@Override
+	public boolean isFinished() {
+		return (leftContact && rightContanct);
+	}
 }

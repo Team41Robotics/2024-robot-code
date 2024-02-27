@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.drive.DefaultDrive;
+import frc.robot.commands.intake.SetPivot;
 import frc.robot.subsystems.LEDS;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.drive.SwerveSubsystem;
@@ -57,14 +58,19 @@ public class RobotContainer {
 		// left_js.button(2).onTrue(new toAngle(45));
 		/// right_js.button(1).whileTrue(new ParallelCommandGroup(new FaceSpeakerDrive()));
 		// ds.button(6).onTrue(new ToggleMotors());
-		left_js.button(2).onTrue(shooter.runFeeder());
+		// left_js.button(2).onTrue(shooter.runFeeder());
+		left_js.button(2).onTrue(new SetPivot(-60));
+		left_js.button(1)
+				.whileTrue(new StartEndCommand(() -> intake.runIntakeMotor(-0.4), () -> intake.stopIntakeMotor()));
 		left_js.button(4).onTrue(shooter.muzzleLoad());
 		ds.button(12).onTrue(shooter.shootSingle(0.7));
 		ds.button(6).onTrue(shooter.shootSingle(0.15).alongWith(shooter.toAngleCommand(Rotation2d.fromDegrees(20))));
 		right_js.button(1)
-				.whileTrue(new StartEndCommand(() -> shooter.runFeederMotor(-0.3), () -> shooter.runFeederMotor(0)));
-		right_js.button(2)
-				.whileTrue(new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0)));
+				.whileTrue(new StartEndCommand(() -> intake.runIntakeMotor(0.4), () -> intake.stopIntakeMotor()));
+
+		right_js.button(2).onTrue(new SetPivot(100));
+		// .whileTrue(new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0)));
+
 	}
 
 	public static Command getAutonomousCommand() {

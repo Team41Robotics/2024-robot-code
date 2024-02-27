@@ -4,26 +4,23 @@ import static frc.robot.RobotContainer.intake;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import java.util.function.DoubleSupplier;
 
 public class SetPivot extends Command {
 
-	public SetPivot(DoubleSupplier target) {
-		addRequirements(intake);
-		intake.pivotPID.setSetpoint(target.getAsDouble());
-	}
+	Rotation2d target;
 
 	public SetPivot(double target) {
-		this(() -> target);
+		addRequirements(intake);
+		this.target = (Rotation2d.fromDegrees(target));
 	}
 
 	@Override
-	public void execute() {
-		intake.setAngle(new Rotation2d());
+	public void initialize() {
+		intake.setAngle(target);
 	}
 
 	@Override
 	public boolean isFinished() {
-		return intake.angleAtSetpoint();
+		return true;
 	}
 }
