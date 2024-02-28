@@ -37,7 +37,7 @@ public class PhotonVision {
 			e.printStackTrace();
 		}
 		note_cam = null; // new PhotonCamera("HD_USB_Camera");
-		april_cam = new PhotonCamera("Global_Shutter_Camera");
+		april_cam = null; // new PhotonCamera("Global_Shutter_Camera");
 		photonPoseEstimator =
 				new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, april_cam, robotToCam);
 		photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
@@ -59,7 +59,7 @@ public class PhotonVision {
 
 	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
 		photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
-
+		if (april_cam == null) return Optional.empty();
 		if (april_cam.getLatestResult().getTargets().size() >= 2) {
 			return photonPoseEstimator.update();
 		}

@@ -178,7 +178,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	}
 
 	public Command shootSingle(double speed) {
-		return new StartEndCommand(() -> runMotors(speed), () -> runMotors(0)).until(ringSensor.negate());
+		return new StartEndCommand(() -> runMotors(speed), () -> runMotors(0));
 	}
 
 	public Command toAngleCommand(Supplier<Rotation2d> speed) {

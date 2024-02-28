@@ -6,6 +6,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.drive.DefaultDrive;
@@ -54,21 +55,26 @@ public class RobotContainer {
 
 	public static void configureButtonBindings() {
 		ds.button(1).onTrue(shooter.toAngleCommand(Rotation2d.fromDegrees(15)));
-		ds.button(3).onTrue(shooter.toAngleCommand(Rotation2d.fromDegrees(60)));
+		ds.button(3).onTrue(shooter.toAngleCommand(Rotation2d.fromDegrees(70)));
 		// left_js.button(2).onTrue(new toAngle(45));
 		/// right_js.button(1).whileTrue(new ParallelCommandGroup(new FaceSpeakerDrive()));
 		// ds.button(6).onTrue(new ToggleMotors());
-		// left_js.button(2).onTrue(shooter.runFeeder());
-		left_js.button(2).onTrue(new SetPivot(-60));
+		left_js.button(3).onTrue(shooter.runFeeder().until(left_js.button(3).negate()));
+		left_js.button(2).onTrue(new SetPivot(-79));
 		left_js.button(1)
 				.whileTrue(new StartEndCommand(() -> intake.runIntakeMotor(-0.4), () -> intake.stopIntakeMotor()));
 		left_js.button(4).onTrue(shooter.muzzleLoad());
-		ds.button(12).onTrue(shooter.shootSingle(0.7));
-		ds.button(6).onTrue(shooter.shootSingle(0.15).alongWith(shooter.toAngleCommand(Rotation2d.fromDegrees(20))));
+		ds.button(12).onTrue(shooter.shootSingle(0.7).until(ds.button(12).negate()));
+		ds.button(6).onTrue(shooter.toAngleCommand(Rotation2d.fromDegrees(55)));
+		// ds.button(6).onTrue(shooter.shootSingle(0.15).alongWith(shooter.toAngleCommand(Rotation2d.fromDegrees(20))));
 		right_js.button(1)
 				.whileTrue(new StartEndCommand(() -> intake.runIntakeMotor(0.4), () -> intake.stopIntakeMotor()));
 
-		right_js.button(2).onTrue(new SetPivot(100));
+		right_js.button(2).onTrue(new SetPivot(115));
+
+		ds.button(12).onTrue(new InstantCommand(() -> intake.kg += 0.05));
+		ds.button(11).onTrue(new InstantCommand(() -> intake.kg -= 0.05));
+
 		// .whileTrue(new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0)));
 
 	}
