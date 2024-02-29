@@ -25,6 +25,10 @@ public class DefaultDrive extends Command {
 
 	@Override
 	public void execute() {
-		run(vx_sup.getAsDouble(), vy_sup.getAsDouble(), w_sup.getAsDouble());
+		if (ds.button(2).getAsBoolean()) {
+			run(0, 0, 0);
+		} else {
+			run(vx_sup.getAsDouble(), vy_sup.getAsDouble(), w_sup.getAsDouble());
+		}
 	}
 }

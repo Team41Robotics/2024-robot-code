@@ -10,7 +10,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
@@ -30,6 +30,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	public IntakeSubsystem() {
 		pivotMotor.setIdleMode(IdleMode.kCoast);
 		turnMotor.setIdleMode(IdleMode.kCoast);
+		pivotPID.setTolerance(10, 1);
 		pivotEncoder.setPositionOffset(pivotEncoder.getAbsolutePosition());
 	}
 
@@ -42,7 +43,9 @@ public class IntakeSubsystem extends SubsystemBase {
 	}
 
 	public boolean angleAtSetpoint() {
-		return pivotPID.atSetpoint();
+		if (this.target_angle.isEmpty()) return false;
+		if (Math.abs(pivotPID.getGoal().position - pivotPID.getSetpoint().position) > 1) return false;
+		return Math.abs(this.target_angle.get().getDegrees() - getAngle().getDegrees()) < 10;
 	}
 
 	public Rotation2d getAngle() {
@@ -65,7 +68,11 @@ public class IntakeSubsystem extends SubsystemBase {
 		if (this.target_angle.isEmpty()) return;
 		double out = pivotPID.calculate(getAngle().getRadians());
 		Logger.recordOutput("Pivot/PID/output", out);
+		Logger.recordOutput(
+				"Pivot/rawEror",
+				Math.abs(this.target_angle.get().getDegrees() - getAngle().getDegrees()));
 		Logger.recordOutput("Pivot/PID/err", pivotPID.getPositionError());
+		Logger.recordOutput("Pivot/AtGoal", angleAtSetpoint());
 		double adjusted_out = MathUtil.clamp(out - getAngle().getSin() * this.kg, -4, 4);
 		Logger.recordOutput("Pivot/Adjusted Out", adjusted_out);
 		pivotMotor.setVoltage(adjusted_out); // MathUtil.clamp(out, -3, 3));
@@ -81,6 +88,6 @@ public class IntakeSubsystem extends SubsystemBase {
 	}
 
 	public Command runIntake(double speed) {
-		return new InstantCommand(() -> this.runIntakeMotor(speed));
+		return new StartEndCommand(() -> this.runIntakeMotor(speed), this::stopIntakeMotor);
 	}
 }

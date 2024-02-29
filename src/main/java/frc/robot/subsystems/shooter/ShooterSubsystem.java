@@ -7,7 +7,9 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -17,6 +19,7 @@ import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -33,8 +36,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	public final CANSparkFlex sm_top = new CANSparkFlex(SHOOTER_MOTOR_TOP, MotorType.kBrushless);
 	public final CANSparkFlex sm_bot = new CANSparkFlex(SHOOTER_MOTOR_BOT, MotorType.kBrushless);
+	private double sign = 1;
+	private final RelativeEncoder en_top = sm_top.getEncoder();
+	private final RelativeEncoder en_bot = sm_bot.getEncoder();
 	LinearFilter top_curr = LinearFilter.movingAverage(5);
 	LinearFilter bot_curr = LinearFilter.movingAverage(5);
+
+	private final BangBangController bang_top = new BangBangController(100);
+	private final BangBangController bang_bot = new BangBangController(100);
 
 	public final CANSparkMax feeder = new CANSparkMax(FEEDER_MOTOR, MotorType.kBrushless);
 	private static double BEAM_BREAK_THRESHOLD = 0.2;
@@ -56,8 +65,11 @@ public class ShooterSubsystem extends SubsystemBase {
 		sm_top.setIdleMode(IdleMode.kCoast);
 		sm_bot.setIdleMode(IdleMode.kCoast);
 		sm_top.setInverted(true);
-		angle_pid.setTolerance(2);
+		angle_pid.setTolerance(5);
 		angleEncoder.setPositionOffset(SHOOTER_ENCODER_OFFSET);
+
+		bang_bot.setSetpoint(0);
+		bang_top.setSetpoint(0);
 	}
 
 	/**
@@ -98,9 +110,15 @@ public class ShooterSubsystem extends SubsystemBase {
 		return angle_pid.atSetpoint();
 	}
 
+	private void runShooters() {
+		Logger.recordOutput("bangSetpoint", bang_bot.getSetpoint());
+		sm_top.setVoltage(10 * sign * bang_top.calculate(Math.abs(en_top.getVelocity())));
+		sm_bot.setVoltage(10 * sign * bang_bot.calculate(Math.abs(en_bot.getVelocity())));
+	}
+
 	@Override
 	public void periodic() {
-
+		runShooters();
 		runPivot();
 		Logger.recordOutput("Shooter/Angle", angleEncoder.getAbsolutePosition());
 		Logger.recordOutput("Shooter/CorrectedAngle", getAngle());
@@ -124,12 +142,14 @@ public class ShooterSubsystem extends SubsystemBase {
 		double dx = drive.getPose().getX() - targetX;
 		double dy = drive.getPose().getY() - targetY;
 		double distance = Math.hypot(dx, dy);
-		System.out.println("Distance: " + distance);
 
 		double y = TARGET_HEIGHT - SHOOTER_HEIGHT;
 		double flight_time = distance / NOTE_VELOCITY;
 		y += 9.8 / 2 * flight_time * flight_time;
-		return Units.radiansToDegrees(Math.atan(y / distance));
+		Logger.recordOutput("Angle", Units.radiansToDegrees(Math.atan(y / distance)));
+		Logger.recordOutput("Distance", distance);
+
+		return 90 - Units.radiansToDegrees(Math.atan(y / distance));
 	}
 
 	public void zeroAbsoluteEncoder() {
@@ -157,19 +177,10 @@ public class ShooterSubsystem extends SubsystemBase {
 		return ringSensor.getAsBoolean();
 	}
 
-	public void toggleMode() {
-		if (sm_top.getIdleMode() == IdleMode.kCoast) {
-			sm_top.setIdleMode(IdleMode.kBrake);
-			sm_bot.setIdleMode(IdleMode.kBrake);
-		} else {
-			sm_top.setIdleMode(IdleMode.kCoast);
-			sm_bot.setIdleMode(IdleMode.kCoast);
-		}
-	}
-
 	public void runMotors(double speed) {
-		sm_top.set(speed * 0.85);
-		sm_bot.set(speed);
+		sign = Math.signum(speed);
+		bang_bot.setSetpoint(Math.abs(speed) * 6000);
+		bang_top.setSetpoint(Math.abs(speed) * 0.85 * 6000);
 	}
 
 	// Commands
@@ -177,8 +188,12 @@ public class ShooterSubsystem extends SubsystemBase {
 		return this.startEnd(() -> runFeederMotor(0.2), () -> runFeederMotor(0)).until(ringSensor);
 	}
 
+	public Command autoShoot() {
+		return shootSingle(0.7).deadlineWith(new RunCommand(() -> setAngle(Rotation2d.fromDegrees(calculateAngle()))));
+	}
+
 	public Command shootSingle(double speed) {
-		return new StartEndCommand(() -> runMotors(speed), () -> runMotors(0));
+		return new StartEndCommand(() -> runMotors(speed), () -> runMotors(0)).until(ringSensor.negate());
 	}
 
 	public Command toAngleCommand(Supplier<Rotation2d> speed) {

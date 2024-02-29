@@ -23,7 +23,7 @@ public class RunElevator extends Command {
 
 	@Override
 	public void initialize() {
-		elevator.setMotor(speed);
+		// elevator.setMotor(speed);
 		maxVelocity1 = 0;
 		maxVelocity2 = 0;
 	}

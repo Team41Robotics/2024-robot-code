@@ -24,7 +24,8 @@ public class PhotonVision {
 	AprilTagFieldLayout fieldLayout;
 
 	Transform3d robotToCam = new Transform3d(
-			new Translation3d(Units.inchesToMeters(14.5), Units.inchesToMeters(0), 0.1), new Rotation3d(0, 0.611, 0));
+			new Translation3d(Units.inchesToMeters(2 * 14.5), Units.inchesToMeters(0), 0.1),
+			new Rotation3d(0, Units.degreesToRadians(30), 0));
 	PhotonPoseEstimator photonPoseEstimator;
 
 	private Pose2d camRobot = new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(9.5), new Rotation2d());
@@ -36,8 +37,9 @@ public class PhotonVision {
 			System.out.println("Couldn't Find April Tag Layout File");
 			e.printStackTrace();
 		}
-		note_cam = null; // new PhotonCamera("HD_USB_Camera");
-		april_cam = null; // new PhotonCamera("Global_Shutter_Camera");
+		note_cam = null; // ew PhotonCamera("HD_USB_Camera");
+
+		april_cam = new PhotonCamera("Global_Shutter_Camera");
 		photonPoseEstimator =
 				new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, april_cam, robotToCam);
 		photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.CLOSEST_TO_REFERENCE_POSE);
