@@ -3,6 +3,7 @@ package frc.robot.commands;
 import static frc.robot.RobotContainer.*;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -13,6 +14,7 @@ import frc.robot.commands.intake.SetPivot;
 public class Handoff extends SequentialCommandGroup {
 	public Handoff() {
 		super(
+				new InstantCommand(() -> shooter.runMotors(0.65)),
 				new ParallelCommandGroup(shooter.toAngleCommand(Rotation2d.fromDegrees(65)), new SetPivot(-85)),
 				new WaitUntilCommand(() -> intake.angleAtSetpoint()),
 				new PrintCommand("waiting for intake"),

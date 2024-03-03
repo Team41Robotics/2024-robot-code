@@ -3,7 +3,6 @@ package frc.robot.commands.elevator;
 import static frc.robot.RobotContainer.elevator;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import java.lang.Math.*;
 
 public class RunElevator extends Command {
 

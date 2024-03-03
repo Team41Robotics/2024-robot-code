@@ -19,10 +19,11 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.constants.Constants;
 import frc.robot.util.Util;
+import org.littletonrobotics.junction.Logger;
 
 public class FaceSpeakerDrive extends Command {
 
-	private PIDController wPID = new PIDController(1, 0, 0);
+	private PIDController wPID = new PIDController(1, 0.08, 0);
 
 	public FaceSpeakerDrive() {
 		addRequirements(drive);
@@ -33,7 +34,7 @@ public class FaceSpeakerDrive extends Command {
 	private double getYVel() {
 		ChassisSpeeds velocity = drive.getVelocity();
 		double theta = drive.getPose().getRotation().getRadians();
-		return Math.cos(theta) * velocity.vyMetersPerSecond + Math.sin(theta * velocity.vxMetersPerSecond);
+		return Math.cos(theta) * velocity.vyMetersPerSecond + Math.sin(theta) * velocity.vxMetersPerSecond;
 	}
 
 	@Override
@@ -42,14 +43,15 @@ public class FaceSpeakerDrive extends Command {
 
 		double cX = currentPose.getX();
 		double dx = Util.getTargetX() - cX;
-		double flight_time = dx / Constants.NOTE_VELOCITY;
-		double cY = currentPose.getY() + getYVel() * flight_time;
+		double flight_time = Math.abs(dx) / Constants.NOTE_VELOCITY;
+		double cY = currentPose.getY() + getYVel() * flight_time * 0;
 
 		double dy = TARGET_Y - cY;
 
 		double targetRotation = Math.atan(dy / dx);
 		double currentRotation = currentPose.getRotation().getRadians();
-		wPID.setSetpoint(targetRotation);
+		wPID.setSetpoint(targetRotation + (!Util.isRed() ? Math.PI : 0));
+		Logger.recordOutput("AutoAngle/err", wPID.getPositionError());
 
 		double vx = left_js.getY();
 		double vy = left_js.getX();

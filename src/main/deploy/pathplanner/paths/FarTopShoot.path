@@ -1,0 +1,49 @@
+{
+  "version": 1.0,
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 8.270256540513081,
+        "y": 7.414093916506922
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 6.644769073017728,
+        "y": 7.5427296153717664
+      },
+      "isLocked": false,
+      "linkedName": "FarTopNote"
+    },
+    {
+      "anchor": {
+        "x": 4.63337450891806,
+        "y": 6.431784943339973
+      },
+      "prevControl": {
+        "x": 5.4051553671884305,
+        "y": 6.817758702604326
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": "FarTopShoot"
+    }
+  ],
+  "rotationTargets": [],
+  "constraintZones": [],
+  "eventMarkers": [],
+  "globalConstraints": {
+    "maxVelocity": 3.7,
+    "maxAcceleration": 7.8,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 10.0,
+    "rotateFast": false
+  },
+  "reversed": false,
+  "folder": null,
+  "previewStartingState": null,
+  "useDefaultConstraints": false
+}

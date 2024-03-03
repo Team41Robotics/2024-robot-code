@@ -2,6 +2,10 @@ package frc.robot;
 
 import static frc.robot.RobotContainer.*;
 
+import edu.wpi.first.math.filter.LinearFilter;
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import org.littletonrobotics.junction.LogFileUtil;
@@ -14,6 +18,11 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 public class Robot extends LoggedRobot {
 	private Command autonomousCommand;
 
+	private LinearFilter v_filter = LinearFilter.movingAverage(10);
+	private LinearFilter c_filter = LinearFilter.movingAverage(10);
+
+	PowerDistribution pdh = new PowerDistribution(1, ModuleType.kRev);
+
 	@Override
 	public void robotInit() {
 		robot = this;
@@ -22,7 +31,7 @@ public class Robot extends LoggedRobot {
 
 		Logger.recordMetadata("ProjectName", "Robot2024");
 		if (isReal()) {
-			// Logger.addDataReceiver(new WPILOGWriter("/U"));
+			// Logger.addDataReceiver(new WPILOGWriter("/E/logs"));
 			Logger.addDataReceiver(new NT4Publisher());
 		} else {
 			setUseTiming(false);
@@ -38,6 +47,13 @@ public class Robot extends LoggedRobot {
 	public void robotPeriodic() {
 		shooter.periodic();
 		CommandScheduler.getInstance().run();
+
+		Logger.recordOutput("pdh/MPM/curr", pdh.getCurrent(1));
+		Logger.recordOutput("pdh/totalCurr", pdh.getTotalCurrent());
+		Logger.recordOutput("pdh/energy", pdh.getTotalEnergy());
+
+		Logger.recordOutput("Battery/Voltage", v_filter.calculate(RobotController.getBatteryVoltage()));
+		Logger.recordOutput("Battery/Current", c_filter.calculate(RobotController.getInputCurrent()));
 	}
 
 	@Override

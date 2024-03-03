@@ -42,15 +42,15 @@ public class ShooterSubsystem extends SubsystemBase {
 	LinearFilter top_curr = LinearFilter.movingAverage(5);
 	LinearFilter bot_curr = LinearFilter.movingAverage(5);
 
-	private final BangBangController bang_top = new BangBangController(100);
-	private final BangBangController bang_bot = new BangBangController(100);
+	private final BangBangController bang_top = new BangBangController(200);
+	private final BangBangController bang_bot = new BangBangController(200);
 
 	public final CANSparkMax feeder = new CANSparkMax(FEEDER_MOTOR, MotorType.kBrushless);
 	private static double BEAM_BREAK_THRESHOLD = 0.2;
 	DutyCycleEncoder angleEncoder = new DutyCycleEncoder(SHOOTER_ENCODER);
 	AnalogInput ringSensorAnalogInput = new AnalogInput(RING_SENSOR);
 	Trigger ringSensor = new Trigger(() -> (ringSensorAnalogInput.getVoltage() <= BEAM_BREAK_THRESHOLD));
-	public PIDController angle_pid = new PIDController(4e-3, 0, 0);
+	public PIDController angle_pid = new PIDController(6e-3, 0, 0);
 
 	private Optional<Rotation2d> target_angle = Optional.empty();
 
@@ -111,15 +111,18 @@ public class ShooterSubsystem extends SubsystemBase {
 	}
 
 	private void runShooters() {
-		Logger.recordOutput("bangSetpoint", bang_bot.getSetpoint());
-		sm_top.setVoltage(10 * sign * bang_top.calculate(Math.abs(en_top.getVelocity())));
-		sm_bot.setVoltage(10 * sign * bang_bot.calculate(Math.abs(en_bot.getVelocity())));
+		Logger.recordOutput("bangSetpoint", bang_bot.getSetpoint() * sign);
+		Logger.recordOutput("bangOutput", 10 * sign * bang_top.calculate(sign * en_top.getVelocity()));
+		sm_top.setVoltage(10 * sign * bang_top.calculate(sign * en_top.getVelocity()));
+		sm_bot.setVoltage(10 * sign * bang_bot.calculate(sign * en_bot.getVelocity()));
 	}
 
 	@Override
 	public void periodic() {
 		runShooters();
 		runPivot();
+
+		Logger.recordOutput("Shooter/IsReady", isReady());
 		Logger.recordOutput("Shooter/Angle", angleEncoder.getAbsolutePosition());
 		Logger.recordOutput("Shooter/CorrectedAngle", getAngle());
 
@@ -183,13 +186,19 @@ public class ShooterSubsystem extends SubsystemBase {
 		bang_top.setSetpoint(Math.abs(speed) * 0.85 * 6000);
 	}
 
+	public boolean isReady() {
+		return Math.abs(bang_bot.getSetpoint() - en_bot.getVelocity()) < 500;
+	}
+
 	// Commands
 	public Command runFeeder() {
 		return this.startEnd(() -> runFeederMotor(0.2), () -> runFeederMotor(0)).until(ringSensor);
 	}
 
 	public Command autoShoot() {
-		return shootSingle(0.7).deadlineWith(new RunCommand(() -> setAngle(Rotation2d.fromDegrees(calculateAngle()))));
+		return shootSingle(0.7)
+				.deadlineWith(new RunCommand(() -> setAngle(Rotation2d.fromDegrees(calculateAngle()))))
+				.andThen(new InstantCommand(() -> runMotors(0.4)));
 	}
 
 	public Command shootSingle(double speed) {
@@ -202,6 +211,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	public Command toAngleCommand(Rotation2d speed) {
 		return this.toAngleCommand(() -> speed);
+	}
+
+	public Command toAngleDegreeCommand(double speed) {
+		return this.toAngleCommand(() -> Rotation2d.fromDegrees(speed));
 	}
 
 	public Command muzzleLoad() {

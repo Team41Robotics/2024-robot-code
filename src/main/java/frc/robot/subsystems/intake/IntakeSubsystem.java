@@ -8,6 +8,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -22,9 +23,10 @@ public class IntakeSubsystem extends SubsystemBase {
 	CANSparkMax turnMotor = new CANSparkMax(2, MotorType.kBrushless);
 	public double kg = 0; // 0.25;
 	public ProfiledPIDController pivotPID =
-			new ProfiledPIDController(2, 0, 0.3, new TrapezoidProfile.Constraints(1.2, 3));
+			new ProfiledPIDController(3, 0, 0.3, new TrapezoidProfile.Constraints(4, 3.5));
 	public PIDController turnPID = new PIDController(0, 0, 0);
 
+	private DigitalInput limitSwitch = new DigitalInput(2);
 	Optional<Rotation2d> target_angle = Optional.empty();
 
 	public IntakeSubsystem() {
@@ -57,6 +59,10 @@ public class IntakeSubsystem extends SubsystemBase {
 		// negative is up
 	}
 
+	public boolean intakeSwitch() {
+		return limitSwitch.get();
+	}
+
 	public void setAngle(Rotation2d target) {
 		this.target_angle = Optional.of(target);
 		// pivotPID.reset();
@@ -75,6 +81,7 @@ public class IntakeSubsystem extends SubsystemBase {
 		Logger.recordOutput("Pivot/AtGoal", angleAtSetpoint());
 		double adjusted_out = MathUtil.clamp(out - getAngle().getSin() * this.kg, -4, 4);
 		Logger.recordOutput("Pivot/Adjusted Out", adjusted_out);
+		Logger.recordOutput("Intake/LimitSwitch", limitSwitch.get());
 		pivotMotor.setVoltage(adjusted_out); // MathUtil.clamp(out, -3, 3));
 	}
 

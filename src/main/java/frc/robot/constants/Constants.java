@@ -12,10 +12,10 @@ public final class Constants {
 	public static final double SWERVE_MAXSPEED = 4.42;
 	public static final double ANGULAR_MAX_SPEED = SWERVE_MAXSPEED / (Math.hypot(ROBOT_LENGTH, ROBOT_WIDTH) / 2);
 
-	public static final double SPEED_MULT = 0.55;
-	public static final double TURBO_SPEED_MULT = 0.9;
+	public static final double SPEED_MULT = 0.7;
+	public static final double TURBO_SPEED_MULT = 0.8;
 
-	public static final double ANGULAR_SPEED_MULT = 0.5;
+	public static final double ANGULAR_SPEED_MULT = 0.7;
 	public static final double TURBO_ANGULAR_SPEED_MULT = 0.9;
 
 	public static final double SWERVE_WHEEL_RAD = 2 * 2.54 / 100;
@@ -26,9 +26,9 @@ public final class Constants {
 	public static final double MODULE_DRIVE_KF = 0.23;
 	public static final double MODULE_TURN_KP = 3;
 
-	public static double NOTE_VELOCITY = 12.3; // TOO not constant
-	public static final double TARGET_X_BLUE = Units.inchesToMeters(-1.5 + 5);
-	public static final double TARGET_X_RED = Units.inchesToMeters(652.3 - 5);
+	public static double NOTE_VELOCITY = 10.5; // TOO not constant
+	public static final double TARGET_X_BLUE = Units.inchesToMeters(-1.5 + 0);
+	public static final double TARGET_X_RED = Units.inchesToMeters(652.3 - 0);
 	public static final double TARGET_Y = Units.inchesToMeters(218.42);
 	public static final double DRIVER_TURN_KP = 1.;
 
