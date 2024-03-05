@@ -26,13 +26,13 @@
         {
           "type": "named",
           "data": {
-            "name": "ShootCycle"
+            "name": "IntakeDown"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "IntakeDown"
+            "name": "ShootCycle"
           }
         },
         {

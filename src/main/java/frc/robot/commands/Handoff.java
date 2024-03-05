@@ -21,7 +21,8 @@ public class Handoff extends SequentialCommandGroup {
 				new WaitUntilCommand(() -> shooter.angleAtSetpoint()),
 				shooter.runFeeder()
 						.deadlineWith(
-								new StartEndCommand(() -> intake.runIntakeMotor(-0.2), () -> intake.stopIntakeMotor()))
+								new StartEndCommand(() -> intake.runIntakeMotor(-0.3), () -> intake.stopIntakeMotor()))
 						.until(ds.button(8)));
+		addRequirements(intake);
 	}
 }

@@ -192,7 +192,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	// Commands
 	public Command runFeeder() {
-		return this.startEnd(() -> runFeederMotor(0.2), () -> runFeederMotor(0)).until(ringSensor);
+		return this.startEnd(() -> runFeederMotor(0.3), () -> runFeederMotor(0)).until(ringSensor);
 	}
 
 	public Command autoShoot() {

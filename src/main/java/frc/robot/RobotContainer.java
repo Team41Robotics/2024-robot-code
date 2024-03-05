@@ -103,15 +103,15 @@ public class RobotContainer {
 
 	public static void configureButtonBindings() {
 		// straight up
-		ds.button(1).onTrue(shooter.toAngleDegreeCommand(15).andThen(shooter.shootSingle(0.5)));
+		ds.button(1).onTrue(shooter.toAngleDegreeCommand(15).andThen(shooter.shootSingle(0.2)));
 		ds.button(2).whileTrue(new manualElevator());
 		// handoff syste m
-		ds.button(3).onTrue((intake.runIntake(0.75).until(() -> !intake.intakeSwitch())));
+		ds.button(3).onTrue((intake.runIntake(0.75).until(() -> !intake.intakeSwitch())).andThen(new Handoff()));
 		left_js.button(3).onTrue(shooter.runFeeder());
 
 		// left_js.button(2)
 		//		.whileTrue(new StartEndCommand(() -> leds.flashLeds(Color.kPink), () -> leds.flashLeds(Color.kBlack)));
-		left_js.button(2).onTrue(new InstantCommand(() -> imu.zeroYaw()));
+		// left_js.button(2).onTrue(new InstantCommand(() -> imu.zeroYaw()));
 		left_js.button(4)
 				.onTrue(shooter.toAngleDegreeCommand(15)
 						.alongWith(shooter.muzzleLoad().andThen(shooter.toAngleDegreeCommand(90))));
