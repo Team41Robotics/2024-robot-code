@@ -113,6 +113,11 @@ public class ShooterSubsystem extends SubsystemBase {
 	private void runShooters() {
 		Logger.recordOutput("bangSetpoint", bang_bot.getSetpoint() * sign);
 		Logger.recordOutput("bangOutput", 10 * sign * bang_top.calculate(sign * en_top.getVelocity()));
+		if (bang_bot.getSetpoint() == 0) {
+			sm_bot.setVoltage(0);
+			sm_top.setVoltage(0);
+			return;
+		}
 		sm_top.setVoltage(10 * sign * bang_top.calculate(sign * en_top.getVelocity()));
 		sm_bot.setVoltage(10 * sign * bang_bot.calculate(sign * en_bot.getVelocity()));
 	}
@@ -120,7 +125,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		runShooters();
-		runPivot();
+		// runPivot();
 
 		Logger.recordOutput("Shooter/IsReady", isReady());
 		Logger.recordOutput("Shooter/Angle", angleEncoder.getAbsolutePosition());
@@ -182,6 +187,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	public void runMotors(double speed) {
 		sign = Math.signum(speed);
+
 		bang_bot.setSetpoint(Math.abs(speed) * 6000);
 		bang_top.setSetpoint(Math.abs(speed) * 0.85 * 6000);
 	}
