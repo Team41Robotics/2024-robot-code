@@ -14,8 +14,10 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.Handoff;
@@ -106,9 +108,17 @@ public class RobotContainer {
 		ds.button(1).onTrue(shooter.toAngleDegreeCommand(15).andThen(shooter.shootSingle(0.2)));
 		ds.button(2).whileTrue(new manualElevator());
 		// handoff syste m
-		ds.button(3).onTrue((intake.runIntake(0.75).until(() -> !intake.intakeSwitch())).andThen(new Handoff()));
+		ds.button(3).whileTrue(new RunCommand(() -> drive.resetOdom()));
+		//	ds.button(3).onTrue((intake.runIntake(0.75).until(() -> !intake.intakeSwitch())).andThen(new Handoff()));
 		left_js.button(3).onTrue(shooter.runFeeder());
 
+		left_js.button(1)
+				.onTrue(new SetPivot(115)
+						.andThen(new WaitCommand(1))
+						.andThen((intake.runIntake(0.75)
+										.until(() -> !intake.intakeSwitch())
+										.until(left_js.button(1).negate()))
+								.andThen(new Handoff().withTimeout(4))));
 		// left_js.button(2)
 		//		.whileTrue(new StartEndCommand(() -> leds.flashLeds(Color.kPink), () -> leds.flashLeds(Color.kBlack)));
 		// left_js.button(2).onTrue(new InstantCommand(() -> imu.zeroYaw()));
@@ -137,7 +147,7 @@ public class RobotContainer {
 		// ds.button(12).onTrue(shooter.autoShoot());
 		// ds.button(6).onTrue(shooter15.toAngleCommand(Rotation2d.fromDegrees(55)));
 		ds.button(6).onTrue(new SetPivot(0));
-		ds.button(14).onTrue(new SetPivot(-85).andThen(shooter.toAngleDegreeCommand(25)));
+		ds.button(14).onTrue(new SetPivot(-85).andThen(shooter.toAngleDegreeCommand(55)));
 		ds.button(2)
 				.whileTrue(new InstantCommand(() -> shooter.runMotors(0))
 						.andThen(new InstantCommand(

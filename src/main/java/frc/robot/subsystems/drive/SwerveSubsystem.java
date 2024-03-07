@@ -47,7 +47,7 @@ public class SwerveSubsystem extends SubsystemBase {
 				getPositions(),
 				init_pose,
 				VecBuilder.fill(0.1, 0.1, 0.1),
-				VecBuilder.fill(2, 2, 2));
+				VecBuilder.fill(0.5, 0.5, 0.3));
 
 		AutoBuilder.configureHolonomic(
 				this::getPose,
@@ -138,15 +138,27 @@ public class SwerveSubsystem extends SubsystemBase {
 		}
 	}
 
+	private Optional<EstimatedRobotPose> est_pos;
+
+	public void resetOdom() {
+
+		if (est_pos.isPresent()) {
+			EstimatedRobotPose new_pose = est_pos.get();
+			pose_est.addVisionMeasurement(new_pose.estimatedPose.toPose2d(), new_pose.timestampSeconds);
+		}
+	}
+
 	public void periodic() {
 		for (SwerveModule module : modules) module.periodic();
 		pose_est.update(new Rotation2d(imu.yaw()), getPositions());
 
-		Optional<EstimatedRobotPose> vis_pos = photon.getEstimatedGlobalPose(pose_est.getEstimatedPosition());
-		if (vis_pos.isPresent()) {
-			EstimatedRobotPose new_pose = vis_pos.get();
-			pose_est.addVisionMeasurement(new_pose.estimatedPose.toPose2d(), new_pose.timestampSeconds);
+		est_pos = photon.getEstimatedGlobalPose(pose_est.getEstimatedPosition());
+		if (est_pos.isPresent()) {
+			EstimatedRobotPose new_pose = est_pos.get();
+			Logger.recordOutput("PhotonPose", new_pose.estimatedPose.toPose2d());
+			// pose_est.addVisionMeasurement(new_pose.estimatedPose.toPose2d(), new_pose.timestampSeconds);
 		}
+
 		updateLogging();
 	}
 
