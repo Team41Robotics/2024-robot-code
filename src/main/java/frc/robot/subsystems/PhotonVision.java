@@ -62,9 +62,9 @@ public class PhotonVision {
 	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
 		// photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
 		if (april_cam == null) return Optional.empty();
-		if (april_cam.getLatestResult().getTargets().size() >= 2) {
-			return photonPoseEstimator.update();
-		}
-		return Optional.empty();
+		if (!april_cam.isConnected()) return Optional.empty();
+		if (april_cam.getLatestResult().getTargets().size() < 2) return Optional.empty();
+
+		return photonPoseEstimator.update();
 	}
 }

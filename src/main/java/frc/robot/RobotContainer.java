@@ -33,6 +33,7 @@ import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.util.LocalADStarAK;
+import frc.robot.util.Util;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -105,13 +106,24 @@ public class RobotContainer {
 
 	public static void configureButtonBindings() {
 		// straight up
-		ds.button(1).onTrue(shooter.toAngleDegreeCommand(15).andThen(shooter.shootSingle(0.2)));
+		ds.button(1).onTrue(shooter.toAngleDegreeCommand(25).andThen(shooter.shootSingle(0.7)));
 		ds.button(2).whileTrue(new manualElevator());
 		// handoff syste m
 		ds.button(3).whileTrue(new RunCommand(() -> drive.resetOdom()));
 		//	ds.button(3).onTrue((intake.runIntake(0.75).until(() -> !intake.intakeSwitch())).andThen(new Handoff()));
 		left_js.button(3).onTrue(shooter.runFeeder());
-
+		left_js.button(2)
+				.onTrue(new SequentialCommandGroup(
+						new InstantCommand(() -> shooter.runMotors(0.5)),
+						shooter.runFeeder(),
+						new ParallelRaceGroup(
+								new WaitUntilCommand(() -> shooter.isReady()).withTimeout(70),
+								new ParallelCommandGroup(new FaceSpeakerDrive(), shooter.autoShoot())
+										.until(() -> !shooter.ringLoaded())),
+						new WaitCommand(0.5),
+						new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0))
+								.until(() -> !shooter.ringLoaded()),
+						new InstantCommand(() -> shooter.runMotors(0.5))));
 		left_js.button(1)
 				.onTrue(new SetPivot(115)
 						.andThen(new WaitCommand(1))
@@ -123,8 +135,11 @@ public class RobotContainer {
 		//		.whileTrue(new StartEndCommand(() -> leds.flashLeds(Color.kPink), () -> leds.flashLeds(Color.kBlack)));
 		// left_js.button(2).onTrue(new InstantCommand(() -> imu.zeroYaw()));
 		left_js.button(4)
-				.onTrue(shooter.toAngleDegreeCommand(15)
-						.alongWith(shooter.muzzleLoad().andThen(shooter.toAngleDegreeCommand(90))));
+				.onTrue(shooter.toAngleDegreeCommand(25)
+						.alongWith(shooter.muzzleLoad()
+								.andThen(
+										shooter.toAngleDegreeCommand(75),
+										new InstantCommand(() -> shooter.runMotors(0.6)))));
 
 		right_js.button(1)
 				.and(() -> shooter.ringLoaded())
@@ -143,6 +158,11 @@ public class RobotContainer {
 						.until(() -> !shooter.ringLoaded()));
 		ds.button(12).whileTrue(intake.runIntake(0.75)); // new Handoff());
 		ds.button(11).whileTrue(intake.runIntake(-0.75)); // new Handoff());
+		right_js.pov(0).onTrue(new InstantCommand(() -> leds.flashLeds(Color.kGreen)));
+		right_js.pov(180).onTrue(leds.twinkle((Util.isRed() ? Color.kRed : Color.kBlue)));
+		right_js.pov(270).onTrue(leds.RGBFade());
+		right_js.pov(90).onTrue(leds.rainbow());
+		right_js.pov(45).onTrue(leds.fade(Color.kBlueViolet));
 
 		// ds.button(12).onTrue(shooter.autoShoot());
 		// ds.button(6).onTrue(shooter15.toAngleCommand(Rotation2d.fromDegrees(55)));

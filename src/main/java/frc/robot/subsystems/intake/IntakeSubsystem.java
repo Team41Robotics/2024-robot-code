@@ -1,5 +1,8 @@
 package frc.robot.subsystems.intake;
 
+import static frc.robot.constants.Constants.INTAKE_FEEDER_MOTOR;
+import static frc.robot.constants.Constants.INTAKE_PIVOT_MOTOR;
+
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
@@ -17,10 +20,11 @@ import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
 public class IntakeSubsystem extends SubsystemBase {
+
 	DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(1);
 
-	CANSparkMax pivotMotor = new CANSparkMax(14, MotorType.kBrushless);
-	CANSparkMax turnMotor = new CANSparkMax(2, MotorType.kBrushless);
+	CANSparkMax pivotMotor = new CANSparkMax(INTAKE_PIVOT_MOTOR, MotorType.kBrushless);
+	CANSparkMax turnMotor = new CANSparkMax(INTAKE_FEEDER_MOTOR, MotorType.kBrushless);
 	public double kg = 0; // 0.25;
 	public ProfiledPIDController pivotPID =
 			new ProfiledPIDController(9, 0, 0.3, new TrapezoidProfile.Constraints(9, 11));
@@ -92,6 +96,8 @@ public class IntakeSubsystem extends SubsystemBase {
 		Logger.recordOutput("Pivot/RawAngle", pivotEncoder.getAbsolutePosition());
 		Logger.recordOutput("Pivot/Angle", getAngle().getDegrees());
 		Logger.recordOutput("Pivot/kg", kg);
+		Logger.recordOutput("Intake/Curr", turnMotor.getOutputCurrent());
+		Logger.recordOutput("Intake/Vel", turnMotor.getEncoder().getVelocity());
 	}
 
 	public Command runIntake(double speed) {

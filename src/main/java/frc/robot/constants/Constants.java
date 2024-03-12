@@ -26,7 +26,7 @@ public final class Constants {
 	public static final double MODULE_DRIVE_KF = 0.23;
 	public static final double MODULE_TURN_KP = 3;
 
-	public static double NOTE_VELOCITY = 10.5; // TOO not constant
+	public static double NOTE_VELOCITY = 10.25; // TOO not constant
 	public static final double TARGET_X_BLUE = Units.inchesToMeters(-1.5 + 0);
 	public static final double TARGET_X_RED = Units.inchesToMeters(652.3 - 0);
 	public static final double TARGET_Y = Units.inchesToMeters(218.42);
@@ -40,8 +40,12 @@ public final class Constants {
 	public static final int SHOOTER_PIVOT_MOTOR1 = 13;
 	public static final int SHOOTER_PIVOT_MOTOR2 = 4;
 	public static final int FEEDER_MOTOR = 3;
+
+	public static final int INTAKE_FEEDER_MOTOR = 2;
+	public static final int INTAKE_PIVOT_MOTOR = 14;
+
 	public static final int SHOOTER_ENCODER = 0;
-	public static final double SHOOTER_ENCODER_OFFSET = 0.89;
+	public static final double SHOOTER_ENCODER_OFFSET = 0.516 + 0.022;
 	public static final double SHOOTER_HEIGHT = Units.inchesToMeters(15);
 	public static final double TARGET_HEIGHT = Units.inchesToMeters(95);
 
@@ -55,4 +59,5 @@ public final class Constants {
 			0.4488, // Drive base radius in meters. Distance from robot center to furthest module.
 			new ReplanningConfig() // Default path replanning config. See the API for the options here
 			);
+	public static final double SHOOTER_SPEAKER_SPEED = 0.75;
 }

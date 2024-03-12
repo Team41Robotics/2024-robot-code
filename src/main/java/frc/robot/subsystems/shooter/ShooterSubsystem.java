@@ -1,6 +1,7 @@
 package frc.robot.subsystems.shooter;
 
 import static frc.robot.RobotContainer.drive;
+import static frc.robot.RobotContainer.ds;
 import static frc.robot.constants.Constants.*;
 
 import com.revrobotics.CANSparkBase.IdleMode;
@@ -25,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.constants.Constants;
 import frc.robot.util.Util;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -50,7 +52,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	DutyCycleEncoder angleEncoder = new DutyCycleEncoder(SHOOTER_ENCODER);
 	AnalogInput ringSensorAnalogInput = new AnalogInput(RING_SENSOR);
 	Trigger ringSensor = new Trigger(() -> (ringSensorAnalogInput.getVoltage() <= BEAM_BREAK_THRESHOLD));
-	public PIDController angle_pid = new PIDController(6e-3, 0, 0);
+	public PIDController angle_pid = new PIDController(1e-2, 0, 0);
 
 	private Optional<Rotation2d> target_angle = Optional.empty();
 
@@ -67,7 +69,7 @@ public class ShooterSubsystem extends SubsystemBase {
 		sm_top.setInverted(true);
 		angle_pid.setTolerance(5);
 		angleEncoder.setPositionOffset(SHOOTER_ENCODER_OFFSET);
-
+		target_angle = Optional.of(Rotation2d.fromDegrees(15));
 		bang_bot.setSetpoint(0);
 		bang_top.setSetpoint(0);
 	}
@@ -78,9 +80,9 @@ public class ShooterSubsystem extends SubsystemBase {
 	 */
 	public Rotation2d getAngle() {
 		double angle = angleEncoder.getAbsolutePosition();
-		if (angle < 0.3) angle += 1;
+		// if (angle < 0.3) angle += 1;
 		angle -= angleEncoder.getPositionOffset();
-		return Rotation2d.fromRotations(angle);
+		return Rotation2d.fromRotations(-angle);
 	}
 
 	public void init() {}
@@ -99,7 +101,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
 		Logger.recordOutput("Shooter/PID/Angle/Error", angle_pid.getPositionError());
 
-		angleMotor.set(MathUtil.clamp(output, -0.1, 0.1));
+		angleMotor.set(MathUtil.clamp(output, -0.25, 0.25));
 	}
 
 	/**
@@ -125,11 +127,14 @@ public class ShooterSubsystem extends SubsystemBase {
 	@Override
 	public void periodic() {
 		runShooters();
-		// runPivot();
+		runPivot();
+		boolean toggle = ds.button(2).getAsBoolean();
+		// angleMotor.setIdleMode(toggle ? IdleMode.kBrake : IdleMode.kCoast);
+		// angleMotor2.setIdleMode(toggle ? IdleMode.kBrake : IdleMode.kCoast);
 
 		Logger.recordOutput("Shooter/IsReady", isReady());
 		Logger.recordOutput("Shooter/Angle", angleEncoder.getAbsolutePosition());
-		Logger.recordOutput("Shooter/CorrectedAngle", getAngle());
+		Logger.recordOutput("Shooter/CorrectedAngle", getAngle().getRotations());
 
 		Logger.recordOutput("Shooter/Motors/TopMotor/Speed", sm_top.getEncoder().getVelocity());
 		Logger.recordOutput("Shooter/Motors/BotMotor/Speed", sm_bot.getEncoder().getVelocity());
@@ -152,7 +157,9 @@ public class ShooterSubsystem extends SubsystemBase {
 		double distance = Math.hypot(dx, dy);
 
 		double y = TARGET_HEIGHT - SHOOTER_HEIGHT;
-		double flight_time = distance / NOTE_VELOCITY;
+		double flight_time = distance
+				/ (NOTE_VELOCITY)
+				* MathUtil.clamp(sm_bot.getEncoder().getVelocity() / bang_bot.getSetpoint(), 0.25, 1);
 		y += 9.8 / 2 * flight_time * flight_time;
 		Logger.recordOutput("Angle", Units.radiansToDegrees(Math.atan(y / distance)));
 		Logger.recordOutput("Distance", distance);
@@ -193,7 +200,8 @@ public class ShooterSubsystem extends SubsystemBase {
 	}
 
 	public boolean isReady() {
-		return Math.abs(bang_bot.getSetpoint() - en_bot.getVelocity()) < 500;
+		return Math.abs(bang_bot.getSetpoint() - en_bot.getVelocity()) < 250
+				&& Math.abs(angle_pid.getPositionError()) < 2;
 	}
 
 	// Commands
@@ -202,7 +210,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	}
 
 	public Command autoShoot() {
-		return shootSingle(0.7)
+		return shootSingle(Constants.SHOOTER_SPEAKER_SPEED)
 				.deadlineWith(new RunCommand(() -> setAngle(Rotation2d.fromDegrees(calculateAngle()))))
 				.andThen(new InstantCommand(() -> runMotors(0.4)));
 	}

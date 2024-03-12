@@ -156,7 +156,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		if (est_pos.isPresent()) {
 			EstimatedRobotPose new_pose = est_pos.get();
 			Logger.recordOutput("PhotonPose", new_pose.estimatedPose.toPose2d());
-			// pose_est.addVisionMeasurement(new_pose.estimatedPose.toPose2d(), new_pose.timestampSeconds);
+			pose_est.addVisionMeasurement(new_pose.estimatedPose.toPose2d(), new_pose.timestampSeconds);
 		}
 
 		updateLogging();
