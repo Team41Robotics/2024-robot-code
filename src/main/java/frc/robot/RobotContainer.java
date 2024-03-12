@@ -117,7 +117,8 @@ public class RobotContainer {
 						new InstantCommand(() -> shooter.runMotors(0.5)),
 						shooter.runFeeder(),
 						new ParallelRaceGroup(
-								new WaitUntilCommand(() -> shooter.isReady()).withTimeout(70),
+								new WaitCommand(0.5)
+										.andThen(new WaitUntilCommand(() -> shooter.isReady()).withTimeout(70)),
 								new ParallelCommandGroup(new FaceSpeakerDrive(), shooter.autoShoot())
 										.until(() -> !shooter.ringLoaded())),
 						new WaitCommand(0.5),
@@ -126,7 +127,7 @@ public class RobotContainer {
 						new InstantCommand(() -> shooter.runMotors(0.5))));
 		left_js.button(1)
 				.onTrue(new SetPivot(115)
-						.andThen(new WaitCommand(1))
+						.andThen(new WaitUntilCommand(() -> intake.getAngle().getDegrees() > 0))
 						.andThen((intake.runIntake(0.75)
 										.until(() -> !intake.intakeSwitch())
 										.until(left_js.button(1).negate()))
@@ -166,7 +167,7 @@ public class RobotContainer {
 
 		// ds.button(12).onTrue(shooter.autoShoot());
 		// ds.button(6).onTrue(shooter15.toAngleCommand(Rotation2d.fromDegrees(55)));
-		ds.button(6).onTrue(new SetPivot(0));
+		ds.button(6).onTrue(shooter.toAngleDegreeCommand(25).andThen(shooter.shootSingle(0.125)));
 		ds.button(14).onTrue(new SetPivot(-85).andThen(shooter.toAngleDegreeCommand(55)));
 		ds.button(2)
 				.whileTrue(new InstantCommand(() -> shooter.runMotors(0))

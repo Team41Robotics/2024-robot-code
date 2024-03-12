@@ -16,6 +16,7 @@ import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -47,6 +48,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	private final BangBangController bang_top = new BangBangController(200);
 	private final BangBangController bang_bot = new BangBangController(200);
 
+	private final DigitalInput middleBeamBreak = new DigitalInput(MIDDLE_BEAM_BREAK_PORT);
 	public final CANSparkMax feeder = new CANSparkMax(FEEDER_MOTOR, MotorType.kBrushless);
 	private static double BEAM_BREAK_THRESHOLD = 0.2;
 	DutyCycleEncoder angleEncoder = new DutyCycleEncoder(SHOOTER_ENCODER);
@@ -147,6 +149,8 @@ public class ShooterSubsystem extends SubsystemBase {
 		Logger.recordOutput("Shooter/BeamBreakOutput", ringSensorAnalogInput.getVoltage());
 		Logger.recordOutput("Shooter/Ring Present", ringLoaded());
 		Logger.recordOutput("Shooter/AtSetpoint", angleAtSetpoint());
+
+		Logger.recordOutput("Shooter/MiddleBeamBreak", middleBeamBreak.get());
 	}
 
 	public double calculateAngle() {
@@ -206,7 +210,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	// Commands
 	public Command runFeeder() {
-		return this.startEnd(() -> runFeederMotor(0.3), () -> runFeederMotor(0)).until(ringSensor);
+		return this.run(() -> runFeederMotor(!middleBeamBreak.get() ? 0.3 : 0.7))
+				.until(ringSensor)
+				.finallyDo(() -> runFeederMotor(0));
+		// return this.startEnd(() -> runFeederMotor(0.3), () -> runFeederMotor(0)).until(ringSensor;
 	}
 
 	public Command autoShoot() {

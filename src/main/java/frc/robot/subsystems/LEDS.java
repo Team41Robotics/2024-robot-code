@@ -14,19 +14,19 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class LEDS extends SubsystemBase {
 	CANdle leds = new CANdle(23);
-	private int LED_LENGTH = 34;
+	private int LED_LENGTH = 19;
 
 	public LEDS() {}
 
 	public void init() {
 		Color color = Color.kChartreuse;
-		leds.animate(new RainbowAnimation(0.5, 0.1, LED_LENGTH));
+		leds.animate(new RainbowAnimation(0.5, 0.1, LED_LENGTH, false, 8));
 		// leds.animate(new FireAnimation(0.2, 0.05, 40, 0.1, 0.1, false, 8));
 	}
 
 	public void flashLeds(Color color) {
 		leds.animate(new StrobeAnimation(
-				(int) (color.red * 255), (int) (255 * color.green), (int) (color.blue) * 255, 0, 0.125, LED_LENGTH));
+				(int) (color.red * 255), (int) (255 * color.green), (int) (color.blue) * 255, 0, 0.125, LED_LENGTH, 8));
 		// System.out.println("LEDS FLASHING!");
 	}
 
@@ -42,20 +42,21 @@ public class LEDS extends SubsystemBase {
 				0,
 				0.6,
 				LED_LENGTH,
-				TwinklePercent.Percent88)));
+				TwinklePercent.Percent88,
+				8)));
 	}
 
 	public Command RGBFade() {
-		return this.runOnce(() -> leds.animate(new RgbFadeAnimation(1.0, 0.6, LED_LENGTH)));
+		return this.runOnce(() -> leds.animate(new RgbFadeAnimation(1.0, 0.6, LED_LENGTH, 8)));
 	}
 
 	public Command fade(Color color) {
 		return this.runOnce(() -> leds.animate(new SingleFadeAnimation(
-				(int) (color.red * 255), (int) (255 * color.green), (int) (color.blue) * 255, 0, 0.6, LED_LENGTH)));
+				(int) (color.red * 255), (int) (255 * color.green), (int) (color.blue) * 255, 0, 0.6, LED_LENGTH, 8)));
 	}
 
 	public Command rainbow() {
-		return this.runOnce(() -> leds.animate(new RainbowAnimation(0.5, 0.1, LED_LENGTH)));
+		return this.runOnce(() -> leds.animate(new RainbowAnimation(0.5, 0.1, LED_LENGTH, false, 8)));
 	}
 
 	@Override

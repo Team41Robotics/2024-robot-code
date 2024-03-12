@@ -44,6 +44,8 @@ public final class Constants {
 	public static final int INTAKE_FEEDER_MOTOR = 2;
 	public static final int INTAKE_PIVOT_MOTOR = 14;
 
+	public static final int MIDDLE_BEAM_BREAK_PORT = 3;
+
 	public static final int SHOOTER_ENCODER = 0;
 	public static final double SHOOTER_ENCODER_OFFSET = 0.516 + 0.022;
 	public static final double SHOOTER_HEIGHT = Units.inchesToMeters(15);
