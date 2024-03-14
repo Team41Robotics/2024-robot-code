@@ -46,9 +46,22 @@
           "data": {
             "commands": [
               {
-                "type": "wait",
+                "type": "race",
                 "data": {
-                  "waitTime": 2.0
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "WaitForIntake"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -104,13 +117,26 @@
           }
         },
         {
-          "type": "parallel",
+          "type": "deadline",
           "data": {
             "commands": [
               {
-                "type": "wait",
+                "type": "race",
                 "data": {
-                  "waitTime": 2.0
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.0
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "WaitForIntake"
+                      }
+                    }
+                  ]
                 }
               },
               {

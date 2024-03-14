@@ -2,7 +2,21 @@ package frc.robot.subsystems.shooter;
 
 import static frc.robot.RobotContainer.drive;
 import static frc.robot.RobotContainer.ds;
-import static frc.robot.constants.Constants.*;
+import static frc.robot.constants.Constants.FEEDER_MOTOR;
+import static frc.robot.constants.Constants.MIDDLE_BEAM_BREAK_PORT;
+import static frc.robot.constants.Constants.NOTE_VELOCITY;
+import static frc.robot.constants.Constants.RING_SENSOR;
+import static frc.robot.constants.Constants.SHOOTER_ENCODER;
+import static frc.robot.constants.Constants.SHOOTER_ENCODER_OFFSET;
+import static frc.robot.constants.Constants.SHOOTER_HEIGHT;
+import static frc.robot.constants.Constants.SHOOTER_MOTOR_BOT;
+import static frc.robot.constants.Constants.SHOOTER_MOTOR_TOP;
+import static frc.robot.constants.Constants.SHOOTER_PIVOT_MOTOR1;
+import static frc.robot.constants.Constants.SHOOTER_PIVOT_MOTOR2;
+import static frc.robot.constants.Constants.TARGET_HEIGHT;
+import static frc.robot.constants.Constants.TARGET_X_BLUE;
+import static frc.robot.constants.Constants.TARGET_X_RED;
+import static frc.robot.constants.Constants.TARGET_Y;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
@@ -10,7 +24,6 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.BangBangController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -45,8 +58,10 @@ public class ShooterSubsystem extends SubsystemBase {
 	LinearFilter top_curr = LinearFilter.movingAverage(5);
 	LinearFilter bot_curr = LinearFilter.movingAverage(5);
 
-	private final BangBangController bang_top = new BangBangController(200);
-	private final BangBangController bang_bot = new BangBangController(200);
+	// private final BangBangController bang_top = new BangBangController(200);
+	// private final BangBangController bang_bot = new BangBangController(200);
+	PIDController pid_top = new PIDController(6 / 6000., 0 / 12000., 0);
+	PIDController pid_bot = new PIDController(6 / 6000., 0 / 12000., 0);
 
 	private final DigitalInput middleBeamBreak = new DigitalInput(MIDDLE_BEAM_BREAK_PORT);
 	public final CANSparkMax feeder = new CANSparkMax(FEEDER_MOTOR, MotorType.kBrushless);
@@ -72,8 +87,10 @@ public class ShooterSubsystem extends SubsystemBase {
 		angle_pid.setTolerance(5);
 		angleEncoder.setPositionOffset(SHOOTER_ENCODER_OFFSET);
 		target_angle = Optional.of(Rotation2d.fromDegrees(15));
-		bang_bot.setSetpoint(0);
-		bang_top.setSetpoint(0);
+		pid_bot.setSetpoint(0);
+		pid_top.setSetpoint(0);
+		pid_bot.setIntegratorRange(-3, 3);
+		pid_top.setIntegratorRange(-3, 3);
 	}
 
 	/**
@@ -115,15 +132,15 @@ public class ShooterSubsystem extends SubsystemBase {
 	}
 
 	private void runShooters() {
-		Logger.recordOutput("bangSetpoint", bang_bot.getSetpoint() * sign);
-		Logger.recordOutput("bangOutput", 10 * sign * bang_top.calculate(sign * en_top.getVelocity()));
-		if (bang_bot.getSetpoint() == 0) {
+		Logger.recordOutput("Shooter/Setpoint", pid_top.getSetpoint());
+		Logger.recordOutput("Shooter/Output", pid_top.calculate(en_top.getVelocity()));
+		if (pid_bot.getSetpoint() == 0) {
 			sm_bot.setVoltage(0);
 			sm_top.setVoltage(0);
 			return;
 		}
-		sm_top.setVoltage(10 * sign * bang_top.calculate(sign * en_top.getVelocity()));
-		sm_bot.setVoltage(10 * sign * bang_bot.calculate(sign * en_bot.getVelocity()));
+		sm_top.setVoltage(pid_top.calculate(en_top.getVelocity()) + 12 * pid_top.getSetpoint() / 6000);
+		sm_bot.setVoltage(pid_bot.calculate(en_bot.getVelocity()) + 12 * pid_bot.getSetpoint() / 6000);
 	}
 
 	@Override
@@ -163,7 +180,7 @@ public class ShooterSubsystem extends SubsystemBase {
 		double y = TARGET_HEIGHT - SHOOTER_HEIGHT;
 		double flight_time = distance
 				/ (NOTE_VELOCITY)
-				* MathUtil.clamp(sm_bot.getEncoder().getVelocity() / bang_bot.getSetpoint(), 0.25, 1);
+				* MathUtil.clamp(sm_bot.getEncoder().getVelocity() / pid_bot.getSetpoint(), 0.25, 1);
 		y += 9.8 / 2 * flight_time * flight_time;
 		Logger.recordOutput("Angle", Units.radiansToDegrees(Math.atan(y / distance)));
 		Logger.recordOutput("Distance", distance);
@@ -197,14 +214,12 @@ public class ShooterSubsystem extends SubsystemBase {
 	}
 
 	public void runMotors(double speed) {
-		sign = Math.signum(speed);
-
-		bang_bot.setSetpoint(Math.abs(speed) * 6000);
-		bang_top.setSetpoint(Math.abs(speed) * 0.85 * 6000);
+		pid_bot.setSetpoint(speed * 6000);
+		pid_top.setSetpoint(speed * 0.85 * 6000);
 	}
 
 	public boolean isReady() {
-		return Math.abs(bang_bot.getSetpoint() - en_bot.getVelocity()) < 250
+		return Math.abs(pid_bot.getSetpoint() - en_bot.getVelocity()) < 250
 				&& Math.abs(angle_pid.getPositionError()) < 2;
 	}
 
