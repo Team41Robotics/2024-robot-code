@@ -2,24 +2,24 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.8701900539193015,
-      "y": 4.231395066115549
+      "x": 0.9192354083061218,
+      "y": 4.173398494720459
     },
-    "rotation": 121.42956561483851
+    "rotation": 123.69006617629692
   },
   "command": {
     "type": "sequential",
     "data": {
       "commands": [
         {
-          "type": "named",
+          "type": "path",
           "data": {
-            "name": "ShootCycle"
+            "pathName": "NewPath"
           }
         }
       ]
     }
   },
   "folder": null,
-  "choreoAuto": false
+  "choreoAuto": true
 }

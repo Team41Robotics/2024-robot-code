@@ -51,8 +51,8 @@ public final class Constants {
 	public static final double SHOOTER_HEIGHT = Units.inchesToMeters(15);
 	public static final double TARGET_HEIGHT = Units.inchesToMeters(95);
 
-	public static final int ELEVATOR_MOTOR_RIGHT = 19;
-	public static final int ELEVATOR_MOTOR_LEFT = 20;
+	public static final int ELEVATOR_MOTOR_RIGHT = 30;
+	public static final int ELEVATOR_MOTOR_LEFT = 31;
 
 	public static final HolonomicPathFollowerConfig PATH_FOLLOWER_CONFIG = new HolonomicPathFollowerConfig(
 			new PIDConstants(5.0, 0.0, 0.0), // Translation PID constants

@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -17,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.Handoff;
@@ -111,19 +111,19 @@ public class RobotContainer {
 		ds.button(3).whileTrue(new RunCommand(() -> drive.resetOdom()));
 		//	ds.button(3).onTrue((intake.runIntake(0.75).until(() -> !intake.intakeSwitch())).andThen(new Handoff()));
 		left_js.button(3).onTrue(shooter.runFeeder());
-		// p		left_js.button(2)
-		// p				.onTrue(new SequentialCommandGroup(
-		// p					new WaitCommand(0.5)
-		// p						new InstantCommand(() -> shooter.runMotors(0.5)),
-		// p						shooter.runFeeder(),
-		// p						new ParallelRaceGroup(
-		// p										.andThen(new WaitUntilCommand(() -> shooter.isReady()).withTimeout(70)),
-		// p								new ParallelCommandGroup(new FaceSpeakerDrive(), shooter.autoShoot())
-		// p										.until(() -> !shooter.ringLoaded())),
-		// p						new WaitCommand(0.5),
-		// p						new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0))
-		// p								.until(() -> !shooter.ringLoaded()),
-		// p						new InstantCommand(() -> shooter.runMotors(0.5))));
+		left_js.button(2)
+				.onTrue(new SequentialCommandGroup(
+						new InstantCommand(() -> shooter.runMotors(0.5)),
+						shooter.runFeeder(),
+						new ParallelRaceGroup(
+								new WaitCommand(0.5)
+										.andThen(new WaitUntilCommand(() -> shooter.isReady()).withTimeout(70)),
+								new ParallelCommandGroup(new FaceSpeakerDrive(), shooter.autoShoot())
+										.until(() -> !shooter.ringLoaded())),
+						new WaitCommand(0.5),
+						new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0))
+								.until(() -> !shooter.ringLoaded()),
+						new InstantCommand(() -> shooter.runMotors(0.5))));
 		left_js.button(1)
 				.onTrue(new SetPivot(115)
 						.andThen(new WaitUntilCommand(() -> intake.getAngle().getDegrees() > 0))
@@ -133,7 +133,7 @@ public class RobotContainer {
 								.andThen(new Handoff().withTimeout(4))));
 		// left_js.button(2)
 		//		.whileTrue(new StartEndCommand(() -> leds.flashLeds(Color.kPink), () -> leds.flashLeds(Color.kBlack)));
-		left_js.button(2).onTrue(new InstantCommand(() -> imu.zeroYaw()));
+		// left_js.button(2).onTrue(new InstantCommand(() -> imu.zeroYaw()));
 		left_js.button(4)
 				.onTrue(shooter.toAngleDegreeCommand(25)
 						.alongWith(shooter.muzzleLoad()
@@ -168,11 +168,12 @@ public class RobotContainer {
 		// ds.button(6).onTrue(shooter15.toAngleCommand(Rotation2d.fromDegrees(55)));
 		ds.button(6).onTrue(shooter.toAngleDegreeCommand(65).andThen(shooter.shootSingle(0.45)));
 		ds.button(14).onTrue(new SetPivot(-85).andThen(shooter.toAngleDegreeCommand(55)));
-		ds.button(2)
-				.whileTrue(new InstantCommand(() -> shooter.runMotors(0))
-						.andThen(new InstantCommand(
-								() -> CommandScheduler.getInstance().cancelAll())));
+		// ds.button(2)
+		//		.whileTrue(new InstantCommand(() -> shooter.runMotors(0))
+		//				.andThen(new InstantCommand(
+		//						() -> CommandScheduler.getInstance().cancelAll())));
 		ds.button(3).whileTrue(new InstantCommand(() -> leds.flashLeds(new Color(255, 0, 0))));
+		ds.button(6).onTrue(new SetPivot(-85).andThen(shooter.toAngleCommand(Rotation2d.fromDegrees(45))));
 		// .whileTrue(new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0)));
 
 	}

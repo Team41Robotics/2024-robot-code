@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.04,
-      "y": 4.14
+      "x": 1.0,
+      "y": 4.0
     },
     "rotation": 126.29340815330868
   },
@@ -30,15 +30,22 @@
           }
         },
         {
-          "type": "named",
+          "type": "parallel",
           "data": {
-            "name": "IntakeDown"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ShootCycle"
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "IntakeDown"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "ShootCycle"
+                }
+              }
+            ]
           }
         },
         {
