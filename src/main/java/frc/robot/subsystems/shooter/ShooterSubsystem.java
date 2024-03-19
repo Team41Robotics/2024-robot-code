@@ -38,6 +38,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.constants.Constants;
@@ -60,8 +61,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	// private final BangBangController bang_top = new BangBangController(200);
 	// private final BangBangController bang_bot = new BangBangController(200);
-	PIDController pid_top = new PIDController(6 / 6000., 0 / 12000., 0);
-	PIDController pid_bot = new PIDController(6 / 6000., 0 / 12000., 0);
+	PIDController pid_top = new PIDController(3 / 6000., 0 / 12000., 0);
+	PIDController pid_bot = new PIDController(3 / 6000., 0 / 12000., 0);
 
 	private final DigitalInput middleBeamBreak = new DigitalInput(MIDDLE_BEAM_BREAK_PORT);
 	public final CANSparkMax feeder = new CANSparkMax(FEEDER_MOTOR, MotorType.kBrushless);
@@ -78,9 +79,15 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	public ShooterSubsystem() {
 
+		sm_bot.restoreFactoryDefaults();
+		sm_top.restoreFactoryDefaults();
 		angleMotor2.follow(angleMotor, true);
 		angleMotor.setIdleMode(IdleMode.kBrake);
 		angleMotor2.setIdleMode(IdleMode.kBrake);
+
+		// sm_top.setSmartCurrentLimit(60);
+		// sm_bot.setSmartCurrentLimit(60);
+
 		sm_top.setIdleMode(IdleMode.kCoast);
 		sm_bot.setIdleMode(IdleMode.kCoast);
 		sm_top.setInverted(true);
@@ -215,7 +222,9 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	public void runMotors(double speed) {
 		pid_bot.setSetpoint(speed * 6000);
-		pid_top.setSetpoint(speed * 0.85 * 6000);
+		new WaitCommand(0.6)
+				.andThen(new InstantCommand(() -> pid_top.setSetpoint(speed * 0.85 * 6000)))
+				.schedule();
 	}
 
 	public boolean isReady() {

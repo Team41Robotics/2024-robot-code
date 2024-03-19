@@ -9,8 +9,12 @@ import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.DutyCycleEncoder;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -23,6 +27,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
 	DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(1);
 
+	Translation3d intake_pos = new Translation3d(0, Units.inchesToMeters(12.23), Units.inchesToMeters(6.878));
 	CANSparkMax pivotMotor = new CANSparkMax(INTAKE_PIVOT_MOTOR, MotorType.kBrushless);
 	CANSparkMax turnMotor = new CANSparkMax(INTAKE_FEEDER_MOTOR, MotorType.kBrushless);
 	public double kg = 0; // 0.25;
@@ -93,6 +98,10 @@ public class IntakeSubsystem extends SubsystemBase {
 
 		// System.out.println(getAngle().getDegrees() + "\t" + out);
 		runPivot();
+
+		Logger.recordOutput(
+				"3DPoses/intake",
+				new Pose3d(intake_pos, new Rotation3d(getAngle().getRadians(), 0, 0)));
 		Logger.recordOutput("Pivot/RawAngle", pivotEncoder.getAbsolutePosition());
 		Logger.recordOutput("Pivot/Angle", getAngle().getDegrees());
 		Logger.recordOutput("Pivot/kg", kg);

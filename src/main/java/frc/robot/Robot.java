@@ -31,7 +31,7 @@ public class Robot extends LoggedRobot {
 
 		Logger.recordMetadata("ProjectName", "Robot2024");
 		if (isReal()) {
-			// Logger.addDataReceiver(new WPILOGWriter("/E/logs"));
+			Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
 			Logger.addDataReceiver(new NT4Publisher());
 		} else {
 			setUseTiming(false);

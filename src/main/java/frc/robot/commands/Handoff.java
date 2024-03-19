@@ -14,11 +14,11 @@ import frc.robot.commands.intake.SetPivot;
 public class Handoff extends SequentialCommandGroup {
 	public Handoff() {
 		super(
-				new InstantCommand(() -> shooter.runMotors(0.45)),
 				new ParallelCommandGroup(shooter.toAngleCommand(Rotation2d.fromDegrees(65)), new SetPivot(-85)),
 				new WaitUntilCommand(() -> intake.angleAtSetpoint()),
 				new PrintCommand("waiting for intake"),
 				new WaitUntilCommand(() -> shooter.angleAtSetpoint()),
+				new InstantCommand(() -> shooter.runMotors(0.45)),
 				shooter.runFeeder()
 						.deadlineWith(
 								new StartEndCommand(() -> intake.runIntakeMotor(-0.5), () -> intake.stopIntakeMotor()))
