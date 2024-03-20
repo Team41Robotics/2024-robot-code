@@ -182,7 +182,7 @@ public class RobotContainer {
 		// ds.button(3).whileTrue(new InstantCommand(() -> leds.flashLeds(new Color(255, 0, 0))));
 		ds.button(6).onTrue(new SetPivot(-85).andThen(shooter.toAngleCommand(Rotation2d.fromDegrees(45))));
 
-		ds.button(7).onTrue(new SetPivot(10));
+		ds.button(7).onTrue(shooter.toAngleDegreeCommand(30).andThen(shooter.ampShoot()));
 		// .whileTrue(new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0)));
 
 	}

@@ -27,6 +27,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -61,8 +62,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	// private final BangBangController bang_top = new BangBangController(200);
 	// private final BangBangController bang_bot = new BangBangController(200);
-	PIDController pid_top = new PIDController(3 / 6000., 0 / 12000., 0);
-	PIDController pid_bot = new PIDController(3 / 6000., 0 / 12000., 0);
+	PIDController pid_top = new PIDController(6 / 6000., 0 / 12000., 0);
+	PIDController pid_bot = new PIDController(6 / 6000., 0 / 12000., 0);
 
 	private final DigitalInput middleBeamBreak = new DigitalInput(MIDDLE_BEAM_BREAK_PORT);
 	public final CANSparkMax feeder = new CANSparkMax(FEEDER_MOTOR, MotorType.kBrushless);
@@ -70,7 +71,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	DutyCycleEncoder angleEncoder = new DutyCycleEncoder(SHOOTER_ENCODER);
 	AnalogInput ringSensorAnalogInput = new AnalogInput(RING_SENSOR);
 	Trigger ringSensor = new Trigger(() -> (ringSensorAnalogInput.getVoltage() <= BEAM_BREAK_THRESHOLD));
-	public PIDController angle_pid = new PIDController(1e-2, 0, 0);
+	public PIDController angle_pid = new PIDController(3e-2, 0, 0.0);
 
 	private Optional<Rotation2d> target_angle = Optional.empty();
 
@@ -165,6 +166,9 @@ public class ShooterSubsystem extends SubsystemBase {
 		Logger.recordOutput("Shooter/Motors/TopMotor/Speed", sm_top.getEncoder().getVelocity());
 		Logger.recordOutput("Shooter/Motors/BotMotor/Speed", sm_bot.getEncoder().getVelocity());
 
+		Logger.recordOutput("Shooter/Motors/TopMotor/setPoint", pid_top.getSetpoint());
+		Logger.recordOutput("Shooter/Motors/BotMotor/setPoint", pid_bot.getSetpoint());
+
 		Logger.recordOutput("Shooter/Motors/TopMotor/Current", top_curr.calculate(sm_top.getOutputCurrent()));
 		Logger.recordOutput("Shooter/Motors/BotMotor/Current", bot_curr.calculate(sm_bot.getOutputCurrent()));
 
@@ -177,6 +181,12 @@ public class ShooterSubsystem extends SubsystemBase {
 		Logger.recordOutput("Shooter/MiddleBeamBreak", middleBeamBreak.get());
 	}
 
+	private double getXVel() {
+		ChassisSpeeds velocity = drive.getVelocity();
+		double theta = drive.getPose().getRotation().getRadians();
+		return Math.sin(theta) * velocity.vyMetersPerSecond + Math.cos(theta) * velocity.vxMetersPerSecond;
+	}
+
 	public double calculateAngle() {
 		double targetY = TARGET_Y;
 		double targetX = Util.isRed() ? TARGET_X_RED : TARGET_X_BLUE;
@@ -186,7 +196,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
 		double y = TARGET_HEIGHT - SHOOTER_HEIGHT;
 		double flight_time = distance
-				/ (NOTE_VELOCITY)
+				/ (NOTE_VELOCITY + getXVel())
 				* MathUtil.clamp(sm_bot.getEncoder().getVelocity() / pid_bot.getSetpoint(), 0.25, 1);
 		y += 9.8 / 2 * flight_time * flight_time;
 		Logger.recordOutput("Angle", Units.radiansToDegrees(Math.atan(y / distance)));
@@ -228,8 +238,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	}
 
 	public boolean isReady() {
-		return Math.abs(pid_bot.getSetpoint() - en_bot.getVelocity()) < 250
-				&& Math.abs(angle_pid.getPositionError()) < 2;
+		return pid_bot.getSetpoint() - en_bot.getVelocity() < 250 && Math.abs(angle_pid.getPositionError()) < 2;
 	}
 
 	// Commands
@@ -250,16 +259,23 @@ public class ShooterSubsystem extends SubsystemBase {
 		return new StartEndCommand(() -> runMotors(speed), () -> runMotors(0)).until(ringSensor.negate());
 	}
 
-	public Command toAngleCommand(Supplier<Rotation2d> speed) {
-		return new InstantCommand(() -> setAngle(speed.get()));
+	public Command toAngleCommand(Supplier<Rotation2d> angle) {
+		return new InstantCommand(() -> setAngle(angle.get()));
 	}
 
-	public Command toAngleCommand(Rotation2d speed) {
-		return this.toAngleCommand(() -> speed);
+	public Command toAngleCommand(Rotation2d angle) {
+		return this.toAngleCommand(() -> angle);
 	}
 
-	public Command toAngleDegreeCommand(double speed) {
-		return this.toAngleCommand(() -> Rotation2d.fromDegrees(speed));
+	public Command toAngleDegreeCommand(double angle) {
+		return this.toAngleCommand(() -> Rotation2d.fromDegrees(angle));
+	}
+
+	public Command ampShoot() {
+		return this.runOnce(() -> {
+			pid_bot.setSetpoint(0.18);
+			pid_top.setSetpoint(-0.1);
+		});
 	}
 
 	public Command muzzleLoad() {

@@ -23,7 +23,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class FaceSpeakerDrive extends Command {
 
-	private PIDController wPID = new PIDController(1, 0.08, 0);
+	private PIDController wPID = new PIDController(1.5, 0.1, 0);
 
 	public FaceSpeakerDrive() {
 		addRequirements(drive);
@@ -37,14 +37,25 @@ public class FaceSpeakerDrive extends Command {
 		return Math.cos(theta) * velocity.vyMetersPerSecond + Math.sin(theta) * velocity.vxMetersPerSecond;
 	}
 
+	private double getXVel() {
+		ChassisSpeeds velocity = drive.getVelocity();
+		double theta = drive.getPose().getRotation().getRadians();
+		return Math.sin(theta) * velocity.vyMetersPerSecond + Math.cos(theta) * velocity.vxMetersPerSecond;
+	}
+
+	@Override
+	public void initialize() {
+		wPID.reset();
+	}
+
 	@Override
 	public void execute() {
 		Pose2d currentPose = drive.getPose();
 
 		double cX = currentPose.getX();
 		double dx = Util.getTargetX() - cX;
-		double flight_time = Math.abs(dx) / Constants.NOTE_VELOCITY;
-		double cY = currentPose.getY() + getYVel() * flight_time * 0;
+		double flight_time = Math.abs(dx) / (Constants.NOTE_VELOCITY + getXVel());
+		double cY = currentPose.getY() + getYVel() * flight_time;
 
 		double dy = TARGET_Y - cY;
 
