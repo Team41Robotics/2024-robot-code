@@ -13,7 +13,7 @@ import org.littletonrobotics.junction.Logger;
 
 public class ElevatorSubsystem extends SubsystemBase {
 
-	private static final int CLIMBER_MIN_HEIGHT = -50;
+	private static final int CLIMBER_MIN_HEIGHT = -70;
 	private static final int CLIMBER_MAX_HEIGHT = 40;
 	public TalonFX climberMotor1 = new TalonFX(ELEVATOR_MOTOR_LEFT);
 	public TalonFX climberMotor2 = new TalonFX(ELEVATOR_MOTOR_RIGHT);

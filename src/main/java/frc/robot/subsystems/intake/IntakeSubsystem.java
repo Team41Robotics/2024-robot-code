@@ -32,7 +32,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	CANSparkMax turnMotor = new CANSparkMax(INTAKE_FEEDER_MOTOR, MotorType.kBrushless);
 	public double kg = 0; // 0.25;
 	public ProfiledPIDController pivotPID =
-			new ProfiledPIDController(9, 0, 0.3, new TrapezoidProfile.Constraints(9, 11));
+			new ProfiledPIDController(7, 0, 0.1, new TrapezoidProfile.Constraints(9, 11));
 	public PIDController turnPID = new PIDController(0, 0, 0);
 
 	private DigitalInput limitSwitch = new DigitalInput(2);
@@ -63,7 +63,7 @@ public class IntakeSubsystem extends SubsystemBase {
 		double angle = pivotEncoder.getAbsolutePosition();
 		if (angle > 0.6) angle -= 1;
 		// angle -= pivotEncoder.getPositionOffset();
-		return Rotation2d.fromRotations(angle).minus(Rotation2d.fromDegrees(70));
+		return Rotation2d.fromRotations(angle).minus(Rotation2d.fromDegrees(75));
 		// return Rotation2d.fromRotations(pivotEncoder.getAbsolutePosition()).minus(Rotation2d.fromDegrees(70));
 		// negative is up
 	}

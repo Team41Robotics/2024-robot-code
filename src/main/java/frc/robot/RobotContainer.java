@@ -96,6 +96,17 @@ public class RobotContainer {
 						new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0))
 								.until(() -> !shooter.ringLoaded()),
 						new InstantCommand(() -> shooter.runMotors(0.5))));
+		NamedCommands.registerCommand(
+				"ShootCycle2",
+				new SequentialCommandGroup(
+						new InstantCommand(() -> shooter.runMotors(0.5)),
+						shooter.runFeeder(),
+						new ParallelRaceGroup(
+								new WaitUntilCommand(() -> shooter.isReady()).withTimeout(70),
+								new ParallelCommandGroup(shooter.autoShoot()).until(() -> !shooter.ringLoaded())),
+						new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0))
+								.until(() -> !shooter.ringLoaded()),
+						new InstantCommand(() -> shooter.runMotors(0.5))));
 
 		Pathfinding.setPathfinder(new LocalADStarAK());
 

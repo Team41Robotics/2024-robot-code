@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.0,
-      "y": 4.0
+      "x": 0.7141939224496041,
+      "y": 4.3386424065009646
     },
     "rotation": 126.29340815330868
   },
@@ -59,7 +59,7 @@
                     {
                       "type": "wait",
                       "data": {
-                        "waitTime": 2.0
+                        "waitTime": 2.5
                       }
                     },
                     {
@@ -91,9 +91,22 @@
           "data": {
             "commands": [
               {
-                "type": "wait",
+                "type": "race",
                 "data": {
-                  "waitTime": 2.0
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 2.5
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Handoff"
+                      }
+                    }
+                  ]
                 }
               },
               {
@@ -101,18 +114,12 @@
                 "data": {
                   "pathName": "New Path"
                 }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Handoff"
-                }
               }
             ]
           }
         },
         {
-          "type": "deadline",
+          "type": "race",
           "data": {
             "commands": [
               {
