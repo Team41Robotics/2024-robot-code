@@ -32,7 +32,6 @@ import frc.robot.subsystems.elevator.ElevatorSubsystem;
 import frc.robot.subsystems.intake.IntakeSubsystem;
 import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.util.LocalADStarAK;
-import frc.robot.util.Util;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 public class RobotContainer {
@@ -143,7 +142,7 @@ public class RobotContainer {
 						new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0))
 								.until(() -> !shooter.ringLoaded())));
 		left_js.button(1)
-				.onTrue(new SetPivot(115)
+				.onTrue(new SetPivot(120)
 						.andThen(new WaitUntilCommand(() -> intake.getAngle().getDegrees() > 0))
 						.andThen((intake.runIntake(0.75)
 										.until(() -> !intake.intakeSwitch())
@@ -177,8 +176,8 @@ public class RobotContainer {
 		ds.button(12).whileTrue(intake.runIntake(0.75)); // new Handoff());
 		ds.button(11).whileTrue(intake.runIntake(-0.75)); // new Handoff());
 		right_js.pov(0).onTrue(new InstantCommand(() -> leds.flashLeds(Color.kGreen)));
-		right_js.pov(180).onTrue(leds.twinkle((Util.isRed() ? Color.kRed : Color.kBlue)));
-		right_js.pov(270).onTrue(leds.RGBFade());
+		right_js.pov(180).onTrue(leds.twinkle(Color.kPink));
+		right_js.pov(270).onTrue(leds.twinkle(Color.kYellow));
 		right_js.pov(90).onTrue(leds.rainbow());
 		right_js.pov(45).onTrue(leds.fade(Color.kBlueViolet));
 
@@ -193,7 +192,8 @@ public class RobotContainer {
 		// ds.button(3).whileTrue(new InstantCommand(() -> leds.flashLeds(new Color(255, 0, 0))));
 		ds.button(6).onTrue(new SetPivot(-85).andThen(shooter.toAngleCommand(Rotation2d.fromDegrees(45))));
 
-		ds.button(7).onTrue(shooter.toAngleDegreeCommand(30).andThen(shooter.ampShoot()));
+		ds.button(7).onTrue(shooter.toAngleDegreeCommand(20).andThen(shooter.ampShoot()));
+
 		// .whileTrue(new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0)));
 
 	}

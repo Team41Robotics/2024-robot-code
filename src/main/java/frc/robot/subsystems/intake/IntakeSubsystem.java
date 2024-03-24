@@ -32,17 +32,19 @@ public class IntakeSubsystem extends SubsystemBase {
 	CANSparkMax turnMotor = new CANSparkMax(INTAKE_FEEDER_MOTOR, MotorType.kBrushless);
 	public double kg = 0; // 0.25;
 	public ProfiledPIDController pivotPID =
-			new ProfiledPIDController(7, 0, 0.1, new TrapezoidProfile.Constraints(9, 11));
+			new ProfiledPIDController(11, 0, 0.1, new TrapezoidProfile.Constraints(17, 19));
 	public PIDController turnPID = new PIDController(0, 0, 0);
 
 	private DigitalInput limitSwitch = new DigitalInput(2);
 	Optional<Rotation2d> target_angle = Optional.empty();
 
 	public IntakeSubsystem() {
+		turnMotor.restoreFactoryDefaults();
 		pivotMotor.setIdleMode(IdleMode.kCoast);
 		turnMotor.setIdleMode(IdleMode.kCoast);
 		pivotPID.setTolerance(10, 1);
 		pivotEncoder.setPositionOffset(pivotEncoder.getAbsolutePosition());
+		turnMotor.setSmartCurrentLimit(30);
 	}
 
 	public void runIntakeMotor(double speed) {
@@ -61,6 +63,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
 	public Rotation2d getAngle() {
 		double angle = pivotEncoder.getAbsolutePosition();
+		// System.out.println(angle);
 		if (angle > 0.6) angle -= 1;
 		// angle -= pivotEncoder.getPositionOffset();
 		return Rotation2d.fromRotations(angle).minus(Rotation2d.fromDegrees(75));
@@ -88,6 +91,9 @@ public class IntakeSubsystem extends SubsystemBase {
 				Math.abs(this.target_angle.get().getDegrees() - getAngle().getDegrees()));
 		Logger.recordOutput("Pivot/PID/err", pivotPID.getPositionError());
 		Logger.recordOutput("Pivot/AtGoal", angleAtSetpoint());
+		Logger.recordOutput("Pivot/PID/goal", pivotPID.getGoal().position);
+		Logger.recordOutput("Pivot/PID/setpoint", pivotPID.getSetpoint().position);
+
 		double adjusted_out = MathUtil.clamp(out - getAngle().getSin() * this.kg, -4, 4);
 		Logger.recordOutput("Pivot/Adjusted Out", adjusted_out);
 		Logger.recordOutput("Intake/LimitSwitch", limitSwitch.get());

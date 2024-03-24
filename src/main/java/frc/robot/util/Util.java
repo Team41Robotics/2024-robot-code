@@ -26,7 +26,7 @@ public class Util {
 
 	public static ChassisSpeeds joystickToSpeeds(double vx, double vy, double w, boolean turbo, Rotation2d rot) {
 		double mag = Math.hypot(vx, vy);
-		double mag_curved = MathUtil.clamp(Util.sensCurve(mag, 0.1) * 1.5, -1, 1);
+		double mag_curved = MathUtil.clamp(Util.sensCurve(mag, 0.15) * 1.5, -1, 1);
 
 		double theta = Math.atan2(vy, vx);
 		double sign = isRed() ? -1.0 : 1.0;

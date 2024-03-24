@@ -71,7 +71,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	DutyCycleEncoder angleEncoder = new DutyCycleEncoder(SHOOTER_ENCODER);
 	AnalogInput ringSensorAnalogInput = new AnalogInput(RING_SENSOR);
 	Trigger ringSensor = new Trigger(() -> (ringSensorAnalogInput.getVoltage() <= BEAM_BREAK_THRESHOLD));
-	public PIDController angle_pid = new PIDController(3e-2, 0, 0.0);
+	public PIDController angle_pid = new PIDController(5e-2, 0, 0.0);
 
 	private Optional<Rotation2d> target_angle = Optional.empty();
 
@@ -238,14 +238,13 @@ public class ShooterSubsystem extends SubsystemBase {
 	}
 
 	public boolean isReady() {
-		return pid_bot.getSetpoint() - en_bot.getVelocity() < 250 && Math.abs(angle_pid.getPositionError()) < 2;
+		return (pid_top.getSetpoint() - en_top.getVelocity() < 250 && Math.abs(angle_pid.getPositionError()) < 2)
+				&& (pid_bot.getSetpoint() - en_bot.getVelocity() < 250 && Math.abs(angle_pid.getPositionError()) < 2);
 	}
 
 	// Commands
 	public Command runFeeder() {
-		return this.run(() -> runFeederMotor(!middleBeamBreak.get() ? 0.3 : 0.7))
-				.until(ringSensor)
-				.finallyDo(() -> runFeederMotor(0));
+		return this.run(() -> runFeederMotor(0.2)).until(ringSensor).finallyDo(() -> runFeederMotor(0));
 		// return this.startEnd(() -> runFeederMotor(0.3), () -> runFeederMotor(0)).until(ringSensor;
 	}
 
