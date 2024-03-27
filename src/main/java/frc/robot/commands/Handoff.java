@@ -19,7 +19,7 @@ public class Handoff extends SequentialCommandGroup {
 				new WaitUntilCommand(() -> intake.angleAtSetpoint()),
 				new PrintCommand("waiting for intake"),
 				new WaitUntilCommand(() -> shooter.angleAtSetpoint()),
-				new WaitCommand(0.2),
+				new WaitCommand(0.15),
 				new InstantCommand(() -> shooter.runMotors(0.7)),
 				shooter.runFeeder()
 						.deadlineWith(

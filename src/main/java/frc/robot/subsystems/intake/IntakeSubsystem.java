@@ -32,7 +32,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	CANSparkMax turnMotor = new CANSparkMax(INTAKE_FEEDER_MOTOR, MotorType.kBrushless);
 	public double kg = 0; // 0.25;
 	public ProfiledPIDController pivotPID =
-			new ProfiledPIDController(11, 0, 0.1, new TrapezoidProfile.Constraints(17, 19));
+			new ProfiledPIDController(30, 0, 0.1, new TrapezoidProfile.Constraints(40, 40));
 	public PIDController turnPID = new PIDController(0, 0, 0);
 
 	private DigitalInput limitSwitch = new DigitalInput(2);
