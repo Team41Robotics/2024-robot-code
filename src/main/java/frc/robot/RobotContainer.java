@@ -126,18 +126,18 @@ public class RobotContainer {
 		right_js.button(2).onTrue(elevator.zeroEncoders());
 
 		ds.button(3).onTrue(shooter.feederShot());
-		left_js.button(3).onTrue(shooter.loadNote());
-		left_js.button(2).onTrue(new ShootCycle(shooter));
 		left_js.button(1)
-				.onTrue(intake.automaticIntake()
-						.until(left_js.button(1).negate())
-						.andThen(new Handoff().withTimeout(4)));
+			.onTrue(intake.automaticIntake()
+				.until(left_js.button(1).negate())
+				.andThen(new Handoff().withTimeout(4)));
 
+		left_js.button(2).onTrue(new ShootCycle(shooter));
+		left_js.button(3).onTrue(shooter.loadNote());
 		left_js.button(4)
-				.onTrue(shooter.toAngleDegreeCommand(25)
-						.alongWith(shooter.muzzleLoad()
-								.andThen(
-										shooter.toAngleDegreeCommand(45),
+			.onTrue(shooter.toAngleDegreeCommand(25)
+				.alongWith(shooter.muzzleLoad()
+					.andThen(
+						shooter.toAngleDegreeCommand(45),
 										new InstantCommand(() -> shooter.runMotors(0.3)))));
 
 		right_js.button(1)
