@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.Combinations;
 
 import static frc.robot.RobotContainer.*;
 
@@ -21,7 +21,7 @@ public class Handoff extends SequentialCommandGroup {
 				new WaitUntilCommand(() -> shooter.angleAtSetpoint()),
 				new WaitCommand(0.15),
 				new InstantCommand(() -> shooter.runMotors(0.7)),
-				shooter.runFeeder()
+				shooter.loadNote()
 						.deadlineWith(
 								new StartEndCommand(() -> intake.runIntakeMotor(-0.5), () -> intake.stopIntakeMotor()))
 						.until(ds.button(8)));

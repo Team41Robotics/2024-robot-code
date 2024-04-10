@@ -19,15 +19,12 @@ public class LEDS extends SubsystemBase {
 	public LEDS() {}
 
 	public void init() {
-		Color color = Color.kChartreuse;
 		leds.animate(new RainbowAnimation(0.5, 0.1, LED_LENGTH, false, 8));
-		// leds.animate(new FireAnimation(0.2, 0.05, 40, 0.1, 0.1, false, 8));
 	}
 
 	public void flashLeds(Color color) {
 		leds.animate(new StrobeAnimation(
 				(int) (color.red * 255), (int) (255 * color.green), (int) (color.blue) * 255, 0, 0.125, LED_LENGTH, 8));
-		// System.out.println("LEDS FLASHING!");
 	}
 
 	public void animate(Animation animation) {

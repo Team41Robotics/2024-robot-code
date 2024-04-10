@@ -1,6 +1,5 @@
 package frc.robot.util;
 
-import static frc.robot.constants.Constants.*;
 import static frc.robot.constants.Constants.FieldConstants.*;
 import static frc.robot.constants.Constants.RobotConstants.*;
 import static java.lang.Math.*;

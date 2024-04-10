@@ -165,14 +165,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	private Optional<EstimatedRobotPose> est_pos;
 
-	public void resetOdom() {
-
-		if (est_pos.isPresent()) {
-			EstimatedRobotPose new_pose = est_pos.get();
-			pose_est.addVisionMeasurement(new_pose.estimatedPose.toPose2d(), new_pose.timestampSeconds);
-		}
-	}
-
+	/**
+	 * Updates the state of the SwerveSubsystem periodically.
+	 * This method is called repeatedly to perform necessary updates and calculations.
+	 * It updates the pose estimation, vision measurements, and logging.
+	 */
 	public void periodic() {
 		for (SwerveModule module : modules) module.periodic();
 		pose_est.update(new Rotation2d(imu.yaw()), getPositions());
@@ -187,6 +184,11 @@ public class SwerveSubsystem extends SubsystemBase {
 		updateLogging();
 	}
 
+	/**
+	 * Returns the current estimated pose of the robot.
+	 *
+	 * @return the current estimated pose of the robot
+	 */
 	public Pose2d getPose() {
 		return pose_est.getEstimatedPosition();
 	}

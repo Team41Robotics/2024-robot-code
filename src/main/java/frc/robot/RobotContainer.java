@@ -8,7 +8,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
@@ -16,10 +15,11 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import frc.robot.commands.Handoff;
+import frc.robot.commands.Combinations.ShootCycle;
+import frc.robot.commands.Combinations.AimBot;
+import frc.robot.commands.Combinations.Handoff;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.FaceSpeakerDrive;
 import frc.robot.commands.elevator.manualElevator;
@@ -62,7 +62,7 @@ public class RobotContainer {
 
 		// NamedCommands.registerCommand("GoToRing", new GoToRing());
 		NamedCommands.registerCommand("ShooterUp", shooter.toAngleDegreeCommand(15));
-		NamedCommands.registerCommand("RunFeeder", shooter.runFeeder());
+		NamedCommands.registerCommand("RunFeeder", shooter.loadNote());
 		NamedCommands.registerCommand("RunIntake", (intake.runIntake(0.75).until(() -> !intake.intakeSwitch())));
 		NamedCommands.registerCommand(
 				"AutoShoot",
@@ -85,7 +85,7 @@ public class RobotContainer {
 				"ShootCycle",
 				new SequentialCommandGroup(
 						new InstantCommand(() -> shooter.runMotors(0.5)),
-						shooter.runFeeder(),
+						shooter.loadNote(),
 						new ParallelRaceGroup(
 								new WaitUntilCommand(() -> shooter.isReady()).withTimeout(70),
 								new ParallelCommandGroup(new FaceSpeakerDrive(), shooter.autoShoot())
@@ -97,7 +97,7 @@ public class RobotContainer {
 				"ShootCycle2",
 				new SequentialCommandGroup(
 						new InstantCommand(() -> shooter.runMotors(0.5)),
-						shooter.runFeeder(),
+						shooter.loadNote(),
 						new ParallelRaceGroup(
 								new WaitUntilCommand(() -> shooter.isReady()).withTimeout(70),
 								new ParallelCommandGroup(shooter.autoShoot()).until(() -> !shooter.ringLoaded())),
@@ -112,10 +112,10 @@ public class RobotContainer {
 	}
 
 	public static void configureButtonBindings() {
-		// straight up
-		ds.button(1).onTrue(shooter.toAngleDegreeCommand(35).andThen(shooter.shootSingle(0.7)));
+
+		ds.button(1).onTrue(shooter.subwooferShot());
 		ds.button(2).whileTrue(new manualElevator());
-		ds.button(2).onTrue(new InstantCommand(() -> shooter.runMotors(0)));
+		ds.button(2).onTrue(shooter.stopMotors());
 		// handoff syste m
 		right_js.button(1)
 				.and(shooter::isReady)
@@ -125,30 +125,14 @@ public class RobotContainer {
 
 		right_js.button(2).onTrue(elevator.zeroEncoders());
 
-		ds.button(3).onTrue(shooter.toAngleDegreeCommand(80).andThen(shooter.shootSingle(0.7)));
-		//	ds.button(3).onTrue((intake.runIntake(0.75).until(() -> !intake.intakeSwitch())).andThen(new Handoff()));
-		left_js.button(3).onTrue(shooter.runFeeder());
-		left_js.button(2)
-				.onTrue(new SequentialCommandGroup(
-						shooter.runFeeder(),
-						new ParallelRaceGroup(
-								new WaitCommand(0.5)
-										.andThen(new WaitUntilCommand(() -> shooter.isReady()).withTimeout(70)),
-								new ParallelCommandGroup(new FaceSpeakerDrive(), shooter.autoShoot())
-										.until(() -> !shooter.ringLoaded())),
-						new WaitCommand(0.5),
-						new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0))
-								.until(() -> !shooter.ringLoaded())));
+		ds.button(3).onTrue(shooter.feederShot());
+		left_js.button(3).onTrue(shooter.loadNote());
+		left_js.button(2).onTrue(new ShootCycle(shooter));
 		left_js.button(1)
-				.onTrue(new SetPivot(120)
-						.andThen(new WaitUntilCommand(() -> intake.getAngle().getDegrees() > 0))
-						.andThen((intake.runIntake(0.75)
-										.until(() -> !intake.intakeSwitch())
-										.until(left_js.button(1).negate()))
-								.andThen(new Handoff().withTimeout(4))));
-		// left_js.button(2)
-		//		.whileTrue(new StartEndCommand(() -> leds.flashLeds(Color.kPink), () -> leds.flashLeds(Color.kBlack)));
-		// left_js.button(2).onTrue(new InstantCommand(() -> imu.zeroYaw()));
+				.onTrue(intake.automaticIntake()
+						.until(left_js.button(1).negate())
+						.andThen(new Handoff().withTimeout(4)));
+
 		left_js.button(4)
 				.onTrue(shooter.toAngleDegreeCommand(25)
 						.alongWith(shooter.muzzleLoad()
@@ -158,13 +142,7 @@ public class RobotContainer {
 
 		right_js.button(1)
 				.and(() -> shooter.ringLoaded())
-				.whileTrue(new ConditionalCommand(
-						new ParallelCommandGroup(new FaceSpeakerDrive(), shooter.autoShoot())
-								.until(() -> !shooter.ringLoaded())
-								.andThen(shooter.toAngleDegreeCommand(90)),
-						shooter.toAngleDegreeCommand(20).andThen(new InstantCommand(() -> shooter.runMotors(.7))),
-						ds.button(15)));
-		// right_js.button(1).whileTrue(intake.runIntake(0.6));
+				.whileTrue(new AimBot(shooter, ds.button(15)));
 		ds.button(9).onTrue(new SetPivot(115));
 		ds.button(10).onTrue(new Handoff());
 
@@ -179,20 +157,14 @@ public class RobotContainer {
 		right_js.pov(90).onTrue(leds.rainbow());
 		right_js.pov(45).onTrue(leds.fade(Color.kBlueViolet));
 
-		// ds.button(12).onTrue(shooter.autoShoot());
-		// ds.button(6).onTrue(shooter15.toAngleCommand(Rotation2d.fromDegrees(55)));
+
 		ds.button(6).onTrue(shooter.toAngleDegreeCommand(65).andThen(shooter.shootSingle(0.45)));
 		ds.button(14).onTrue(new SetPivot(-85).andThen(shooter.toAngleDegreeCommand(55)));
-		// ds.button(2)
-		//		.whileTrue(new InstantCommand(() -> shooter.runMotors(0))
-		//				.andThen(new InstantCommand(
-		//						() -> CommandScheduler.getInstance().cancelAll())));
-		// ds.button(3).whileTrue(new InstantCommand(() -> leds.flashLeds(new Color(255, 0, 0))));
+
 		ds.button(6).onTrue(new SetPivot(-85).andThen(shooter.toAngleCommand(Rotation2d.fromDegrees(45))));
 
 		ds.button(7).onTrue(shooter.toAngleDegreeCommand(20).andThen(shooter.ampShoot()));
 
-		// .whileTrue(new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0)));
 
 	}
 

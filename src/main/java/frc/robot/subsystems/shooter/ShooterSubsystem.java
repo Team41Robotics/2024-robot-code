@@ -55,7 +55,6 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	public final CANSparkFlex sm_top = new CANSparkFlex(SHOOTER_MOTOR_TOP, MotorType.kBrushless);
 	public final CANSparkFlex sm_bot = new CANSparkFlex(SHOOTER_MOTOR_BOT, MotorType.kBrushless);
-	private double sign = 1;
 	private final RelativeEncoder en_top = sm_top.getEncoder();
 	private final RelativeEncoder en_bot = sm_bot.getEncoder();
 	LinearFilter top_curr = LinearFilter.movingAverage(5);
@@ -245,6 +244,11 @@ public class ShooterSubsystem extends SubsystemBase {
 		feeder.set(percent);
 	}
 
+	/**
+	 * Checks if a ring is loaded in the shooter subsystem.
+	 *
+	 * @return true if a ring is loaded, false otherwise
+	 */
 	public boolean ringLoaded() {
 		return ringSensor.getAsBoolean();
 	}
@@ -279,7 +283,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	 *
 	 * @return The command to run the feeder.
 	 */
-	public Command runFeeder() {
+	public Command loadNote() {
 		return this.run(() -> runFeederMotor(0.2)).until(ringSensor).finallyDo(() -> runFeederMotor(0));
 	}
 
@@ -363,7 +367,19 @@ public class ShooterSubsystem extends SubsystemBase {
 				new WaitUntilCommand(ringSensor),
 				new InstantCommand(() -> runFeederMotor(-0.2)),
 				new WaitUntilCommand(ringSensor.negate()),
-				this.runFeeder(),
-				new InstantCommand(() -> runMotors(0)));
+				this.loadNote(),
+				stopMotors());
+	}
+
+	public Command subwooferShot() {
+		return toAngleDegreeCommand(35).andThen(shootSingle(0.7));
+	}
+
+	public Command stopMotors() {
+		return this.runOnce(() -> runMotors(0));
+	}
+
+	public Command feederShot() {
+		return toAngleDegreeCommand(80).andThen(shootSingle(0.7));
 	}
 }
