@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import frc.robot.commands.Handoff;
 import frc.robot.commands.drive.DefaultDrive;
-import frc.robot.commands.drive.FaceSpeaker;
 import frc.robot.commands.drive.FaceSpeakerDrive;
 import frc.robot.commands.elevator.manualElevator;
 import frc.robot.commands.intake.SetPivot;
@@ -62,7 +61,6 @@ public class RobotContainer {
 		leds.init();
 
 		// NamedCommands.registerCommand("GoToRing", new GoToRing());
-		NamedCommands.registerCommand("FaceSpeaker", new FaceSpeaker());
 		NamedCommands.registerCommand("ShooterUp", shooter.toAngleDegreeCommand(15));
 		NamedCommands.registerCommand("RunFeeder", shooter.runFeeder());
 		NamedCommands.registerCommand("RunIntake", (intake.runIntake(0.75).until(() -> !intake.intakeSwitch())));

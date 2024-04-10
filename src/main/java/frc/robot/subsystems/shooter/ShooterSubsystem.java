@@ -1,8 +1,8 @@
 package frc.robot.subsystems.shooter;
 
 import static frc.robot.RobotContainer.drive;
-import static frc.robot.RobotContainer.ds;
 import static frc.robot.constants.Constants.FEEDER_MOTOR;
+import static frc.robot.constants.Constants.FieldConstants.*;
 import static frc.robot.constants.Constants.MIDDLE_BEAM_BREAK_PORT;
 import static frc.robot.constants.Constants.NOTE_VELOCITY;
 import static frc.robot.constants.Constants.RING_SENSOR;
@@ -14,9 +14,6 @@ import static frc.robot.constants.Constants.SHOOTER_MOTOR_TOP;
 import static frc.robot.constants.Constants.SHOOTER_PIVOT_MOTOR1;
 import static frc.robot.constants.Constants.SHOOTER_PIVOT_MOTOR2;
 import static frc.robot.constants.Constants.TARGET_HEIGHT;
-import static frc.robot.constants.Constants.TARGET_X_BLUE;
-import static frc.robot.constants.Constants.TARGET_X_RED;
-import static frc.robot.constants.Constants.TARGET_Y;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
@@ -27,7 +24,6 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.DigitalInput;
@@ -48,6 +44,11 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * The ShooterSubsystem class represents the shooter subsystem of the robot.
+ * It controls the angle and speed of the shooter motors, as well as the feeder motor.
+ * The subsystem also provides methods for calculating the shooting angle and checking if a ring is loaded.
+ */
 public class ShooterSubsystem extends SubsystemBase {
 	public final CANSparkMax angleMotor = new CANSparkMax(SHOOTER_PIVOT_MOTOR1, MotorType.kBrushless);
 	public final CANSparkMax angleMotor2 = new CANSparkMax(SHOOTER_PIVOT_MOTOR2, MotorType.kBrushless);
@@ -112,8 +113,12 @@ public class ShooterSubsystem extends SubsystemBase {
 		return Rotation2d.fromRotations(-angle);
 	}
 
-	public void init() {}
-
+	/**
+	 * Runs the pivot mechanism of the shooter subsystem.
+	 * If the target angle is not set, the method returns without performing any action.
+	 * Calculates the output using the angle PID controller and records relevant outputs to the logger.
+	 * Sets the angle motor output based on the calculated output, clamped between -0.25 and 0.25 volts.
+	 */
 	private void runPivot() {
 		if (target_angle.isEmpty()) return;
 
@@ -139,6 +144,11 @@ public class ShooterSubsystem extends SubsystemBase {
 		return angle_pid.atSetpoint();
 	}
 
+	/**
+	 * Runs the shooters and records their output.
+	 * If the setpoint of the bottom shooter is 0, the voltage of both shooters is set to 0.
+	 * Otherwise, the voltage of each shooter is calculated based on PID + FeedForward.
+	 */
 	private void runShooters() {
 		Logger.recordOutput("Shooter/Setpoint", pid_top.getSetpoint());
 		Logger.recordOutput("Shooter/Output", pid_top.calculate(en_top.getVelocity()));
@@ -155,10 +165,14 @@ public class ShooterSubsystem extends SubsystemBase {
 	public void periodic() {
 		runShooters();
 		runPivot();
-		boolean toggle = ds.button(2).getAsBoolean();
-		// angleMotor.setIdleMode(toggle ? IdleMode.kBrake : IdleMode.kCoast);
-		// angleMotor2.setIdleMode(toggle ? IdleMode.kBrake : IdleMode.kCoast);
+		logTelemetry();
+	}
 
+	/**
+	 * Logs telemetry data for the shooter subsystem.
+	 * This method records various sensor readings and motor outputs to the logger.
+	 */
+	private void logTelemetry() {
 		Logger.recordOutput("Shooter/IsReady", isReady());
 		Logger.recordOutput("Shooter/Angle", angleEncoder.getAbsolutePosition());
 		Logger.recordOutput("Shooter/CorrectedAngle", getAngle().getRotations());
@@ -181,12 +195,13 @@ public class ShooterSubsystem extends SubsystemBase {
 		Logger.recordOutput("Shooter/MiddleBeamBreak", middleBeamBreak.get());
 	}
 
-	private double getXVel() {
-		ChassisSpeeds velocity = drive.getVelocity();
-		double theta = drive.getPose().getRotation().getRadians();
-		return Math.sin(theta) * velocity.vyMetersPerSecond + Math.cos(theta) * velocity.vxMetersPerSecond;
-	}
-
+	/**
+	 * Calculates the angle needed to shoot the target based on the robot's position and target coordinates.
+	 * <p>
+	 * Uses estimated drop due to gravity along with inverse trig to
+	 *
+	 * @return The angle in degrees.
+	 */
 	public double calculateAngle() {
 		double targetY = TARGET_Y;
 		double targetX = Util.isRed() ? TARGET_X_RED : TARGET_X_BLUE;
@@ -196,7 +211,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
 		double y = TARGET_HEIGHT - SHOOTER_HEIGHT;
 		double flight_time = distance
-				/ (NOTE_VELOCITY + getXVel())
+				/ (NOTE_VELOCITY + drive.getXVel())
 				* MathUtil.clamp(sm_bot.getEncoder().getVelocity() / pid_bot.getSetpoint(), 0.25, 1);
 		y += 9.8 / 2 * flight_time * flight_time;
 		Logger.recordOutput("Angle", Units.radiansToDegrees(Math.atan(y / distance)));
@@ -212,8 +227,12 @@ public class ShooterSubsystem extends SubsystemBase {
 		angleEncoder.setPositionOffset(angleEncoder.getAbsolutePosition());
 	}
 
-	public void setAngle(Rotation2d angle) { // someone is kinda stpuid
-		// TODO
+	/**
+	 * Sets the angle of the shooter, and clamps it between 0 and 90 degrees.
+	 *
+	 * @param angle the desired angle of the shooter
+	 */
+	public void setAngle(Rotation2d angle) {
 		if (angle.getDegrees() < 0 || angle.getDegrees() > 90) {
 			this.target_angle = Optional.of(Rotation2d.fromDegrees(15));
 			System.out.println("ERROR: Out of bounds angle");
@@ -230,6 +249,12 @@ public class ShooterSubsystem extends SubsystemBase {
 		return ringSensor.getAsBoolean();
 	}
 
+	/**
+	 * Runs the shooter motors at the specified speed, with the top motor not being changed until after 0.6 seconds
+	 * the top motor gets run at 0.85 times the speed of the bottom motor
+	 *
+	 * @param speed the speed at which to run the motors from 0-1
+	 */
 	public void runMotors(double speed) {
 		pid_bot.setSetpoint(speed * 6000);
 		new WaitCommand(0.6)
@@ -237,39 +262,83 @@ public class ShooterSubsystem extends SubsystemBase {
 				.schedule();
 	}
 
+	/**
+	 * Checks if the shooter is ready to shoot.
+	 * The shooter is considered ready if the top and bottom PID setpoints are within 250 rpm of their respective velocities,
+	 * and the angle PID position error is less than 2 degrees.
+	 *
+	 * @return true if the shooter is ready, false otherwise
+	 */
 	public boolean isReady() {
 		return (pid_top.getSetpoint() - en_top.getVelocity() < 250 && Math.abs(angle_pid.getPositionError()) < 2)
 				&& (pid_bot.getSetpoint() - en_bot.getVelocity() < 250 && Math.abs(angle_pid.getPositionError()) < 2);
 	}
 
-	// Commands
+	/**
+	 * Runs the feeder motor until the ring sensor is triggered and then stops the motor.
+	 *
+	 * @return The command to run the feeder.
+	 */
 	public Command runFeeder() {
 		return this.run(() -> runFeederMotor(0.2)).until(ringSensor).finallyDo(() -> runFeederMotor(0));
-		// return this.startEnd(() -> runFeederMotor(0.3), () -> runFeederMotor(0)).until(ringSensor;
 	}
 
+	/**
+	 * Executes the autoShoot command. Spins the motors up to shooting speed and sets the target angle to optimal angle
+	 *
+	 * @return The command to start autoshoot
+	 */
 	public Command autoShoot() {
 		return shootSingle(Constants.SHOOTER_SPEAKER_SPEED)
 				.deadlineWith(new RunCommand(() -> setAngle(Rotation2d.fromDegrees(calculateAngle()))))
 				.andThen(new InstantCommand(() -> runMotors(0.4)));
 	}
 
+	/**
+	 * Creates a command to shoot a note ball at a specified speed.
+	 *
+	 * @param speed the speed at which to shoot the note
+	 * @return the command to shoot the note
+	 */
 	public Command shootSingle(double speed) {
 		return new StartEndCommand(() -> runMotors(speed), () -> runMotors(0)).until(ringSensor.negate());
 	}
 
+	/**
+	 * Creates a Command object that sets the angle of the pivot based on the provided angle supplier.
+	 *
+	 * @param angle the supplier that provides the desired angle for the pivot
+	 * @return the command
+	 */
 	public Command toAngleCommand(Supplier<Rotation2d> angle) {
 		return new InstantCommand(() -> setAngle(angle.get()));
 	}
 
+	/**
+	 * Creates a Command object that sets the pivot to a specific angle.
+	 *
+	 * @param angle the desired angle for the pivot subsystem
+	 * @return the command
+	 */
 	public Command toAngleCommand(Rotation2d angle) {
 		return this.toAngleCommand(() -> angle);
 	}
 
+	/**
+	 * Returns a Command object that sets the pivot to a specific angle in degrees.
+	 *
+	 * @param angle the desired angle in degrees
+	 * @return the command
+	 */
 	public Command toAngleDegreeCommand(double angle) {
 		return this.toAngleCommand(() -> Rotation2d.fromDegrees(angle));
 	}
 
+	/**
+	 * Preset speeds for a shot in the AMP
+	 * TODO: Make Work
+	 * @return The shooting command.
+	 */
 	public Command ampShoot() {
 		return this.runOnce(() -> {
 			pid_bot.setSetpoint(0.18);
@@ -277,6 +346,17 @@ public class ShooterSubsystem extends SubsystemBase {
 		});
 	}
 
+	/**
+	 * Returns a Command object that represents the process of muzzle loading.
+	 * The muzzle loading process includes running the motors at a negative speed,
+	 * waiting until the ring sensor detects a ring, running the feeder motor at a negative speed,
+	 * waiting until the ring sensor no longer detects a ring, running the feeder,
+	 * and finally stopping the motors.
+	 * <p>
+	 * yes, this is cursed, but it works quite well
+	 * The note will get sucked in, go past the sensor, and then moved forward a tiny bit to be ready to fire
+	 * @return a Command object representing the muzzle loading process
+	 */
 	public Command muzzleLoad() {
 		return new SequentialCommandGroup(
 				new InstantCommand(() -> runMotors(-0.2)),

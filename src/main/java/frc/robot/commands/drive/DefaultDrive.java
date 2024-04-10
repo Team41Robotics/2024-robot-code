@@ -10,6 +10,14 @@ import java.util.function.DoubleSupplier;
 public class DefaultDrive extends Command {
 	DoubleSupplier vx_sup, vy_sup, w_sup;
 
+	/**
+	 * Constructs a new defaultDrive command that controls the robot in a field oriented style
+	 * @param vx_sup a supplier for the vx component of velocity
+	 * @param vy_sup a supplier for the vy component of velocity
+	 * @param w_sup  a supplier for the desired rotation velocity
+	 *
+	 * @return the command
+	 */
 	public DefaultDrive(DoubleSupplier vx_sup, DoubleSupplier vy_sup, DoubleSupplier w_sup) {
 		addRequirements(drive);
 		this.vx_sup = vx_sup;
@@ -25,10 +33,6 @@ public class DefaultDrive extends Command {
 
 	@Override
 	public void execute() {
-		if (ds.button(2).getAsBoolean()) {
-			run(0, 0, 0);
-		} else {
-			run(vx_sup.getAsDouble(), vy_sup.getAsDouble(), w_sup.getAsDouble());
-		}
+		run(vx_sup.getAsDouble(), vy_sup.getAsDouble(), w_sup.getAsDouble());
 	}
 }

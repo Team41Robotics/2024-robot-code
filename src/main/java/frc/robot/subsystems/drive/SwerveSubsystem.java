@@ -2,6 +2,7 @@ package frc.robot.subsystems.drive;
 
 import static frc.robot.RobotContainer.*;
 import static frc.robot.constants.Constants.*;
+import static frc.robot.constants.Constants.RobotConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
@@ -40,6 +41,11 @@ public class SwerveSubsystem extends SubsystemBase {
 			new Translation2d(-ROBOT_LENGTH / 2, -ROBOT_WIDTH / 2));
 	public SwerveDrivePoseEstimator pose_est;
 
+	/**
+	 * Initializes the SwerveSubsystem with the given initial pose.
+	 *
+	 * @param init_pose The initial pose of the robot.
+	 */
 	public void init(Pose2d init_pose) {
 		pose_est = new SwerveDrivePoseEstimator(
 				kinematics,
@@ -66,12 +72,22 @@ public class SwerveSubsystem extends SubsystemBase {
 		});
 	}
 
+	/**
+	 * Returns an array of SwerveModulePosition objects representing the positions of the swerve modules.
+	 *
+	 * @return an array of SwerveModulePosition objects representing the positions of the swerve modules
+	 */
 	public SwerveModulePosition[] getPositions() {
 		SwerveModulePosition[] pos = new SwerveModulePosition[4];
 		for (int i = 0; i < 4; i++) pos[i] = modules[i].getPosition();
 		return pos;
 	}
 
+	/**
+	 * Returns the velocity of the swerve subsystem in terms of ChassisSpeeds.
+	 *
+	 * @return The velocity of the swerve subsystem as ChassisSpeeds.
+	 */
 	public ChassisSpeeds getVelocity() {
 		SwerveModuleState[] pos = new SwerveModuleState[4];
 		for (int i = 0; i < 4; i++) pos[i] = modules[i].getMeasuredState();
@@ -80,6 +96,11 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public ChassisSpeeds desired_speeds = new ChassisSpeeds();
 
+	/**
+	 * Drives the swerve subsystem at the specified speed.
+	 *
+	 * @param speed the desired speed of the swerve subsystem
+	 */
 	public void drive(ChassisSpeeds speed) {
 		speed = ChassisSpeeds.discretize(speed, 0.02);
 		desired_speeds = speed;
@@ -100,6 +121,10 @@ public class SwerveSubsystem extends SubsystemBase {
 		for (int i = 0; i < 4; i++) modules[i].setState(new SwerveModuleState(0, new Rotation2d(45)));
 	}
 
+	/**
+	 * Updates the logging information for the SwerveSubsystem.
+	 * Records various outputs such as speed setpoints, actual speeds, pose estimates, module setpoints, module speeds, and note positions.
+	 */
 	private void updateLogging() {
 		Logger.recordOutput("/Swerve/speed_setpoint", new double[] {
 			desired_speeds.vxMetersPerSecond, desired_speeds.vyMetersPerSecond, desired_speeds.omegaRadiansPerSecond
@@ -152,7 +177,7 @@ public class SwerveSubsystem extends SubsystemBase {
 		for (SwerveModule module : modules) module.periodic();
 		pose_est.update(new Rotation2d(imu.yaw()), getPositions());
 
-		est_pos = photon.getEstimatedGlobalPose(pose_est.getEstimatedPosition());
+		est_pos = photon.getEstimatedGlobalPose();
 		if (est_pos.isPresent()) {
 			EstimatedRobotPose new_pose = est_pos.get();
 			Logger.recordOutput("PhotonPose", new_pose.estimatedPose.toPose2d());
@@ -164,6 +189,33 @@ public class SwerveSubsystem extends SubsystemBase {
 
 	public Pose2d getPose() {
 		return pose_est.getEstimatedPosition();
+	}
+
+	/**
+	 * Returns the field oriented Y velocity of the robot in meters per second.
+	 * The Y velocity is calculated based on the current velocity of the robot and its orientation.
+	 *
+	 * @return the Y velocity of the robot in meters per second
+	 */
+	public double getYVel() {
+		ChassisSpeeds velocity = getVelocity();
+		double theta = getPose().getRotation().getRadians();
+		return Math.cos(theta) * velocity.vyMetersPerSecond + Math.sin(theta) * velocity.vxMetersPerSecond;
+	}
+
+	/**
+	 * Calculates the x-velocity of the robot based on the current chassis speeds.
+	 * The x-velocity is the component of the velocity in the x-direction of the robot's coordinate system.
+	 * It takes into account the robot's orientation and the velocity in the y-direction.
+	 *
+	 * @return The x-velocity of the robot.
+	 *
+	 * @return The x-velocity of the robot in meters per second.
+	 */
+	public double getXVel() {
+		ChassisSpeeds velocity = drive.getVelocity();
+		double theta = drive.getPose().getRotation().getRadians();
+		return Math.sin(theta) * velocity.vyMetersPerSecond + Math.cos(theta) * velocity.vxMetersPerSecond;
 	}
 
 	public Command followPath(String fileString) {

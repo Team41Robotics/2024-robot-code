@@ -60,15 +60,17 @@ public class IntakeSubsystem extends SubsystemBase {
 		if (Math.abs(pivotPID.getGoal().position - pivotPID.getSetpoint().position) > 1) return false;
 		return Math.abs(this.target_angle.get().getDegrees() - getAngle().getDegrees()) < 10;
 	}
-
+	/**
+	 * Returns the current angle of the intake, linearized and zeroed
+	 * <p>
+	 * 0 Degrees is straight up, -90 is directly inwards, and +90 is directly forwards
+	 *
+	 * @return angle of the intake
+	 */
 	public Rotation2d getAngle() {
 		double angle = pivotEncoder.getAbsolutePosition();
-		// System.out.println(angle);
 		if (angle > 0.6) angle -= 1;
-		// angle -= pivotEncoder.getPositionOffset();
 		return Rotation2d.fromRotations(angle).minus(Rotation2d.fromDegrees(75));
-		// return Rotation2d.fromRotations(pivotEncoder.getAbsolutePosition()).minus(Rotation2d.fromDegrees(70));
-		// negative is up
 	}
 
 	public boolean intakeSwitch() {
@@ -115,6 +117,13 @@ public class IntakeSubsystem extends SubsystemBase {
 		Logger.recordOutput("Intake/Vel", turnMotor.getEncoder().getVelocity());
 	}
 
+	/**
+	 * Returns a new startEnd command that runs the intake at a specified speed and stops it when the command ends
+	 *
+	 * @param speed the desired speed to run the intake at, -1 to 1
+	 *
+	 * @return the runIntake command
+	 */
 	public Command runIntake(double speed) {
 		return new StartEndCommand(() -> this.runIntakeMotor(speed), this::stopIntakeMotor);
 	}

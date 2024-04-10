@@ -45,6 +45,11 @@ public class PhotonVision {
 		photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 	}
 
+	/**
+	 * Returns the nearest note's pose relative to the robot's pose.
+	 *
+	 * @return An Optional containing the nearest note's pose if it exists, or an empty Optional otherwise.
+	 */
 	public Optional<Pose2d> getNearestNote() {
 		if (note_cam == null) return Optional.empty();
 		if (!note_cam.getLatestResult().hasTargets()) return Optional.empty();
@@ -59,8 +64,13 @@ public class PhotonVision {
 		else return Optional.of(camRobot.plus(noteCam));
 	}
 
-	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-		// photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
+	/**
+	 * Returns an optional EstimatedRobotPose object representing the estimated global pose of the robot.
+	 * If the April camera is not available, not connected, or does not detect at least 2 targets, an empty optional is returned.
+	 *
+	 * @return an optional EstimatedRobotPose object representing the estimated global pose of the robot, or an empty optional if the pose cannot be estimated
+	 */
+	public Optional<EstimatedRobotPose> getEstimatedGlobalPose() {
 		if (april_cam == null) return Optional.empty();
 		if (!april_cam.isConnected()) return Optional.empty();
 		if (april_cam.getLatestResult().getTargets().size() < 2) return Optional.empty();
