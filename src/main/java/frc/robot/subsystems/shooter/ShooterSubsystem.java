@@ -103,7 +103,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	/**
 	 * returns the angle of the shooter.
-	 * @returns angle: from 90 straight forward to 0 straight up
+	 * @return angle: from 90 straight forward to 0 straight up
 	 */
 	public Rotation2d getAngle() {
 		double angle = angleEncoder.getAbsolutePosition();

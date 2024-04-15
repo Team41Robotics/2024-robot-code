@@ -17,9 +17,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
-import frc.robot.commands.Combinations.ShootCycle;
 import frc.robot.commands.Combinations.AimBot;
 import frc.robot.commands.Combinations.Handoff;
+import frc.robot.commands.Combinations.ShootCycle;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.FaceSpeakerDrive;
 import frc.robot.commands.elevator.manualElevator;
@@ -127,22 +127,20 @@ public class RobotContainer {
 
 		ds.button(3).onTrue(shooter.feederShot());
 		left_js.button(1)
-			.onTrue(intake.automaticIntake()
-				.until(left_js.button(1).negate())
-				.andThen(new Handoff().withTimeout(4)));
+				.onTrue(intake.automaticIntake()
+						.until(left_js.button(1).negate())
+						.andThen(new Handoff().withTimeout(4)));
 
 		left_js.button(2).onTrue(new ShootCycle(shooter));
 		left_js.button(3).onTrue(shooter.loadNote());
 		left_js.button(4)
-			.onTrue(shooter.toAngleDegreeCommand(25)
-				.alongWith(shooter.muzzleLoad()
-					.andThen(
-						shooter.toAngleDegreeCommand(45),
+				.onTrue(shooter.toAngleDegreeCommand(25)
+						.alongWith(shooter.muzzleLoad()
+								.andThen(
+										shooter.toAngleDegreeCommand(45),
 										new InstantCommand(() -> shooter.runMotors(0.3)))));
 
-		right_js.button(1)
-				.and(() -> shooter.ringLoaded())
-				.whileTrue(new AimBot(shooter, ds.button(15)));
+		right_js.button(1).and(() -> shooter.ringLoaded()).whileTrue(new AimBot(shooter, ds.button(15)));
 		ds.button(9).onTrue(new SetPivot(115));
 		ds.button(10).onTrue(new Handoff());
 
@@ -157,15 +155,12 @@ public class RobotContainer {
 		right_js.pov(90).onTrue(leds.rainbow());
 		right_js.pov(45).onTrue(leds.fade(Color.kBlueViolet));
 
-
 		ds.button(6).onTrue(shooter.toAngleDegreeCommand(65).andThen(shooter.shootSingle(0.45)));
 		ds.button(14).onTrue(new SetPivot(-85).andThen(shooter.toAngleDegreeCommand(55)));
 
 		ds.button(6).onTrue(new SetPivot(-85).andThen(shooter.toAngleCommand(Rotation2d.fromDegrees(45))));
 
 		ds.button(7).onTrue(shooter.toAngleDegreeCommand(20).andThen(shooter.ampShoot()));
-
-
 	}
 
 	public static Command getAutonomousCommand() {

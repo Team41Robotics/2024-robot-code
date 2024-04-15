@@ -16,7 +16,6 @@ public class DefaultDrive extends Command {
 	 * @param vy_sup a supplier for the vy component of velocity
 	 * @param w_sup  a supplier for the desired rotation velocity
 	 *
-	 * @return the command
 	 */
 	public DefaultDrive(DoubleSupplier vx_sup, DoubleSupplier vy_sup, DoubleSupplier w_sup) {
 		addRequirements(drive);

@@ -48,7 +48,7 @@ public class Util {
 	 * The speeds include the linear velocity components in the x and y directions,
 	 * as well as the angular velocity component around the robot's center of rotation.
 	 *
-	 * @url https://www.desmos.com/calculator/mbxig6izt9
+	 * @see <a href="https://www.desmos.com/calculator/mbxig6izt9">Desmos Graph</a>
 	 * @param vx The linear velocity component in the x direction.
 	 * @param vy The linear velocity component in the y direction.
 	 * @param w The angular velocity component around the robot's center of rotation.
