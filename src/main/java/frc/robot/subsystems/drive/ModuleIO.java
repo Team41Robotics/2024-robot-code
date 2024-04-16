@@ -24,7 +24,11 @@ public interface ModuleIO {
 		public double compensatedTargetVel = 0.0;
 	}
 
-	/** Updates the set of loggable inputs. */
+	/**
+	 * Updates the inputs for the module.
+	 *
+	 * @param inputs the new inputs for the module
+	 */
 	public default void updateInputs(ModuleIOInputs inputs) {}
 
 	/** Run the drive motor at the specified voltage. */

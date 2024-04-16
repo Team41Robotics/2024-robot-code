@@ -23,12 +23,18 @@ java {
 sourceSets {
     main {
         java {
-            srcDirs = ['src/main/java', 'build/generated/sources/annotationProcessor/java/main']
+            srcDirs = [
+                'src/main/java',
+                'build/generated/sources/annotationProcessor/java/main'
+            ]
         }
     }
 }
 
 javadoc {
+    options.addStringOption('Xdoclint:none')
+
+    exclude '**/BuildConstants.java'
     source = sourceSets.main.java
     classpath = configurations.compileClasspath
 }
