@@ -20,15 +20,13 @@ public class Util {
 	 * If the absolute value of the input is less than the deadband value, the output is 0.
 	 * Otherwise, the output is calculated using a sigmoid function and the sign of the input.
 	 *
-	 * WARNING THIS IS BROKEN ON NEGATIVE INPUTS, DO NOT USE!!!
-	 *
 	 * @param w the input value
 	 * @param d the deadband value
 	 * @return the output value after applying the sensitivity curve
 	 */
 	public static double sensCurve(double w, double d) {
 		if (abs(w) < d) return 0;
-		double wn = (w - d) / (1 - d);
+		double wn = (abs(w) - d) / (1 - d);
 
 		wn = sigmoid(wn) / sigmoid(1);
 		return wn * signum(w);
