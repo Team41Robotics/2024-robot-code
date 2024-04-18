@@ -2,6 +2,12 @@ package frc.robot.subsystems.shooter;
 
 import org.littletonrobotics.junction.AutoLog;
 
+/**
+ * The ShooterIO interface represents the input/output functionality of the shooter subsystem.
+ * It provides methods to set the velocity of the shooter motors, stop the motors, and update the beam brake state.
+ * 
+ * NOT USED CURRENTLY
+ */
 public interface ShooterIO {
 
 	@AutoLog

@@ -240,6 +240,11 @@ public class ShooterSubsystem extends SubsystemBase {
 		this.target_angle = Optional.of(angle);
 	}
 
+	/**
+	 * Sets the feeder motor to run at the specified percentage.
+	 * 
+	 * @param percent the percentage at which to run the feeder motor, ranging from -1.0 to 1.0
+	 */
 	public void runFeederMotor(double percent) {
 		feeder.set(percent);
 	}
@@ -371,14 +376,33 @@ public class ShooterSubsystem extends SubsystemBase {
 				stopMotors());
 	}
 
+	/**
+	 * Returns a Command object that represents a subwoofer shot.
+	 * This command first moves the shooter to a 35-degree angle,
+	 * and then shoots a single projectile with a power of 0.7.
+	 *
+	 * @return The Command object representing the subwoofer shot.
+	 */
 	public Command subwooferShot() {
 		return toAngleDegreeCommand(35).andThen(shootSingle(0.7));
 	}
 
+	/**
+	 * Stops the motors of the shooter subsystem.
+	 * 
+	 * @return The command to stop the motors.
+	 */
 	public Command stopMotors() {
 		return this.runOnce(() -> runMotors(0));
 	}
 
+	/**
+	 * Returns a Command object that represents a feeder shot.
+	 * This command first sets the shooter angle to 80 degrees using the toAngleDegreeCommand method,
+	 * and then shoots a single ball with a power of 0.7 using the shootSingle method.
+	 *
+	 * @return a Command object representing a feeder shot
+	 */
 	public Command feederShot() {
 		return toAngleDegreeCommand(80).andThen(shootSingle(0.7));
 	}

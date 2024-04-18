@@ -65,7 +65,6 @@ public class FaceSpeakerDrive extends Command {
 				drive.getPose().getRotation());
 		speeds.omegaRadiansPerSecond = wPID.calculate(currentRotation) * 2.5;
 		drive.drive(speeds);
-		;
 	}
 
 	@Override

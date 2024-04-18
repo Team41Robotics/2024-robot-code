@@ -33,6 +33,9 @@ import frc.robot.subsystems.shooter.ShooterSubsystem;
 import frc.robot.util.LocalADStarAK;
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
+/**
+ * The RobotContainer class is responsible for initializing and configuring the robot's subsystems, sensors, and commands.
+ */
 public class RobotContainer {
 	// robot
 	public static Robot robot;
@@ -54,6 +57,12 @@ public class RobotContainer {
 	public static CommandJoystick right_js = new CommandJoystick(2);
 	public static CommandJoystick ds = new CommandJoystick(0);
 
+	/**
+	 * Initializes the subsystems of the robot.
+	 * This method sets up the default command for the drive subsystem,
+	 * initializes the LED subsystem, and registers various commands for
+	 * controlling the shooter, intake, and other subsystems.
+	 */
 	public static void initSubsystems() {
 		drive.setDefaultCommand(new DefaultDrive(() -> left_js.getY(), () -> left_js.getX(), () -> -right_js.getX()));
 		drive.init(new Pose2d(8, 6, new Rotation2d(Math.PI)));
@@ -111,6 +120,9 @@ public class RobotContainer {
 		Shuffleboard.getTab("Swerve").add("Auto Selector", autoChooser.getSendableChooser());
 	}
 
+	/**
+	 * Configures the button bindings for the robot.
+	 */
 	public static void configureButtonBindings() {
 
 		ds.button(1).onTrue(shooter.subwooferShot());
@@ -163,6 +175,11 @@ public class RobotContainer {
 		ds.button(7).onTrue(shooter.toAngleDegreeCommand(20).andThen(shooter.ampShoot()));
 	}
 
+	/**
+	 * Returns the autonomous command to be executed by the robot.
+	 *
+	 * @return the autonomous command
+	 */
 	public static Command getAutonomousCommand() {
 		return autoChooser.get();
 	}

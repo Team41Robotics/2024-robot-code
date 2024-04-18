@@ -24,6 +24,10 @@ import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * The IntakeSubsystem class represents the intake subsystem of the robot.
+ * It controls the intake motors and pivot mechanism to intake and manipulate game objects.
+ */
 public class IntakeSubsystem extends SubsystemBase {
 
 	DutyCycleEncoder pivotEncoder = new DutyCycleEncoder(1);
@@ -151,6 +155,12 @@ public class IntakeSubsystem extends SubsystemBase {
 		return new StartEndCommand(() -> this.runIntakeMotor(speed), this::stopIntakeMotor);
 	}
 
+	/**
+	 * Returns a command to set the target angle of the intake subsystem to the specified degrees.
+	 * 
+	 * @param degrees the target angle in degrees
+	 * @return the Command object representing the action to set the target angle
+	 */
 	public Command toDegree(double degrees) {
 		return this.runOnce(() -> this.target_angle = Optional.of(Rotation2d.fromDegrees(degrees)));
 	}

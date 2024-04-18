@@ -3,6 +3,12 @@ package frc.robot.subsystems.shooter;
 import com.revrobotics.CANSparkFlex;
 import edu.wpi.first.math.controller.PIDController;
 
+/**
+ * This class represents the ShooterSparkFlexIO subsystem, which is responsible for controlling the shooter motors using CANSparkFlex controllers.
+ * It implements the ShooterIO interface.
+ * 
+ * Note: This class is currently not used.
+ */
 public class ShooterSparkFlexIO implements ShooterIO {
 
 	private final CANSparkFlex sm1 = null; // new CANSparkFlex(Constants.SHOOTER_MOTOR_1, MotorType.kBrushless);

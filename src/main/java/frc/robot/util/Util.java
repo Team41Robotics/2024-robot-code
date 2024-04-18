@@ -48,6 +48,8 @@ public class Util {
 	 * The speeds include the linear velocity components in the x and y directions,
 	 * as well as the angular velocity component around the robot's center of rotation.
 	 *
+	 * Also, the sensitivity curve is basically a clamped linear function right now :/
+	 *
 	 * @see <a href="https://www.desmos.com/calculator/mbxig6izt9">Desmos Graph</a>
 	 * @param vx The linear velocity component in the x direction.
 	 * @param vy The linear velocity component in the y direction.
