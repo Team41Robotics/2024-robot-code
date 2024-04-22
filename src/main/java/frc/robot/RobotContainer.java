@@ -3,7 +3,6 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.pathfinding.Pathfinding;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -17,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Combinations.AimBot;
 import frc.robot.commands.Combinations.Handoff;
 import frc.robot.commands.Combinations.ShootCycle;
@@ -46,6 +46,8 @@ public class RobotContainer {
 	public static IntakeSubsystem intake = new IntakeSubsystem();
 	public static ElevatorSubsystem elevator = new ElevatorSubsystem();
 
+	public static CommandXboxController xbox = new CommandXboxController(0);
+
 	public static PhotonVision photon = new PhotonVision();
 	public static LEDS leds = new LEDS();
 
@@ -64,8 +66,7 @@ public class RobotContainer {
 	 * controlling the shooter, intake, and other subsystems.
 	 */
 	public static void initSubsystems() {
-		drive.setDefaultCommand(new DefaultDrive(() -> left_js.getY(), () -> left_js.getX(), () -> -right_js.getX()));
-		drive.init(new Pose2d(8, 6, new Rotation2d(Math.PI)));
+		drive.setDefaultCommand(new DefaultDrive(xbox::getLeftY, xbox::getLeftX, () -> -xbox.getRightX()));
 
 		leds.init();
 
@@ -156,9 +157,7 @@ public class RobotContainer {
 		ds.button(9).onTrue(new SetPivot(115));
 		ds.button(10).onTrue(new Handoff());
 
-		right_js.button(4)
-				.onTrue(new StartEndCommand(() -> shooter.runFeederMotor(0.4), () -> shooter.runFeederMotor(0))
-						.until(() -> !shooter.ringLoaded()));
+		right_js.button(4).onTrue(shooter.fireNote());
 		ds.button(12).whileTrue(intake.runIntake(0.75)); // new Handoff());
 		ds.button(11).whileTrue(intake.runIntake(-0.75)); // new Handoff());
 		right_js.pov(0).onTrue(new InstantCommand(() -> leds.flashLeds(Color.kGreen)));
@@ -173,6 +172,13 @@ public class RobotContainer {
 		ds.button(6).onTrue(new SetPivot(-85).andThen(shooter.toAngleCommand(Rotation2d.fromDegrees(45))));
 
 		ds.button(7).onTrue(shooter.toAngleDegreeCommand(20).andThen(shooter.ampShoot()));
+
+		xbox.leftTrigger(0.4)
+				.whileTrue((intake.automaticIntake()
+						.until(left_js.button(1).negate())
+						.andThen(new Handoff().withTimeout(4))));
+		xbox.rightTrigger(0.4).onTrue(shooter.toAngleDegreeCommand(45).andThen(shooter.shootSingle(0.95)));
+		xbox.x().onTrue(shooter.fireNote());
 	}
 
 	/**

@@ -242,7 +242,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	/**
 	 * Sets the feeder motor to run at the specified percentage.
-	 * 
+	 *
 	 * @param percent the percentage at which to run the feeder motor, ranging from -1.0 to 1.0
 	 */
 	public void runFeederMotor(double percent) {
@@ -256,6 +256,10 @@ public class ShooterSubsystem extends SubsystemBase {
 	 */
 	public boolean ringLoaded() {
 		return ringSensor.getAsBoolean();
+	}
+
+	public boolean ringNotLoaded() {
+		return !ringLoaded();
 	}
 
 	/**
@@ -389,7 +393,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
 	/**
 	 * Stops the motors of the shooter subsystem.
-	 * 
+	 *
 	 * @return The command to stop the motors.
 	 */
 	public Command stopMotors() {
@@ -399,11 +403,15 @@ public class ShooterSubsystem extends SubsystemBase {
 	/**
 	 * Returns a Command object that represents a feeder shot.
 	 * This command first sets the shooter angle to 80 degrees using the toAngleDegreeCommand method,
-	 * and then shoots a single ball with a power of 0.7 using the shootSingle method.
+	 * and then revs the shooter to 70%
 	 *
 	 * @return a Command object representing a feeder shot
 	 */
 	public Command feederShot() {
 		return toAngleDegreeCommand(80).andThen(shootSingle(0.7));
+	}
+
+	public Command fireNote() {
+		return new StartEndCommand(() -> runFeederMotor(0.4), () -> runFeederMotor(0)).until(this::ringNotLoaded);
 	}
 }
