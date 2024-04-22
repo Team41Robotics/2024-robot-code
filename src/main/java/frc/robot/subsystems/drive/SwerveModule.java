@@ -46,7 +46,7 @@ public class SwerveModule {
 	/**
 	 * Sets the target state of the SwerveModule.
 	 * The state is optimized based on the current direction of the module.
-	 * 
+	 *
 	 * @param state the desired state of the SwerveModule
 	 */
 	public void setState(SwerveModuleState state) {
@@ -74,7 +74,7 @@ public class SwerveModule {
 
 	/**
 	 * Returns the measured state of the swerve module.
-	 * 
+	 *
 	 * @return The measured state of the swerve module.
 	 */
 	public SwerveModuleState getMeasuredState() {

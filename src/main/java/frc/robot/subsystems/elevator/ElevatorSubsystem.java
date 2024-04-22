@@ -11,6 +11,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import org.littletonrobotics.junction.Logger;
 
+/**
+ * The ElevatorSubsystem class represents the elevator subsystem of the robot.
+ * It controls the movement and position of the elevator using PID controllers.
+ */
 public class ElevatorSubsystem extends SubsystemBase {
 
 	private static final int CLIMBER_MIN_HEIGHT = -70;
@@ -28,6 +32,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 		climberMotor2.setInverted(false);
 	}
 
+	/**
+	 * Resets the encoders and PID setpoints of the elevator subsystem to zero.
+	 *
+	 * @return The command to reset the encoders and setpoints.
+	 */
 	public Command zeroEncoders() {
 		return this.runOnce(() -> {
 			climberMotor1.setPosition(0);
@@ -37,6 +46,11 @@ public class ElevatorSubsystem extends SubsystemBase {
 		});
 	}
 
+	/**
+	 * This method is called periodically to update the elevator subsystem.
+	 * It records various outputs using the Logger class and calculates the voltage
+	 * to be applied to the elevator motors using PID controllers.
+	 */
 	@Override
 	public void periodic() {
 		Logger.recordOutput("Elevator/Left/PID/Setpoint", climber1PID.getSetpoint());
@@ -59,27 +73,59 @@ public class ElevatorSubsystem extends SubsystemBase {
 				climber2PID.calculate(climberMotor2.getPosition().getValueAsDouble()));
 	}
 
+	/**
+	 * Sets the speed of the left climber motor.
+	 *
+	 * @param speed the speed to set for the left climber motor
+	 */
 	public void setLeft(double speed) {
 		climberMotor1.set(speed);
 	}
 
+	/**
+	 * Sets the speed of the right climber motor.
+	 *
+	 * @param speed the speed to set the right climber motor to
+	 */
+	public void setRight(double speed) {
+		climberMotor2.set(speed);
+	}
+
+	/**
+	 * Sets the position of the right climber to the specified value.
+	 * The position is clamped between the maximum and minimum heights of the climber.
+	 *
+	 * @param pos The desired position of the right climber.
+	 */
 	public void setRightPos(double pos) {
 		climber2PID.setSetpoint(MathUtil.clamp(pos, -CLIMBER_MAX_HEIGHT, -CLIMBER_MIN_HEIGHT));
 	}
 
+	/**
+	 * Sets the position of the left climber to the specified value.
+	 * The position is clamped between the minimum and maximum height of the climber.
+	 *
+	 * @param pos the desired position of the left climber
+	 */
 	public void setLeftPos(double pos) {
 		climber1PID.setSetpoint(MathUtil.clamp(pos, CLIMBER_MIN_HEIGHT, CLIMBER_MAX_HEIGHT));
 	}
 
+	/**
+	 * Returns the target position of the left climber in the elevator subsystem.
+	 *
+	 * @return The target position of the left climber.
+	 */
 	public double getLeftPos() {
 		return climber1PID.getSetpoint();
 	}
 
+	/**
+	 * Returns the target position of the right climber in the elevator subsystem.
+	 *
+	 * @return The target position of the right climber.
+	 */
 	public double getRightPos() {
 		return climber2PID.getSetpoint();
-	}
-
-	public void setRight(double speed) {
-		climberMotor2.set(speed);
 	}
 }

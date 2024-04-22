@@ -32,7 +32,7 @@ public class Robot extends LoggedRobot {
 	 * This method is called once when the robot starts up.
 	 * It sets up the robot's subsystems, configures button bindings,
 	 * and initializes the logger.
-	 * 
+	 *
 	 * @see edu.wpi.first.wpilibj.TimedRobot#robotInit()
 	 */
 	@Override
@@ -58,7 +58,7 @@ public class Robot extends LoggedRobot {
 	/**
 	 * This method is called periodically during the robot operation.
 	 * It runs scheduled commands, and records various outputs for logging purposes.
-	 * 
+	 *
 	 * @see edu.wpi.first.wpilibj.TimedRobot#robotPeriodic()
 	 */
 	@Override

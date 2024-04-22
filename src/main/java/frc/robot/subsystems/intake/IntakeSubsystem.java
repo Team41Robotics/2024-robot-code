@@ -157,7 +157,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
 	/**
 	 * Returns a command to set the target angle of the intake subsystem to the specified degrees.
-	 * 
+	 *
 	 * @param degrees the target angle in degrees
 	 * @return the Command object representing the action to set the target angle
 	 */

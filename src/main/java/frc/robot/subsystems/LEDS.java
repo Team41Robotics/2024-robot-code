@@ -30,7 +30,7 @@ public class LEDS extends SubsystemBase {
 
 	/**
 	 * Flashes the LEDs with the specified color.
-	 * 
+	 *
 	 * @param color the color to flash the LEDs with
 	 */
 	public void flashLeds(Color color) {
@@ -40,7 +40,7 @@ public class LEDS extends SubsystemBase {
 
 	/**
 	 * Animates the LEDs with the specified animation.
-	 * 
+	 *
 	 * @param animation the animation to apply to the LEDs
 	 */
 	public void animate(Animation animation) {
@@ -49,7 +49,7 @@ public class LEDS extends SubsystemBase {
 
 	/**
 	 * Creates a command to twinkle the LEDs with the specified color.
-	 * 
+	 *
 	 * @param color the color to twinkle the LEDs with
 	 * @return the command to twinkle the LEDs
 	 */
@@ -67,7 +67,7 @@ public class LEDS extends SubsystemBase {
 
 	/**
 	 * Creates a command to fade the LEDs through RGB colors.
-	 * 
+	 *
 	 * @return the command to fade the LEDs
 	 */
 	public Command RGBFade() {
@@ -76,7 +76,7 @@ public class LEDS extends SubsystemBase {
 
 	/**
 	 * Creates a command to fade the LEDs with the specified color.
-	 * 
+	 *
 	 * @param color the color to fade the LEDs with
 	 * @return the command to fade the LEDs
 	 */
@@ -87,7 +87,7 @@ public class LEDS extends SubsystemBase {
 
 	/**
 	 * Creates a command to animate the LEDs in a rainbow pattern.
-	 * 
+	 *
 	 * @return the command to animate the LEDs in a rainbow pattern
 	 */
 	public Command rainbow() {

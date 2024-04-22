@@ -24,6 +24,13 @@ public class DefaultDrive extends Command {
 		this.w_sup = w_sup;
 	}
 
+	/**
+	 * Runs the drive command with the specified velocity components.
+	 *
+	 * @param vx The velocity component in the x-axis.
+	 * @param vy The velocity component in the y-axis.
+	 * @param w  The angular velocity component.
+	 */
 	public void run(double vx, double vy, double w) {
 		ChassisSpeeds speeds = Util.joystickToSpeeds(
 				vx, vy, w, right_js.button(1).getAsBoolean(), drive.getPose().getRotation());
