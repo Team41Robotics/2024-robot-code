@@ -33,7 +33,7 @@ public class DefaultDrive extends Command {
 	 */
 	public void run(double vx, double vy, double w) {
 		ChassisSpeeds speeds = Util.joystickToSpeeds(
-				vx, vy, w, right_js.button(1).getAsBoolean(), drive.getPose().getRotation());
+				vx, vy, w, left_js.button(3).getAsBoolean(), drive.getPose().getRotation());
 		drive.drive(speeds);
 	}
 

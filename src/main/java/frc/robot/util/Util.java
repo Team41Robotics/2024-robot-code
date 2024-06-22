@@ -1,7 +1,7 @@
 package frc.robot.util;
 
-import static frc.robot.constants.Constants.FieldConstants.*;
-import static frc.robot.constants.Constants.RobotConstants.*;
+import static frc.robot.commands.constants.Constants.FieldConstants.*;
+import static frc.robot.commands.constants.Constants.RobotConstants.*;
 import static java.lang.Math.*;
 
 import edu.wpi.first.math.MathUtil;

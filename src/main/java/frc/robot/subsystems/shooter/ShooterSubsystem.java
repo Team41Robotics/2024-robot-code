@@ -1,19 +1,19 @@
 package frc.robot.subsystems.shooter;
 
 import static frc.robot.RobotContainer.drive;
-import static frc.robot.constants.Constants.FEEDER_MOTOR;
-import static frc.robot.constants.Constants.FieldConstants.*;
-import static frc.robot.constants.Constants.MIDDLE_BEAM_BREAK_PORT;
-import static frc.robot.constants.Constants.NOTE_VELOCITY;
-import static frc.robot.constants.Constants.RING_SENSOR;
-import static frc.robot.constants.Constants.SHOOTER_ENCODER;
-import static frc.robot.constants.Constants.SHOOTER_ENCODER_OFFSET;
-import static frc.robot.constants.Constants.SHOOTER_HEIGHT;
-import static frc.robot.constants.Constants.SHOOTER_MOTOR_BOT;
-import static frc.robot.constants.Constants.SHOOTER_MOTOR_TOP;
-import static frc.robot.constants.Constants.SHOOTER_PIVOT_MOTOR1;
-import static frc.robot.constants.Constants.SHOOTER_PIVOT_MOTOR2;
-import static frc.robot.constants.Constants.TARGET_HEIGHT;
+import static frc.robot.commands.constants.Constants.FEEDER_MOTOR;
+import static frc.robot.commands.constants.Constants.FieldConstants.*;
+import static frc.robot.commands.constants.Constants.MIDDLE_BEAM_BREAK_PORT;
+import static frc.robot.commands.constants.Constants.NOTE_VELOCITY;
+import static frc.robot.commands.constants.Constants.RING_SENSOR;
+import static frc.robot.commands.constants.Constants.SHOOTER_ENCODER;
+import static frc.robot.commands.constants.Constants.SHOOTER_ENCODER_OFFSET;
+import static frc.robot.commands.constants.Constants.SHOOTER_HEIGHT;
+import static frc.robot.commands.constants.Constants.SHOOTER_MOTOR_BOT;
+import static frc.robot.commands.constants.Constants.SHOOTER_MOTOR_TOP;
+import static frc.robot.commands.constants.Constants.SHOOTER_PIVOT_MOTOR1;
+import static frc.robot.commands.constants.Constants.SHOOTER_PIVOT_MOTOR2;
+import static frc.robot.commands.constants.Constants.TARGET_HEIGHT;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkFlex;
@@ -38,7 +38,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.constants.Constants;
+import frc.robot.commands.constants.Constants;
 import frc.robot.util.Util;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -398,6 +398,10 @@ public class ShooterSubsystem extends SubsystemBase {
 	 */
 	public Command stopMotors() {
 		return this.runOnce(() -> runMotors(0));
+	}
+
+	public Command stopFeedMotor() {
+		return this.runOnce(() -> runFeederMotor(0));
 	}
 
 	/**

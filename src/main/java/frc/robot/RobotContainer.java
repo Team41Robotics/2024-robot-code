@@ -3,6 +3,7 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.pathfinding.Pathfinding;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.util.Color;
@@ -22,6 +23,7 @@ import frc.robot.commands.Combinations.Handoff;
 import frc.robot.commands.Combinations.ShootCycle;
 import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.FaceSpeakerDrive;
+import frc.robot.commands.drive.GoToRing;
 import frc.robot.commands.elevator.manualElevator;
 import frc.robot.commands.intake.SetPivot;
 import frc.robot.subsystems.LEDS;
@@ -46,7 +48,7 @@ public class RobotContainer {
 	public static IntakeSubsystem intake = new IntakeSubsystem();
 	public static ElevatorSubsystem elevator = new ElevatorSubsystem();
 
-	public static CommandXboxController xbox = new CommandXboxController(0);
+	public static CommandXboxController xbox = new CommandXboxController(2);
 
 	public static PhotonVision photon = new PhotonVision();
 	public static LEDS leds = new LEDS();
@@ -55,9 +57,9 @@ public class RobotContainer {
 	public static LoggedDashboardChooser<Command> autoChooser;
 
 	public static IMU imu = new IMU();
-	public static CommandJoystick left_js = new CommandJoystick(1);
-	public static CommandJoystick right_js = new CommandJoystick(2);
-	public static CommandJoystick ds = new CommandJoystick(0);
+	public static CommandJoystick left_js = new CommandJoystick(0);
+	public static CommandJoystick right_js = new CommandJoystick(3);
+	public static CommandJoystick ds = new CommandJoystick(4);
 
 	/**
 	 * Initializes the subsystems of the robot.
@@ -116,7 +118,7 @@ public class RobotContainer {
 						new InstantCommand(() -> shooter.runMotors(0.5))));
 
 		Pathfinding.setPathfinder(new LocalADStarAK());
-
+		drive.init(new Pose2d());
 		autoChooser = new LoggedDashboardChooser<>("Auto Routine", AutoBuilder.buildAutoChooser());
 		Shuffleboard.getTab("Swerve").add("Auto Selector", autoChooser.getSendableChooser());
 	}
@@ -126,42 +128,42 @@ public class RobotContainer {
 	 */
 	public static void configureButtonBindings() {
 
-		ds.button(1).onTrue(shooter.subwooferShot());
-		ds.button(2).whileTrue(new manualElevator());
-		ds.button(2).onTrue(shooter.stopMotors());
+		ds.button(1).onTrue(shooter.subwooferShot()); // aims for subwoofer 
+		ds.button(2).whileTrue(new manualElevator()); // turns on manual elevator control
+		ds.button(2).onTrue(shooter.stopMotors()); // stops the shooter 
 		// handoff syste m
-		right_js.button(1)
+		right_js.button(1) // flashes leds green 
 				.and(shooter::isReady)
 				.and(shooter::ringLoaded)
 				.whileTrue(new RunCommand(() -> leds.flashLeds(Color.kGreen))
 						.finallyDo(() -> leds.rainbow().schedule()));
 
-		right_js.button(2).onTrue(elevator.zeroEncoders());
+		right_js.button(2).onTrue(elevator.zeroEncoders()); // zeroes encoders
 
-		ds.button(3).onTrue(shooter.feederShot());
-		left_js.button(1)
+		ds.button(3).onTrue(shooter.feederShot()); // 
+		left_js.button(1) // auto intake and handoff
 				.onTrue(intake.automaticIntake()
 						.until(left_js.button(1).negate())
 						.andThen(new Handoff().withTimeout(4)));
 
-		left_js.button(2).onTrue(new ShootCycle(shooter));
-		left_js.button(3).onTrue(shooter.loadNote());
-		left_js.button(4)
+		left_js.button(2).onTrue(new ShootCycle(shooter)); // aims for speaker and shoots
+		left_js.button(3).onTrue(shooter.loadNote()); // runs shooter feed motors until beam brake is triggered
+		left_js.button(4) // muzzle load for use at human player station
 				.onTrue(shooter.toAngleDegreeCommand(25)
 						.alongWith(shooter.muzzleLoad()
 								.andThen(
 										shooter.toAngleDegreeCommand(45),
 										new InstantCommand(() -> shooter.runMotors(0.3)))));
 
-		right_js.button(1).and(() -> shooter.ringLoaded()).whileTrue(new AimBot(shooter, ds.button(15)));
-		ds.button(9).onTrue(new SetPivot(115));
-		ds.button(10).onTrue(new Handoff());
+		right_js.button(1).and(() -> shooter.ringLoaded()).whileTrue(new AimBot(shooter, ds.button(15))); // auto aim 
+		ds.button(9).onTrue(new SetPivot(115)); // manually lower intake
+		ds.button(10).onTrue(new Handoff()); // manually toggle handoff
 
-		right_js.button(4).onTrue(shooter.fireNote());
-		ds.button(12).whileTrue(intake.runIntake(0.75)); // new Handoff());
-		ds.button(11).whileTrue(intake.runIntake(-0.75)); // new Handoff());
-		right_js.pov(0).onTrue(new InstantCommand(() -> leds.flashLeds(Color.kGreen)));
-		right_js.pov(180).onTrue(leds.twinkle(Color.kPink));
+		right_js.button(4).onTrue(shooter.fireNote()); // fires note
+		ds.button(12).whileTrue(intake.runIntake(0.75)); // runs intake motors
+		ds.button(11).whileTrue(intake.runIntake(-0.75)); // runs intake motors in reverse (use to spit out notes)
+		right_js.pov(0).onTrue(new InstantCommand(() -> leds.flashLeds(Color.kGreen))); // flashes green
+		right_js.pov(180).onTrue(leds.twinkle(Color.kPink)); // flashes pink 
 		right_js.pov(270).onTrue(leds.twinkle(Color.kYellow));
 		right_js.pov(90).onTrue(leds.rainbow());
 		right_js.pov(45).onTrue(leds.fade(Color.kBlueViolet));
@@ -171,14 +173,51 @@ public class RobotContainer {
 
 		ds.button(6).onTrue(new SetPivot(-85).andThen(shooter.toAngleCommand(Rotation2d.fromDegrees(45))));
 
-		ds.button(7).onTrue(shooter.toAngleDegreeCommand(20).andThen(shooter.ampShoot()));
-
+		ds.button(7).onTrue(shooter.toAngleDegreeCommand(20).andThen(shooter.ampShoot())); // amp shot 
+		ds.button(15).whileTrue(new GoToRing()); // auto align
+		/*
 		xbox.leftTrigger(0.4)
 				.whileTrue((intake.automaticIntake()
 						.until(left_js.button(1).negate())
 						.andThen(new Handoff().withTimeout(4))));
 		xbox.rightTrigger(0.4).onTrue(shooter.toAngleDegreeCommand(45).andThen(shooter.shootSingle(0.95)));
 		xbox.x().onTrue(shooter.fireNote());
+		*/
+	}
+
+	public static void configureOtherBindings() {
+		/*
+		left_js.button(1)
+				.debounce(.1)
+				.onTrue((intake.automaticIntake().until(left_js.button(2)).andThen(new Handoff().withTimeout(4))));
+		right_js.button(2).onTrue(shooter.toAngleDegreeCommand(10));
+		right_js.button(3).onTrue(shooter.toAngleDegreeCommand(60));
+		right_js.button(4).onTrue(shooter.toAngleDegreeCommand(70));
+		right_js.button(5).onTrue(shooter.toAngleDegreeCommand(40));
+		left_js.button(4)
+				.onTrue(new InstantCommand(() -> CommandScheduler.getInstance().cancelAll()));
+		right_js.button(1).onTrue(shooter.shootSingle(0.4));
+		right_js.button(1).debounce(0.1).onFalse(shooter.fireNote());
+		left_js.button(4).whileTrue(shooter.loadNote());
+		right_js.pov(180).onTrue(leds.twinkle(Color.kPink));
+		right_js.pov(270).onTrue(leds.twinkle(Color.kYellow));
+		right_js.pov(90).onTrue(leds.rainbow());
+		right_js.pov(45).onTrue(leds.fade(Color.kBlueViolet));
+
+		left_js.button(5).onTrue(intake.toDegree(120));
+		*/
+
+		xbox.leftTrigger(0.4)
+				.whileTrue((intake.xBoxIntake().until(xbox.button(4).negate()).andThen(new Handoff().withTimeout(4))));
+		xbox.rightTrigger(0.4).onTrue(shooter.toAngleDegreeCommand(35).andThen(shooter.shootSingle(0.3)));
+		xbox.button(10).onTrue(shooter.toAngleDegreeCommand(85).andThen(shooter.shootSingle(0.90)));
+		xbox.button(1).onTrue(intake.xBoxIntake());
+		xbox.button(2).onTrue(shooter.fireNote());
+		xbox.button(6).onTrue(new InstantCommand(() -> shooter.runFeederMotor(.7)));
+		xbox.button(6).onFalse(shooter.stopFeedMotor());
+		xbox.button(5).onTrue(new InstantCommand(() -> intake.runIntakeMotor(0.5)));
+		xbox.button(5).onFalse(new InstantCommand(() -> intake.stopIntakeMotor()));
+		xbox.y().whileTrue(new GoToRing());
 	}
 
 	/**

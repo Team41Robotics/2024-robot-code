@@ -1,7 +1,7 @@
 package frc.robot.subsystems.intake;
 
-import static frc.robot.constants.Constants.INTAKE_FEEDER_MOTOR;
-import static frc.robot.constants.Constants.INTAKE_PIVOT_MOTOR;
+import static frc.robot.commands.constants.Constants.INTAKE_FEEDER_MOTOR;
+import static frc.robot.commands.constants.Constants.INTAKE_PIVOT_MOTOR;
 
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
@@ -37,7 +37,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	CANSparkMax turnMotor = new CANSparkMax(INTAKE_FEEDER_MOTOR, MotorType.kBrushless);
 	public double kg = 0; // 0.25;
 	public ProfiledPIDController pivotPID =
-			new ProfiledPIDController(30, 0, 0.1, new TrapezoidProfile.Constraints(40, 40));
+			new ProfiledPIDController(15, 0, 0.1, new TrapezoidProfile.Constraints(10, 10));
 	public PIDController turnPID = new PIDController(0, 0, 0);
 
 	private DigitalInput limitSwitch = new DigitalInput(2);
@@ -162,7 +162,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	 * @return the Command object representing the action to set the target angle
 	 */
 	public Command toDegree(double degrees) {
-		return this.runOnce(() -> this.target_angle = Optional.of(Rotation2d.fromDegrees(degrees)));
+		return this.runOnce(() -> setAngle(Rotation2d.fromDegrees(degrees)));
 	}
 
 	/**
@@ -175,5 +175,14 @@ public class IntakeSubsystem extends SubsystemBase {
 		return toDegree(120)
 				.andThen(new WaitUntilCommand(() -> getAngle().getDegrees() > 0))
 				.andThen(runIntake(0.75).until(() -> !intakeSwitch()));
+	}
+
+	/**
+	 * For use during the Expo since the limit switch doesn't work
+	 * The intake will pivot down to 120 degrees
+	 * @return
+	 */
+	public Command xBoxIntake() {
+		return toDegree(120);
 	}
 }

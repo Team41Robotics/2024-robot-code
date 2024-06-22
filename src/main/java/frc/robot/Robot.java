@@ -12,7 +12,6 @@ import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.networktables.NT4Publisher;
-import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 /**
@@ -39,16 +38,17 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		robot = this;
 		initSubsystems();
-		configureButtonBindings();
+		RobotContainer.configureOtherBindings();
 
 		Logger.recordMetadata("ProjectName", "Robot2024");
 		if (isReal()) {
-			Logger.addDataReceiver(new WPILOGWriter("/U/logs"));
+			// Logger.addDataReceiver(new WPILOGWriter("/D/logs"));
 			Logger.addDataReceiver(new NT4Publisher());
 		} else {
 			setUseTiming(false);
 			String logPath = LogFileUtil.findReplayLog();
-			Logger.setReplaySource(new WPILOGReader(logPath));
+			// Logger.setReplaySource(new WPILOGReader(logPath));
+
 			Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
 		}
 		// Logger.disableDeterministicTimestamps()

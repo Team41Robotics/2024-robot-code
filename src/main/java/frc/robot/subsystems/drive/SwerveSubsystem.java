@@ -1,8 +1,8 @@
 package frc.robot.subsystems.drive;
 
 import static frc.robot.RobotContainer.*;
-import static frc.robot.constants.Constants.*;
-import static frc.robot.constants.Constants.RobotConstants.*;
+import static frc.robot.commands.constants.Constants.*;
+import static frc.robot.commands.constants.Constants.RobotConstants.*;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.FollowPathHolonomic;
@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.constants.SwerveModuleConfiguration;
+import frc.robot.commands.constants.SwerveModuleConfiguration;
 import frc.robot.util.Util;
 import java.util.Optional;
 import org.littletonrobotics.junction.Logger;
@@ -206,13 +206,11 @@ public class SwerveSubsystem extends SubsystemBase {
 	}
 
 	/**
-	 * Calculates the x-velocity of the robot based on the current chassis speeds.
-	 * The x-velocity is the component of the velocity in the x-direction of the robot's coordinate system.
-	 * It takes into account the robot's orientation and the velocity in the y-direction.
+	 * Returns the field oriented X velocity of the robot in meters per second.
+	 * The X velocity is calculated based on the current velocity of the robot and its orientation.
 	 *
-	 * @return The x-velocity of the robot.
+	 * @return the X velocity of the robot in meters per second
 	 *
-	 * @return The x-velocity of the robot in meters per second.
 	 */
 	public double getXVel() {
 		ChassisSpeeds velocity = drive.getVelocity();

@@ -91,7 +91,7 @@ public class LEDS extends SubsystemBase {
 	 * @return the command to animate the LEDs in a rainbow pattern
 	 */
 	public Command rainbow() {
-		return this.runOnce(() -> leds.animate(new RainbowAnimation(0.5, 0.1, LED_LENGTH, false, 8)));
+		return this.runOnce(() -> leds.animate(new RainbowAnimation(0.5, 0.3, LED_LENGTH, false, 8)));
 	}
 
 	@Override

@@ -1,7 +1,7 @@
 package frc.robot.subsystems.drive;
 
-import static frc.robot.constants.Constants.*;
-import static frc.robot.constants.Constants.RobotConstants.*;
+import static frc.robot.commands.constants.Constants.*;
+import static frc.robot.commands.constants.Constants.RobotConstants.*;
 import static java.lang.Math.*;
 
 import com.ctre.phoenix6.hardware.CANcoder;
@@ -14,7 +14,7 @@ import com.revrobotics.SparkPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
-import frc.robot.constants.SwerveModuleConfiguration;
+import frc.robot.commands.constants.SwerveModuleConfiguration;
 
 /**
  * Module IO implementation for SparkMax drive motor controller, SparkMax turn motor controller (NEO

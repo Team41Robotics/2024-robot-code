@@ -1,7 +1,7 @@
 package frc.robot.subsystems.elevator;
 
-import static frc.robot.constants.Constants.ELEVATOR_MOTOR_LEFT;
-import static frc.robot.constants.Constants.ELEVATOR_MOTOR_RIGHT;
+import static frc.robot.commands.constants.Constants.ELEVATOR_MOTOR_LEFT;
+import static frc.robot.commands.constants.Constants.ELEVATOR_MOTOR_RIGHT;
 
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;

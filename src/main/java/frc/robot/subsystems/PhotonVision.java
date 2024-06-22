@@ -9,7 +9,7 @@ import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.util.Units;
-import frc.robot.constants.Constants;
+import frc.robot.commands.constants.Constants;
 import java.io.IOException;
 import java.util.Optional;
 import org.photonvision.EstimatedRobotPose;
@@ -28,7 +28,7 @@ public class PhotonVision {
 			new Rotation3d(0, Units.degreesToRadians(30), 0));
 	PhotonPoseEstimator photonPoseEstimator;
 
-	private Pose2d camRobot = new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(9.5), new Rotation2d());
+	private Pose2d camRobot = new Pose2d(Units.inchesToMeters(0), Units.inchesToMeters(11), new Rotation2d());
 
 	public PhotonVision() {
 		try {
@@ -37,7 +37,8 @@ public class PhotonVision {
 			System.out.println("Couldn't Find April Tag Layout File");
 			e.printStackTrace();
 		}
-		note_cam = null; // ew PhotonCamera("HD_USB_Camera");
+
+		note_cam = new PhotonCamera("Global_Shutter_Camera (1)");
 
 		april_cam = new PhotonCamera("Global_Shutter_Camera");
 		photonPoseEstimator =
