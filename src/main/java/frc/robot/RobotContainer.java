@@ -5,7 +5,6 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
@@ -57,9 +56,9 @@ public class RobotContainer {
 	public static LoggedDashboardChooser<Command> autoChooser;
 
 	public static IMU imu = new IMU();
-	public static CommandJoystick left_js = new CommandJoystick(0);
-	public static CommandJoystick right_js = new CommandJoystick(3);
-	public static CommandJoystick ds = new CommandJoystick(4);
+	public static CommandJoystick left_js = new CommandJoystick(3);
+	public static CommandJoystick right_js = new CommandJoystick(4);
+	public static CommandJoystick ds = new CommandJoystick(2);
 
 	/**
 	 * Initializes the subsystems of the robot.
@@ -68,11 +67,11 @@ public class RobotContainer {
 	 * controlling the shooter, intake, and other subsystems.
 	 */
 	public static void initSubsystems() {
-		drive.setDefaultCommand(new DefaultDrive(xbox::getLeftY, xbox::getLeftX, () -> -xbox.getRightX()));
+		drive.setDefaultCommand(new DefaultDrive(() -> left_js.getY(), () -> left_js.getX(), () -> -right_js.getX()));
 
 		leds.init();
 
-		// NamedCommands.registerCommand("GoToRing", new GoToRing());
+		NamedCommands.registerCommand("GoToRing", new GoToRing());
 		NamedCommands.registerCommand("ShooterUp", shooter.toAngleDegreeCommand(15));
 		NamedCommands.registerCommand("RunFeeder", shooter.loadNote());
 		NamedCommands.registerCommand("RunIntake", (intake.runIntake(0.75).until(() -> !intake.intakeSwitch())));
@@ -119,8 +118,10 @@ public class RobotContainer {
 
 		Pathfinding.setPathfinder(new LocalADStarAK());
 		drive.init(new Pose2d());
+
 		autoChooser = new LoggedDashboardChooser<>("Auto Routine", AutoBuilder.buildAutoChooser());
-		Shuffleboard.getTab("Swerve").add("Auto Selector", autoChooser.getSendableChooser());
+
+		// Shuffleboard.getTab("Swerve").add("Auto Selector", autoChooser.getSendableChooser());
 	}
 
 	/**
@@ -128,11 +129,11 @@ public class RobotContainer {
 	 */
 	public static void configureButtonBindings() {
 
-		ds.button(1).onTrue(shooter.subwooferShot()); // aims for subwoofer 
+		ds.button(1).onTrue(shooter.subwooferShot()); // aims for subwoofer
 		ds.button(2).whileTrue(new manualElevator()); // turns on manual elevator control
-		ds.button(2).onTrue(shooter.stopMotors()); // stops the shooter 
+		ds.button(2).onTrue(shooter.stopMotors()); // stops the shooter
 		// handoff syste m
-		right_js.button(1) // flashes leds green 
+		right_js.button(1) // flashes leds green
 				.and(shooter::isReady)
 				.and(shooter::ringLoaded)
 				.whileTrue(new RunCommand(() -> leds.flashLeds(Color.kGreen))
@@ -140,7 +141,7 @@ public class RobotContainer {
 
 		right_js.button(2).onTrue(elevator.zeroEncoders()); // zeroes encoders
 
-		ds.button(3).onTrue(shooter.feederShot()); // 
+		ds.button(3).onTrue(shooter.feederShot()); //
 		left_js.button(1) // auto intake and handoff
 				.onTrue(intake.automaticIntake()
 						.until(left_js.button(1).negate())
@@ -153,9 +154,9 @@ public class RobotContainer {
 						.alongWith(shooter.muzzleLoad()
 								.andThen(
 										shooter.toAngleDegreeCommand(45),
-										new InstantCommand(() -> shooter.runMotors(0.3)))));
+										new InstantCommand(() -> shooter.runMotors(0.8)))));
 
-		right_js.button(1).and(() -> shooter.ringLoaded()).whileTrue(new AimBot(shooter, ds.button(15))); // auto aim 
+		right_js.button(1).and(() -> shooter.ringLoaded()).whileTrue(new AimBot(shooter, ds.button(15))); // auto aim
 		ds.button(9).onTrue(new SetPivot(115)); // manually lower intake
 		ds.button(10).onTrue(new Handoff()); // manually toggle handoff
 
@@ -163,18 +164,18 @@ public class RobotContainer {
 		ds.button(12).whileTrue(intake.runIntake(0.75)); // runs intake motors
 		ds.button(11).whileTrue(intake.runIntake(-0.75)); // runs intake motors in reverse (use to spit out notes)
 		right_js.pov(0).onTrue(new InstantCommand(() -> leds.flashLeds(Color.kGreen))); // flashes green
-		right_js.pov(180).onTrue(leds.twinkle(Color.kPink)); // flashes pink 
+		right_js.pov(180).onTrue(leds.twinkle(Color.kPink)); // flashes pink
 		right_js.pov(270).onTrue(leds.twinkle(Color.kYellow));
 		right_js.pov(90).onTrue(leds.rainbow());
-		right_js.pov(45).onTrue(leds.fade(Color.kBlueViolet));
+		right_js.pov(45).onTrue(leds.fade(Color.kBlueViolet)); //
 
 		ds.button(6).onTrue(shooter.toAngleDegreeCommand(65).andThen(shooter.shootSingle(0.45)));
 		ds.button(14).onTrue(new SetPivot(-85).andThen(shooter.toAngleDegreeCommand(55)));
 
 		ds.button(6).onTrue(new SetPivot(-85).andThen(shooter.toAngleCommand(Rotation2d.fromDegrees(45))));
 
-		ds.button(7).onTrue(shooter.toAngleDegreeCommand(20).andThen(shooter.ampShoot())); // amp shot 
-		ds.button(15).whileTrue(new GoToRing()); // auto align
+		ds.button(7).onTrue(shooter.toAngleDegreeCommand(20).andThen(shooter.ampShoot())); // amp shot
+		left_js.pov(45).whileTrue(new GoToRing()); // auto align
 		/*
 		xbox.leftTrigger(0.4)
 				.whileTrue((intake.automaticIntake()

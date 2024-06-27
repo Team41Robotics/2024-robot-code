@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 0.7275269251393202,
-      "y": 4.3385312981452175
+      "x": 1.0198807862003185,
+      "y": 4.034483282641779
     },
-    "rotation": 124.21570213243737
+    "rotation": 118.70386243902381
   },
   "command": {
     "type": "sequential",
@@ -18,9 +18,15 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
           "type": "path",
           "data": {
-            "pathName": "Golden note Prep"
+            "pathName": "New New New Path"
           }
         }
       ]

@@ -304,7 +304,7 @@ public class ShooterSubsystem extends SubsystemBase {
 	public Command autoShoot() {
 		return shootSingle(Constants.SHOOTER_SPEAKER_SPEED)
 				.deadlineWith(new RunCommand(() -> setAngle(Rotation2d.fromDegrees(calculateAngle()))))
-				.andThen(new InstantCommand(() -> runMotors(0.4)));
+				.andThen(new InstantCommand(() -> runMotors(0.7)));
 	}
 
 	/**
