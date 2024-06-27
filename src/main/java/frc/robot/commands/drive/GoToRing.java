@@ -19,7 +19,7 @@ public class GoToRing extends Command {
 
 	private PIDController wPID = new PIDController(1.25, 0, 0);
 
-	private Translation2d storedNotePose = null;
+	private Translation2d storedNotePose = null; 
 
 	public GoToRing() {
 		addRequirements(drive);
@@ -27,36 +27,23 @@ public class GoToRing extends Command {
 		wPID.enableContinuousInput(0, Math.PI * 2);
 	}
 
-	private double getYVel() {
-		ChassisSpeeds velocity = drive.getVelocity();
-		double theta = drive.getPose().getRotation().getRadians();
-		return Math.cos(theta) * velocity.vyMetersPerSecond + Math.sin(theta) * velocity.vxMetersPerSecond;
-	}
-
-	private double getXVel() {
-		ChassisSpeeds velocity = drive.getVelocity();
-		double theta = drive.getPose().getRotation().getRadians();
-		return Math.sin(theta) * velocity.vyMetersPerSecond + Math.cos(theta) * velocity.vxMetersPerSecond;
-	}
-
 	@Override
 	public void initialize() {
 		wPID.reset();
-
 		wPID.enableContinuousInput(-Math.PI, Math.PI);
 	}
 
 	@Override
 	public void execute() {
 
-		Optional<Pose2d> nearestNote = photon.getNearestNote();
+		Optional<Pose2d> nearestNote = photon.getNearestNote(); // gets the pose of the nearest note from photon vision
 
-		if (nearestNote.isPresent()) {
-			// Translation2d current_translation = drive.getPose().getTranslation();
-			Translation2d target_translation = nearestNote.get().getTranslation();
+		if (nearestNote.isPresent()) { 
+			
+			Translation2d target_translation = nearestNote.get().getTranslation(); // gets translation vector for nearest note
 
-			Pose2d currentPose = drive.getPose();
-			storedNotePose = target_translation.plus(currentPose.getTranslation());
+			Pose2d currentPose = drive.getPose(); // gets vector of current pose 
+			storedNotePose = target_translation.plus(currentPose.getTranslation()); // adds pose vector and note vector
 		}
 
 		if (storedNotePose == null) {
@@ -64,17 +51,17 @@ public class GoToRing extends Command {
 		}
 
 		double targetRotation = storedNotePose
-				.minus(drive.getPose().getTranslation())
+				.minus(drive.getPose().getTranslation()) // compare difference in angle between current translation and target translation
 				.getAngle()
 				.getRadians();
-		wPID.setSetpoint(targetRotation);
+		wPID.setSetpoint(targetRotation); // use PID to adjust to target translation 
 
 		Pose2d currentPose = drive.getPose();
 
-		double currentRotation = currentPose.getRotation().getRadians();
+		//double currentRotation = currentPose.getRotation().getRadians();
 		// Logger.recordOutput("AutoAngle/err", wPID.getPositionError());
-		System.out.println("target rotation: " + wPID.getSetpoint());
-		System.out.println("current rotation:" + currentRotation);
+		//System.out.println("target rotation: " + wPID.getSetpoint());
+		//System.out.println("current rotation:" + currentRotation);
 
 		ChassisSpeeds speeds = Util.joystickToSpeeds(
 				xbox.getLeftY(),
