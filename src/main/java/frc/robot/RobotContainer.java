@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.commands.Combinations.AimBot;
 import frc.robot.commands.Combinations.Handoff;
 import frc.robot.commands.Combinations.ShootCycle;
-import frc.robot.commands.drive.DefaultDrive;
 import frc.robot.commands.drive.FaceSpeakerDrive;
 import frc.robot.commands.drive.GoToRing;
 import frc.robot.commands.elevator.manualElevator;
@@ -67,7 +66,9 @@ public class RobotContainer {
 	 * controlling the shooter, intake, and other subsystems.
 	 */
 	public static void initSubsystems() {
-		drive.setDefaultCommand(new DefaultDrive(() -> left_js.getY(), () -> left_js.getX(), () -> -right_js.getX()));
+		// drive.setDefaultCommand(new DefaultDrive(() -> left_js.getY(), () -> left_js.getX(), () ->
+		// -right_js.getX()));
+		drive.setDefaultCommand();
 
 		leds.init();
 

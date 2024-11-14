@@ -19,7 +19,7 @@ public class GoToRing extends Command {
 
 	private PIDController wPID = new PIDController(1.25, 0, 0);
 
-	private Translation2d storedNotePose = null; 
+	private Translation2d storedNotePose = null;
 
 	public GoToRing() {
 		addRequirements(drive);
@@ -38,11 +38,12 @@ public class GoToRing extends Command {
 
 		Optional<Pose2d> nearestNote = photon.getNearestNote(); // gets the pose of the nearest note from photon vision
 
-		if (nearestNote.isPresent()) { 
-			
-			Translation2d target_translation = nearestNote.get().getTranslation(); // gets translation vector for nearest note
+		if (nearestNote.isPresent()) {
 
-			Pose2d currentPose = drive.getPose(); // gets vector of current pose 
+			Translation2d target_translation =
+					nearestNote.get().getTranslation(); // gets translation vector for nearest note
+
+			Pose2d currentPose = drive.getPose(); // gets vector of current pose
 			storedNotePose = target_translation.plus(currentPose.getTranslation()); // adds pose vector and note vector
 		}
 
@@ -51,17 +52,19 @@ public class GoToRing extends Command {
 		}
 
 		double targetRotation = storedNotePose
-				.minus(drive.getPose().getTranslation()) // compare difference in angle between current translation and target translation
+				.minus(drive.getPose()
+						.getTranslation()) // compare difference in angle between current translation and target
+				// translation
 				.getAngle()
 				.getRadians();
-		wPID.setSetpoint(targetRotation); // use PID to adjust to target translation 
+		wPID.setSetpoint(targetRotation); // use PID to adjust to target translation
 
 		Pose2d currentPose = drive.getPose();
 
-		//double currentRotation = currentPose.getRotation().getRadians();
+		// double currentRotation = currentPose.getRotation().getRadians();
 		// Logger.recordOutput("AutoAngle/err", wPID.getPositionError());
-		//System.out.println("target rotation: " + wPID.getSetpoint());
-		//System.out.println("current rotation:" + currentRotation);
+		// System.out.println("target rotation: " + wPID.getSetpoint());
+		// System.out.println("current rotation:" + currentRotation);
 
 		ChassisSpeeds speeds = Util.joystickToSpeeds(
 				xbox.getLeftY(),

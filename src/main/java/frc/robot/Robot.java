@@ -38,7 +38,7 @@ public class Robot extends LoggedRobot {
 	public void robotInit() {
 		robot = this;
 		initSubsystems();
-		RobotContainer.configureButtonBindings();
+		RobotContainer.configureOtherBindings();
 
 		Logger.recordMetadata("ProjectName", "Robot2024");
 		if (isReal()) {
